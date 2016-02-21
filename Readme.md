@@ -27,4 +27,4 @@ Mac/Linux should work too.
 
 Usage:
 Run setup first and select the fastest audio device. After that, run `opensmith songfile.psarc`. Add `-rhythm` parameter to play rhythm instead of lead, `-dx` to set difficulty x (0-30 depending on the song), `-f` to go fullscreen.
-You can use your Rocksmith DLCs as well as custom DLCs (https://github.com/rscustom/rocksmith-custom-song-toolkit).
+You can use Ubisoft DLCs as well as custom DLCs (https://github.com/rscustom/rocksmith-custom-song-toolkit).
