@@ -18,7 +18,7 @@ Contents:
 * Audio input and output
 * Note detector
 * Tuner executable
-* Settings executable
+* Setup executable
 * Main executable
 
 Building:
