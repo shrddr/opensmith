@@ -1,0 +1,16 @@
+# Floats at note height
+# Scale z to length
+mtllib cube.mtl
+v -1.5 0.0 1.0
+v -1.5 0.0 0.0
+v 10.5 0.0 0.0
+v 10.5 0.0 1.0
+vt 0.0 0.0
+vt 0.0 1.0
+vt 1.0 1.0
+vt 1.0 0.0
+vn 0.0 1.0 0.0
+usemtl Material_ray.png
+s off
+f 1/1/1 2/2/1 3/3/1
+f 1/1/1 3/3/1 4/4/1
