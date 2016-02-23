@@ -1,4 +1,5 @@
 #include "Text2D.h"
+#include <cstring>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "util.h"

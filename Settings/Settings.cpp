@@ -33,7 +33,7 @@ Settings::Settings()
 void Settings::save()
 {
 	std::ofstream file;
-	file.open("settings.txt");
+	file.open("../resources/settings");
 
 	file << inputDevice << std::endl;
 	file << outputDevice << std::endl;
@@ -46,9 +46,9 @@ void Settings::save()
 void Settings::load()
 {
 	std::ifstream file;
-	file.open("settings.txt");
+	file.open("../resources/settings");
 	if (!file.good())
-		throw std::runtime_error("Settings file not found. Run setup first.");
+		throw std::runtime_error("Settings file not found. Run setup first.\n");
 
 	file >> inputDevice;
 	file >> outputDevice;

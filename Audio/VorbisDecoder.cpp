@@ -1,6 +1,8 @@
 #include "VorbisDecoder.h"
+#include <cstring>
 #include <iostream>
 #include <fstream>
+
 
 void VorbisDecoder::getData()
 {
@@ -15,7 +17,7 @@ void VorbisDecoder::getData()
 		return;
 	}
 
-	memcpy(buffer, &data[pos], numRead);
+	std::memcpy(buffer, &data[pos], numRead);
 	pos += numRead;
 
 	ogg_sync_wrote(&syncState, numRead);

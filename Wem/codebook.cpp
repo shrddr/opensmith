@@ -1,7 +1,7 @@
 #include <fstream>
 #include "codebook.h"
 #include "bitstream.h"
-#include "BigEndianReader.h"
+#include "PsarcReader/BigEndianReader.h"
 
 unsigned int _book_maptype1_quantvals(unsigned int entries, unsigned int dimensions) {
 	/* get us a starting hint, we'll polish it below */

@@ -1,5 +1,5 @@
 # Put audio libraries here depending on PortAudio configuration
-AUDIOLIBS = -lasound -pthread
+PORTAUDIO = bin/libportaudio.a -lasound -pthread
 
 all: libRijndael libPsarcReader libSettings libWem libAudio exeopensmith exeSetup exeTest exeTuner
 
@@ -36,13 +36,16 @@ libAudio:
 	rm bin/Audio.o bin/NoteDetector.o bin/VorbisDecoder.o
 
 exeopensmith:
-	g++ -std=c++11 -I. -Iinclude opensmith/Camera.cpp opensmith/Controller.cpp opensmith/Hud.cpp opensmith/main.cpp opensmith/Mesh.cpp opensmith/Model.cpp opensmith/Sprite.cpp opensmith/Text2D.cpp opensmith/util.cpp opensmith/View.cpp bin/libAudio.a bin/libPsarcReader.a bin/libRijndael.a bin/libSettings.a bin/libWem.a lib/libportaudio.a $(AUDIOLIBS) -lz `pkg-config --static --libs glew` `pkg-config --static --libs glfw3` `pkg-config --static --libs ogg` `pkg-config --static --libs vorbis` -o bin/opensmith
+	g++ -std=c++11 -I. -Iinclude opensmith/Camera.cpp opensmith/Controller.cpp opensmith/Hud.cpp opensmith/main.cpp opensmith/Mesh.cpp opensmith/Model.cpp opensmith/Sprite.cpp opensmith/Text2D.cpp opensmith/util.cpp opensmith/View.cpp bin/libAudio.a bin/libPsarcReader.a bin/libRijndael.a bin/libSettings.a bin/libWem.a $(PORTAUDIO) -lz `pkg-config --static --libs glew` `pkg-config --static --libs glfw3` `pkg-config --static --libs ogg` `pkg-config --static --libs vorbis` -o bin/opensmith
 
 exeSetup:
-	g++ -std=c++11 -I. -Iinclude Setup/Setup.cpp bin/libAudio.a bin/libSettings.a lib/libportaudio.a $(AUDIOLIBS) -o bin/Setup
+	g++ -std=c++11 -I. -Iinclude Setup/Setup.cpp bin/libAudio.a bin/libSettings.a $(PORTAUDIO) -o bin/Setup
 
 exeTest:
 	g++ -I. -Iinclude Test/test.cpp bin/libAudio.a bin/libWem.a bin/libPsarcReader.a `pkg-config --static --libs ogg` `pkg-config --static --libs vorbis` -o bin/Test
 
 exeTuner:
-	g++ -std=c++11 -I. -Iinclude Tuner/libfft.c Tuner/tuner.cpp bin/libAudio.a bin/libSettings.a lib/libportaudio.a $(AUDIOLIBS) -o bin/Tuner
+	g++ -std=c++11 -I. -Iinclude Tuner/libfft.c Tuner/tuner.cpp bin/libAudio.a bin/libSettings.a $(PORTAUDIO) -o bin/Tuner
+
+clean:
+	rm bin/libAudio.a bin/libPsarcReader.a bin/libRijndael.a bin/libSettings.a bin/libWem.a bin/opensmith bin/Setup bin/Test bin/Tuner

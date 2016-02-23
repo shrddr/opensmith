@@ -32,7 +32,7 @@ public:
 		{
 		public:
 			DataPointer(Entry& E, BigEndianReader& R, std::vector<uint32_t>& z, uint32_t b) :
-				Entry(E),
+				_Entry(E),
 				Reader(R),
 				zLengths(z),
 				blockSize(b) {}
@@ -40,7 +40,7 @@ public:
 			/* Unzips file entry into memory */
 			void readTo(std::vector<char>& storage);
 		private:
-			Entry& Entry;
+			Entry& _Entry;
 			BigEndianReader& Reader;
 			std::vector<uint32_t>& zLengths;
 			uint32_t blockSize;

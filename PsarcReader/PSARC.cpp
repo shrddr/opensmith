@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstring>
 #include <fstream>
 #include <algorithm>
 #include "Rijndael/rijndael.h"
@@ -141,7 +142,7 @@ void PSARC::decryptTOC(char* output, long len)
 	for (i = 0, p = output; i < len / blockSize; i++)
 	{
 		rijndaelEncrypt(rk, nrounds, (unsigned char*)chain, (unsigned char*)temp);
-		memcpy(chain, p, blockSize);
+		std::memcpy(chain, p, blockSize);
 		blockXor(p, temp);
 		p += blockSize;
 	}
@@ -207,12 +208,12 @@ int PSARC::inflateStream(std::istream& source, int srcLen, std::vector<char>& de
 
 void PSARC::Entry::DataPointer::readTo(std::vector<char>& storage)
 {
-	if (Entry.Length != 0)
+	if (_Entry.Length != 0)
 	{
-		Reader.setPos(Entry.Offset);
-		storage.reserve(Entry.Length);
+		Reader.setPos(_Entry.Offset);
+		storage.reserve(_Entry.Length);
 
-		for (size_t i = Entry.zIndex; storage.size() < Entry.Length; i++)
+		for (size_t i = _Entry.zIndex; storage.size() < _Entry.Length; i++)
 		{
 			if (zLengths[i] == 0)
 			{

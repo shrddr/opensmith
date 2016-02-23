@@ -1,4 +1,6 @@
 #pragma once
+#include <stdlib.h>
+
 template <class T>
 class CircularBuffer
 {

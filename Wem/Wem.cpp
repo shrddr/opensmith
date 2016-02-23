@@ -2,8 +2,9 @@
 
 #include "Wem.h"
 #include <fstream>
+#include <cstring>
 #include "bitstream.h"
-#include "BigEndianReader.h"
+#include "PsarcReader/BigEndianReader.h"
 #include "codebook.h"
 
 
@@ -76,7 +77,7 @@ Wem::Wem(char const* fileName):
 		char riffHeader[4], waveHeader[4];
 		inStream.read(riffHeader, 4);
 
-		if (memcmp(riffHeader, "RIFF", 4))
+		if (std::memcmp(riffHeader, "RIFF", 4))
 			throw std::string("missing RIFF");
 		else
 			littleEndian = true;
@@ -85,7 +86,7 @@ Wem::Wem(char const* fileName):
 		if (riffSize > fileSize) throw std::string("RIFF truncated");
 
 		r.readBytes(waveHeader, 4);
-		if (memcmp(waveHeader, "WAVE", 4))
+		if (std::memcmp(waveHeader, "WAVE", 4))
 			throw std::string("missing WAVE");
 	}
 
@@ -104,32 +105,32 @@ Wem::Wem(char const* fileName):
 		uint32_t chunkSize;
 		chunkSize = r.readInt32();
 
-		if (!memcmp(chunkType, "fmt ", 4))
+		if (!std::memcmp(chunkType, "fmt ", 4))
 		{
 			fmtOffset = r.pos;
 			fmtSize = chunkSize;
 		}
-		else if (!memcmp(chunkType, "cue ", 4))
+		else if (!std::memcmp(chunkType, "cue ", 4))
 		{
 			_cue_offset = r.pos;
 			_cue_size = chunkSize;
 		}
-		else if (!memcmp(chunkType, "LIST", 4))
+		else if (!std::memcmp(chunkType, "LIST", 4))
 		{
 			_LIST_offset = r.pos;
 			_LIST_size = chunkSize;
 		}
-		else if (!memcmp(chunkType, "smpl", 4))
+		else if (!std::memcmp(chunkType, "smpl", 4))
 		{
 			_smpl_offset = r.pos;
 			_smpl_size = chunkSize;
 		}
-		else if (!memcmp(chunkType, "vorb", 4))
+		else if (!std::memcmp(chunkType, "vorb", 4))
 		{
 			_vorb_offset = r.pos;
 			_vorb_size = chunkSize;
 		}
-		else if (!memcmp(chunkType, "data", 4))
+		else if (!std::memcmp(chunkType, "data", 4))
 		{
 			dataOffset = r.pos;
 			dataSize = chunkSize;
@@ -418,7 +419,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 		{
 			/* external codebooks */
 
-			CodebookLibrary cbl("packed_codebooks_aoTuV_603.bin");
+			CodebookLibrary cbl("../resources/wem/packed_codebooks_aoTuV_603.bin");
 
 			for (int i = 0; i < codebook_count; i++)
 			{

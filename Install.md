@@ -1,7 +1,7 @@
-=== Ubuntu 15.10
-==== glew
+### Ubuntu 15.10
+#### glew
 * `sudo apt-get install libglew-dev`
-==== glfw
+#### glfw
 There's an apt-get package named libglfw3-dev, but it doesn't seem to work.
 * `sudo apt-get install cmake xorg-dev libgl1-mesa-dev`
 * `git clone https://github.com/glfw/glfw.git`
@@ -10,17 +10,17 @@ There's an apt-get package named libglfw3-dev, but it doesn't seem to work.
 * `make`
 * `sudo make install`
 * `cd .. && rm -rf glfw` (cleanup)
-==== zlib
+#### zlib
 * `sudo apt-get install zlib1g-dev`
-==== PortAudio
+#### PortAudio
 * `sudo apt-get install libasound-dev` (ALSA audio library)
 * `wget http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz`
-* `tar -xvzf pa_stable_v19_20140130.tgz`
+* `tar -xvzf pa_stable_v19_20140130.tgz && rm pa_stable_v19_20140130.tgz`
 * `cd portaudio`
 * `./configure && make`
-* `cp lib/.libs/libportaudio.a PATH/TO/opensmith/lib`
+* `cp lib/.libs/libportaudio.a PATH/TO/opensmith/bin`
 * `cd .. && rm -rf portaudio` (cleanup)
-==== ogg
+#### ogg
 * `sudo apt-get install libogg-dev`
-==== vorbis
+#### vorbis
 * `sudo apt-get install libvorbis-dev`

@@ -35,14 +35,14 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	std::vector<char> sngEntryStorage;
 	psarc->Entries[entrySng]->Data->readTo(sngEntryStorage);
-	std::ofstream outSngFile("temp.sng", std::ios::binary);
+	std::ofstream outSngFile("../resources/temp.sng", std::ios::binary);
 	outSngFile.write(sngEntryStorage.data(), sngEntryStorage.size());
 	outSngFile.close();
 
 	std::cout << glfwGetTime() << " > SNG extracted from PSARC" << std::endl;
 
 	std::ifstream inSngFile;
-	inSngFile.open("temp.sng", std::ios::binary);
+	inSngFile.open("../resources/temp.sng", std::ios::binary);
 	std::vector<char> sngStorage;
 	SngReader::readTo(inSngFile, sngStorage);
 
@@ -56,13 +56,13 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	std::vector<char> audioEntryStorage;
 	psarc->Entries[entryAudio]->Data->readTo(audioEntryStorage);
-	std::ofstream outWemFile("temp.wem", std::ios::binary);
+	std::ofstream outWemFile("../resources/temp.wem", std::ios::binary);
 	outWemFile.write(audioEntryStorage.data(), audioEntryStorage.size());
 	outWemFile.close();
 
 	std::cout << glfwGetTime() << " > WEM extracted from PSARC" << std::endl;
 
-	Wem w("temp.wem");
+	Wem w("../resources/temp.wem");
 	w.generateOgg(oggStorage);
 
 	std::cout << glfwGetTime() << " > WEM to OGG" << std::endl;
