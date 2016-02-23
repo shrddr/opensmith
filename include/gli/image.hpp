@@ -11,14 +11,14 @@ namespace gli
 	class image
 	{
 	private:
-		friend class texture1D;
-		friend class texture2D;
-		friend class texture3D;
+		friend class texture1d;
+		friend class texture2d;
+		friend class texture3d;
 
 	public:
 		typedef size_t size_type;
 		typedef gli::format format_type;
-		typedef storage::texelcoord_type texelcoord_type;
+		typedef storage::extent_type extent_type;
 		typedef storage::data_type data_type;
 
 		/// Create an empty image instance
@@ -27,14 +27,14 @@ namespace gli
 		/// Create an image object and allocate an image storoge for it.
 		explicit image(
 			format_type Format,
-			texelcoord_type const & Dimensions);
+			extent_type const& Extent);
 
 		/// Create an image object by sharing an existing image storage from another image instance.
 		/// This image object is effectively an image view where format can be reinterpreted
 		/// with a different compatible image format.
 		/// For formats to be compatible, the block size of source and destination must match.
 		explicit image(
-			image const & Image,
+			image const& Image,
 			format_type Format);
 
 		/// Return whether the image instance is empty, no storage or description have been assigned to the instance.
@@ -44,7 +44,7 @@ namespace gli
 		format_type format() const;
 
 		/// Return the dimensions of an image instance: width, height and depth.
-		texelcoord_type dimensions() const;
+		extent_type extent() const;
 
 		/// Return the memory size of an image instance storage in bytes.
 		size_type size() const;
@@ -55,18 +55,18 @@ namespace gli
 		size_type size() const;
 
 		/// Return a pointer to the beginning of the image instance data.
-		void * data();
+		void* data();
 
 		/// Return a pointer to the beginning of the image instance data.
-		void const * data() const;
+		void const* data() const;
 
 		/// Return a pointer of type genType which size must match the image format block size.
 		template <typename genType>
-		genType * data();
+		genType* data();
 
 		/// Return a pointer of type genType which size must match the image format block size.
 		template <typename genType>
-		genType const * data() const;
+		genType const* data() const;
 
 		/// Clear the entire image storage with zeros
 		void clear();
@@ -74,19 +74,19 @@ namespace gli
 		/// Clear the entire image storage with Texel which type must match the image storage format block size
 		/// If the type of genType doesn't match the type of the image format, no conversion is performed and the data will be reinterpreted as if is was of the image format. 
 		template <typename genType>
-		void clear(genType const & Texel);
+		void clear(genType const& Texel);
 
 		/// Load the texel located at TexelCoord coordinates.
 		/// It's an error to call this function if the format is compressed.
 		/// It's an error if TexelCoord values aren't between [0, dimensions].
 		template <typename genType>
-		genType load(texelcoord_type const & TexelCoord);
+		genType load(extent_type const& TexelCoord);
 
 		/// Store the texel located at TexelCoord coordinates.
 		/// It's an error to call this function if the format is compressed.
 		/// It's an error if TexelCoord values aren't between [0, dimensions].
 		template <typename genType>
-		void store(texelcoord_type const & TexelCoord, genType const & Data);
+		void store(extent_type const& TexelCoord, genType const& Data);
 
 	private:
 		/// Create an image object by sharing an existing image storage from another image instance.
@@ -104,10 +104,10 @@ namespace gli
 		std::shared_ptr<storage> Storage;
 		format_type const Format;
 		size_type const BaseLevel;
-		data_type * Data;
+		data_type* Data;
 		size_type const Size;
 
-		data_type * compute_data(size_type BaseLayer, size_type BaseFace, size_type BaseLevel);
+		data_type* compute_data(size_type BaseLayer, size_type BaseFace, size_type BaseLevel);
 		size_type compute_size(size_type Level) const;
 	};
 }//namespace gli

@@ -10,11 +10,11 @@ namespace detail
 	{
 		static void call(textureType & Texture, typename convert<textureType, T, P>::writeFunc Write, tvec4<T, P> const & Color)
 		{
-			assert(Write);
+			GLI_ASSERT(Write);
 
-			texture const ConvertTexel(Texture.target(), Texture.format(), texture::texelcoord_type(1), 1, 1, 1);
+			texture const ConvertTexel(Texture.target(), Texture.format(), texture::extent_type(1), 1, 1, 1);
 			textureType Texel(ConvertTexel);
-			Write(Texel, typename textureType::texelcoord_type(0), 0, 0, 0, Color);
+			Write(Texel, typename textureType::extent_type(0), 0, 0, 0, Color);
 
 			size_t const BlockSize(block_size(Texture.format()));
 			for(size_t BlockIndex = 0, BlockCount = Texture.size() / BlockSize; BlockIndex < BlockCount; ++BlockIndex)

@@ -17,20 +17,27 @@ namespace gli
 		typedef gli::format format_type;
 		typedef gli::swizzles swizzles_type;
 		typedef storage::data_type data_type;
-		typedef storage::texelcoord_type texelcoord_type;
+		typedef storage::extent_type extent_type;
 
 		/// Create an empty texture instance
 		texture();
 
 		/// Create a texture object and allocate a texture storoge for it
+		/// @param Target Type/Shape of the texture storage
+		/// @param Format Texel format
+		/// @param Extent Size of the texture: width, height and depth.
+		/// @param Layers Number of one-dimensional or two-dimensional images of identical size and format
+		/// @param Faces 6 for cube map textures otherwise 1.
+		/// @param Levels Number of images in the texture mipmap chain.
+		/// @param Swizzles A mechanism to swizzle the components of a texture before they are applied according to the texture environment.
 		texture(
 			target_type Target,
 			format_type Format,
-			texelcoord_type const & Dimensions,
+			extent_type const& Extent,
 			size_type Layers,
 			size_type Faces,
 			size_type Levels,
-			swizzles_type const & Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
 		/// Create a texture object by sharing an existing texture storage from another texture instance.
 		/// This texture object is effectively a texture view where the layer, the face and the level allows identifying
@@ -38,22 +45,22 @@ namespace gli
 		/// This texture object is effectively a texture view where the target and format can be reinterpreted
 		/// with a different compatible texture target and texture format.
 		texture(
-			texture const & Texture,
+			texture const& Texture,
 			target_type Target,
 			format_type Format,
 			size_type BaseLayer, size_type MaxLayer,
 			size_type BaseFace, size_type MaxFace,
 			size_type BaseLevel, size_type MaxLevel,
-			swizzles_type const & Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
 		/// Create a texture object by sharing an existing texture storage from another texture instance.
 		/// This texture object is effectively a texture view where the target and format can be reinterpreted
 		/// with a different compatible texture target and texture format.
 		texture(
-			texture const & Texture,
+			texture const& Texture,
 			target_type Target,
 			format_type Format,
-			swizzles_type const & Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
 		virtual ~texture(){}
 
@@ -95,8 +102,8 @@ namespace gli
 		/// Return max_level() - base_level() + 1.
 		size_type levels() const;
 
-		/// Return the dimensions of a texture instance: width, height and depth.
-		texelcoord_type dimensions(size_type Level = 0) const;
+		/// Return the size of a texture instance: width, height and depth.
+		extent_type extent(size_type Level = 0) const;
 
 		/// Return the memory size of a texture instance storage in bytes.
 		size_type size() const;
@@ -115,32 +122,32 @@ namespace gli
 		size_type size(size_type Level) const;
 
 		/// Return a pointer to the beginning of the texture instance data.
-		void * data();
+		void* data();
 
 		/// Return a pointer of type genType which size must match the texture format block size
 		template <typename genType>
-		genType * data();
+		genType* data();
 
 		/// Return a pointer to the beginning of the texture instance data.
-		void const * data() const;
+		void const* data() const;
 
 		/// Return a pointer of type genType which size must match the texture format block size
 		template <typename genType>
-		genType const * data() const;
+		genType const* data() const;
 
 		/// Return a pointer to the beginning of the texture instance data.
-		void * data(size_type Layer, size_type Face, size_type Level);
+		void* data(size_type Layer, size_type Face, size_type Level);
 
 		/// Return a pointer to the beginning of the texture instance data.
-		void const * data(size_type Layer, size_type Face, size_type Level) const;
+		void const* data(size_type Layer, size_type Face, size_type Level) const;
 
 		/// Return a pointer of type genType which size must match the texture format block size
 		template <typename genType>
-		genType * data(size_type Layer, size_type Face, size_type Level);
+		genType* data(size_type Layer, size_type Face, size_type Level);
 
 		/// Return a pointer of type genType which size must match the texture format block size
 		template <typename genType>
-		genType const * data(size_type Layer, size_type Face, size_type Level) const;
+		genType const* data(size_type Layer, size_type Face, size_type Level) const;
 
 		/// Clear the entire texture storage with zeros
 		void clear();
@@ -148,23 +155,36 @@ namespace gli
 		/// Clear the entire texture storage with Texel which type must match the texture storage format block size
 		/// If the type of genType doesn't match the type of the texture format, no conversion is performed and the data will be reinterpreted as if is was of the texture format. 
 		template <typename genType>
-		void clear(genType const & Texel);
+		void clear(genType const& Texel);
 
 		/// Clear a specific image of a texture.
 		template <typename genType>
-		void clear(size_type Layer, size_type Face, size_type Level, genType const & Texel);
+		void clear(size_type Layer, size_type Face, size_type Level, genType const& Texel);
+
+		/// Copy a specific image of a texture 
+		void copy(
+			texture const& TextureSrc,
+			size_t LayerSrc, size_t FaceSrc, size_t LevelSrc,
+			size_t LayerDst, size_t FaceDst, size_t LevelDst);
+
+		/// Copy a subset of a specific image of a texture 
+		void copy(
+			texture const& TextureSrc,
+			size_t LayerSrc, size_t FaceSrc, size_t LevelSrc, extent_type const& OffsetSrc,
+			size_t LayerDst, size_t FaceDst, size_t LevelDst, extent_type const& OffsetDst,
+			extent_type const& Extent);
 
 		/// Reorder the component in texture memory.
 		template <typename genType>
-		void swizzle(gli::swizzles const & Swizzles);
+		void swizzle(gli::swizzles const& Swizzles);
 
 	protected:
 		/// Compute the relative memory offset to access the data for a specific layer, face and level
-		size_type offset(size_type Layer, size_type Face, size_type Level) const;
+		size_type base_offset(size_type Layer, size_type Face, size_type Level) const;
 
 		struct cache
 		{
-			data_type * Data;
+			data_type* Data;
 			size_type Size;
 		};
 

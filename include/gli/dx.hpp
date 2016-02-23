@@ -20,7 +20,7 @@ namespace gli
 			(((std::uint32_t)(std::uint8_t)(ch1) <<  8) & 0x0000FF00) | \
 			((std::uint32_t)(std::uint8_t)(ch0)        & 0x000000FF) )
 
-		enum d3dFormat
+		enum d3dfmt
 		{
 			D3DFMT_UNKNOWN				=  0,
 
@@ -71,6 +71,11 @@ namespace gli
 			D3DFMT_ATI2					= GLI_MAKEFOURCC('A', 'T', 'I', '2'),
 			D3DFMT_AT2N					= GLI_MAKEFOURCC('A', 'T', '2', 'N'),
 
+			D3DFMT_BC4U					= GLI_MAKEFOURCC('B', 'C', '4', 'U'),
+			D3DFMT_BC4S					= GLI_MAKEFOURCC('B', 'C', '4', 'S'),
+			D3DFMT_BC5U					= GLI_MAKEFOURCC('B', 'C', '5', 'U'),
+			D3DFMT_BC5S					= GLI_MAKEFOURCC('B', 'C', '5', 'S'),
+
 			D3DFMT_ETC					= GLI_MAKEFOURCC('E', 'T', 'C', ' '),
 			D3DFMT_ETC1					= GLI_MAKEFOURCC('E', 'T', 'C', '1'),
 			D3DFMT_ATC					= GLI_MAKEFOURCC('A', 'T', 'C', ' '),
@@ -118,7 +123,7 @@ namespace gli
 			D3DFMT_FORCE_DWORD			= 0x7fffffff
 		};
 		
-		enum dxgiFormatDDS
+		enum dxgi_format_dds
 		{
 			DXGI_FORMAT_UNKNOWN							= 0,
 			DXGI_FORMAT_R32G32B32A32_TYPELESS			= 1,
@@ -286,7 +291,7 @@ namespace gli
 			DXGI_FORMAT_FORCE_UINT						= 0xffffffffUL
 		};
 
-		enum dxgiFormatGLI
+		enum dxgi_format_gli
 		{
 			DXGI_FORMAT_R64_UINT_GLI = 1,
 			DXGI_FORMAT_R64_SINT_GLI,
@@ -427,16 +432,16 @@ namespace gli
 				: DDS(DXGI_FORMAT_UNKNOWN)
 			{}
 			
-			dxgiFormat(dxgiFormatDDS DDS)
+			dxgiFormat(dxgi_format_dds DDS)
 				: DDS(DDS)
 			{}
 
-			dxgiFormat(dxgiFormatGLI GLI)
+			dxgiFormat(dxgi_format_gli GLI)
 				: GLI(GLI)
 			{}
 			
-			dxgiFormatDDS DDS;
-			dxgiFormatGLI GLI;
+			dxgi_format_dds DDS;
+			dxgi_format_gli GLI;
 		};
 		
 		enum ddpf
@@ -457,7 +462,7 @@ namespace gli
 		struct format
 		{
 			ddpf DDPixelFormat;
-			d3dFormat D3DFormat;
+			d3dfmt D3DFormat;
 			dxgiFormat DXGIFormat;
 			glm::u32vec4 Mask;
 		};
@@ -469,10 +474,10 @@ namespace gli
 		format const & translate(gli::format const & Format) const;
 
 		/// Convert a Direct3D 9 format into a GLI format
-		gli::format find(d3dFormat FourCC, ddpf PixelFormat) const;
+		gli::format find(d3dfmt FourCC, ddpf PixelFormat) const;
 
 		/// Convert a Direct3D 10 format into a GLI format
-		gli::format find(d3dFormat FourCC, dxgiFormat Format, ddpf PixelFormat) const;
+		gli::format find(d3dfmt FourCC, dxgiFormat Format, ddpf PixelFormat) const;
 
 	private:
 		std::array<format, FORMAT_COUNT> Translation;

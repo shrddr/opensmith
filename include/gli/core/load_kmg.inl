@@ -35,7 +35,7 @@ namespace detail
 		texture Texture(
 			static_cast<target>(Header.Target),
 			static_cast<format>(Header.Format),
-			texture::texelcoord_type(Header.PixelWidth, Header.PixelHeight, Header.PixelDepth),
+			texture::extent_type(Header.PixelWidth, Header.PixelHeight, Header.PixelDepth),
 			Header.Layers,
 			Header.Faces,
 			Header.Levels,
@@ -50,7 +50,7 @@ namespace detail
 				std::memcpy(Texture.data(Layer, Face, Level), Data + Offset, FaceSize);
 
 				Offset += FaceSize;
-				assert(Offset <= Size);
+				GLI_ASSERT(Offset <= Size);
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace detail
 
 	inline texture load_kmg(char const * Data, std::size_t Size)
 	{
-		assert(Data && (Size >= sizeof(detail::kmgHeader10)));
+		GLI_ASSERT(Data && (Size >= sizeof(detail::kmgHeader10)));
 
 		// KMG100
 		{

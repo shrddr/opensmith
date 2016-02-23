@@ -13,8 +13,14 @@ namespace gli
 	class gl
 	{
 	public:
-		enum internalFormat
+		enum internal_format
 		{
+			INTERNAL_RGB_UNORM= 0x1907,			//GL_RGB
+			INTERNAL_BGR_UNORM = 0x80E0,		//GL_BGR
+			INTERNAL_RGBA_UNORM = 0x1908,		//GL_RGBA
+			INTERNAL_BGRA_UNORM = 0x80E1,		//GL_BGRA
+			INTERNAL_BGRA8_UNORM = 0x93A1,		//GL_BGRA8_EXT
+
 			// unorm formats
 			INTERNAL_R8_UNORM = 0x8229,			//GL_R8
 			INTERNAL_RG8_UNORM = 0x822B,		//GL_RG8
@@ -229,7 +235,7 @@ namespace gli
 			INTERNAL_RGBA16_SSCALED_GTC,
 		};
 
-		enum externalFormat
+		enum external_format
 		{
 			EXTERNAL_NONE = 0,					//GL_NONE
 			EXTERNAL_RED = 0x1903,				//GL_RED
@@ -251,9 +257,12 @@ namespace gli
 			EXTERNAL_LUMINANCE = 0x1909,				//GL_LUMINANCE
 			EXTERNAL_ALPHA = 0x1906,					//GL_ALPHA
 			EXTERNAL_LUMINANCE_ALPHA = 0x190A,			//GL_LUMINANCE_ALPHA
+
+			EXTERNAL_SRGB_EXT = 0x8C40,					//SRGB_EXT
+			EXTERNAL_SRGB_ALPHA_EXT = 0x8C42			//SRGB_ALPHA_EXT
 		};
 
-		enum typeFormat
+		enum type_format
 		{
 			TYPE_NONE = 0,						//GL_NONE
 			TYPE_I8 = 0x1400,					//GL_BYTE
@@ -265,6 +274,7 @@ namespace gli
 			TYPE_I64 = 0x140E,					//GL_INT64_ARB
 			TYPE_U64 = 0x140F,					//GL_UNSIGNED_INT64_ARB
 			TYPE_F16 = 0x140B,					//GL_HALF_FLOAT
+			TYPE_F16_OES = 0x8D61,				//GL_HALF_FLOAT_OES
 			TYPE_F32 = 0x1406,					//GL_FLOAT
 			TYPE_F64 = 0x140A,					//GL_DOUBLE
 			TYPE_UINT32_RGB9_E5_REV = 0x8C3E,	//GL_UNSIGNED_INT_5_9_9_9_REV
@@ -309,32 +319,52 @@ namespace gli
 			SWIZZLE_ONE = 0x0001,		//GL_ONE
 		};
 
+		enum profile
+		{
+			PROFILE_ES20,
+			PROFILE_ES30,
+			PROFILE_GL32,
+			PROFILE_GL33,
+			PROFILE_KTX
+		};
+
 		typedef glm::tvec4<int> swizzles;
 
 		struct format
 		{
-			internalFormat Internal;
-			externalFormat External;
-			typeFormat Type;
+			internal_format Internal;
+			external_format External;
+			type_format Type;
 			swizzles Swizzles;
 		};
 
-		gl();
+		gl(profile Profile);
 
 		/// Convert GLI targets into OpenGL texture targets
-		target const & translate(gli::target Target) const;
+		target const& translate(gli::target Target) const;
 
 		/// Convert GLI formats into OpenGL texture formats
-		format const & translate(gli::format Format) const;
-
-		/// Convert GLI swizzles into OpenGL swizzles
-		swizzles translate(gli::swizzles const & Swizzle) const;
+		format translate(gli::format Format, gli::swizzles const& Swizzle) const;
 
 		/// Convert an OpenGL format into a GLI format
-		gli::format find(internalFormat InternalFormat, externalFormat ExternalFormat, typeFormat Type);
+		gli::format find(internal_format InternalFormat, external_format ExternalFormat, type_format Type);
 
 	private:
-		std::array<format, FORMAT_COUNT> Translation;
+		bool use_external_bgra(profile Profile) const
+		{
+			return Profile == PROFILE_ES20 || Profile == PROFILE_GL32 || Profile == PROFILE_KTX;
+		}
+
+		struct format_desc
+		{
+			internal_format Internal;
+			external_format External;
+			type_format Type;
+			unsigned int Properties;
+		};
+
+		std::array<format_desc, FORMAT_COUNT> FormatDesc;
+		profile Profile;
 	};
 }//namespace gli
 

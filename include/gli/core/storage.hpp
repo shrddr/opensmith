@@ -27,7 +27,7 @@ namespace gli
 	class storage
 	{
 	public:
-		typedef ivec3 texelcoord_type;
+		typedef extent3d extent_type;
 		typedef size_t size_type;
 		typedef gli::format format_type;
 		typedef glm::byte data_type;
@@ -37,7 +37,7 @@ namespace gli
 
 		storage(
 			format_type Format,
-			texelcoord_type const & Dimensions,
+			extent_type const & Extent,
 			size_type Layers,
 			size_type Faces,
 			size_type Levels);
@@ -49,17 +49,25 @@ namespace gli
 		size_type faces() const;
 
 		size_type block_size() const;
-		texelcoord_type block_dimensions() const;
-		texelcoord_type block_count(size_type Level) const;
-		texelcoord_type dimensions(size_type Level) const;
+		extent_type block_extent() const;
+		extent_type block_count(size_type Level) const;
+		extent_type extent(size_type Level) const;
 
-		data_type * data();
+		data_type* data();
+		data_type const* const data() const;
 
 		/// Compute the relative memory offset to access the data for a specific layer, face and level
-		size_type offset(
+		size_type base_offset(
 			size_type Layer,
 			size_type Face,
 			size_type Level) const;
+
+		/// Copy a subset of a specific image of a texture 
+		void copy(
+			storage const& StorageSrc,
+			size_t LayerSrc, size_t FaceSrc, size_t LevelSrc, extent_type const& BlockIndexSrc,
+			size_t LayerDst, size_t FaceDst, size_t LevelDst, extent_type const& BlockIndexDst,
+			extent_type const& BlockCount);
 
 		size_type level_size(
 			size_type Level) const;
@@ -74,58 +82,11 @@ namespace gli
 		size_type const Faces;
 		size_type const Levels;
 		size_type const BlockSize;
-		texelcoord_type const BlockCount;
-		texelcoord_type const BlockDimensions;
-		texelcoord_type const Dimensions;
+		extent_type const BlockCount;
+		extent_type const BlockExtent;
+		extent_type const Extent;
 		std::vector<data_type> Data;
 	};
-
-/*
-	storage extractLayers(
-		storage const & Storage, 
-		storage::size_type const & Offset, 
-		storage::size_type const & Size);
-*/
-/*
-	storage extractFace(
-		storage const & Storage, 
-		face const & Face);
-*/
-/*
-	storage extractLevels(
-		storage const & Storage, 
-		storage::size_type const & Offset, 
-		storage::size_type const & Size);
-*/
-/*
-	void copy_layers(
-		storage const & SourceStorage, 
-		storage::size_type const & SourceLayerOffset,
-		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
-		storage::size_type const & DestinationLayerOffset);
-
-	void copy_faces(
-		storage const & SourceStorage, 
-		storage::size_type const & SourceLayerOffset,
-		storage::size_type const & SourceFaceOffset,
-		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
-		storage::size_type const & DestinationLayerOffset,
-		storage::size_type const & DestinationFaceOffset);
-
-	void copy_levels(
-		storage const & SourceStorage, 
-		storage::size_type const & SourceLayerOffset,
-		storage::size_type const & SourceFaceOffset,
-		storage::size_type const & SourceLevelOffset,
-		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
-		storage::size_type const & DestinationLayerOffset,
-		storage::size_type const & DestinationFaceOffset,
-		storage::size_type const & DestinationlevelOffset);
-*/
-
 }//namespace gli
 
 #include "storage.inl"

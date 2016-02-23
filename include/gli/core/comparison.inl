@@ -26,7 +26,7 @@ namespace detail
 
 	inline bool operator==(image const & ImageA, image const & ImageB)
 	{
-		if(!glm::all(glm::equal(ImageA.dimensions(), ImageB.dimensions())))
+		if(!glm::all(glm::equal(ImageA.extent(), ImageB.extent())))
 			return false;
 		if(ImageA.size() != ImageB.size())
 			return false;
@@ -36,7 +36,7 @@ namespace detail
 
 	inline bool operator!=(image const & ImageA, image const & ImageB)
 	{
-		if(!glm::all(glm::equal(ImageA.dimensions(), ImageB.dimensions())))
+		if(!glm::all(glm::equal(ImageA.extent(), ImageB.extent())))
 			return true;
 		if(ImageA.size() != ImageB.size())
 			return true;

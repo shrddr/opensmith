@@ -10,8 +10,8 @@ GLuint loadTexture(const char* fileName)
 	if (Texture.empty())
 		return 0;
 
-	gli::gl GL;
-	gli::gl::format const Format = GL.translate(Texture.format());
+	gli::gl GL(gli::gl::PROFILE_GL33);
+	gli::gl::format const Format = GL.translate(Texture.format(), Texture.swizzles());
 	GLenum Target = GL.translate(Texture.target());
 
 	GLuint TextureName = 0;
@@ -22,12 +22,12 @@ GLuint loadTexture(const char* fileName)
 
 	for (size_t level = 0; level < Texture.levels(); level++)
 	{
-		glm::tvec3<GLsizei> Dimensions(Texture.dimensions(level));
+		glm::tvec3<GLsizei> Extent(Texture.extent(level));
 		glTexImage2D(Target,
 			level,
 			Format.Internal,
-			Dimensions.x,
-			Dimensions.y,
+			Extent.x,
+			Extent.y,
 			0,
 			Format.External,
 			Format.Type,

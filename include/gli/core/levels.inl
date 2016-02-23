@@ -3,22 +3,21 @@
 
 namespace gli
 {
-	/// Compute the number of texture levels necessary to build a complete mipmap chain.
 	template <typename T, precision P, template <typename, precision> class vecType>
-	inline T levels(vecType<T, P> const & Dimensions)
+	inline T levels(vecType<T, P> const& Extent)
 	{
-		return glm::log2(compMax(Dimensions)) + static_cast<T>(1);
+		return glm::log2(compMax(Extent)) + static_cast<T>(1);
 	}
 
-	/// Compute the number of texture levels necessary to build a complete mipmap chain.
-	inline size_t levels(size_t Dimensions)
+	template <typename T>
+	inline T levels(T Extent)
 	{
-		return glm::log2(Dimensions) + static_cast<size_t>(1);
+		return static_cast<T>(glm::log2(Extent) + static_cast<size_t>(1));
 	}
-
-	/// Compute the number of texture levels necessary to build a complete mipmap chain.
-	inline int levels(int Dimensions)
+/*
+	inline int levels(int Extent)
 	{
-		return glm::log2(Dimensions) + static_cast<int>(1);
+		return glm::log2(Extent) + static_cast<int>(1);
 	}
+*/
 }//namespace gli

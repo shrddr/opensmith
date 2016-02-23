@@ -8,57 +8,60 @@
 namespace gli
 {
 	/// Cube map texture
-	class textureCube : public texture
+	class texture_cube : public texture
 	{
 	public:
-		typedef ivec2 texelcoord_type;
+		typedef extent2d extent_type;
 
 	public:
 		/// Create an empty texture cube
-		textureCube();
+		texture_cube();
 
-		/// Create a textureCube and allocate a new storage
-		explicit textureCube(
+		/// Create a texture_cube and allocate a new storage
+		explicit texture_cube(
 			format_type Format,
-			texelcoord_type const & Dimensions,
-			size_type Levels);
+			extent_type const & Extent,
+			size_type Levels,
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
-		/// Create a textureCube and allocate a new storage with a complete mipmap chain
-		explicit textureCube(
+		/// Create a texture_cube and allocate a new storage with a complete mipmap chain
+		explicit texture_cube(
 			format_type Format,
-			texelcoord_type const & Dimensions);
+			extent_type const & Extent,
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
-		/// Create a textureCube view with an existing storage
-		explicit textureCube(
+		/// Create a texture_cube view with an existing storage
+		explicit texture_cube(
 			texture const & Texture);
 
-		/// Create a textureCube view with an existing storage
-		explicit textureCube(
+		/// Create a texture_cube view with an existing storage
+		explicit texture_cube(
 			texture const & Texture,
 			format_type Format,
 			size_type BaseLayer, size_type MaxLayer,
 			size_type BaseFace, size_type MaxFace,
-			size_type BaseLevel, size_type MaxLevel);
+			size_type BaseLevel, size_type MaxLevel,
+			swizzles_type const& Swizzles = swizzles_type(SWIZZLE_RED, SWIZZLE_GREEN, SWIZZLE_BLUE, SWIZZLE_ALPHA));
 
-		/// Create a textureCube view, reference a subset of an existing textureCube instance
-		explicit textureCube(
-			textureCube const & Texture,
+		/// Create a texture_cube view, reference a subset of an existing texture_cube instance
+		explicit texture_cube(
+			texture_cube const & Texture,
 			size_type BaseFace, size_type MaxFace,
 			size_type BaseLevel, size_type MaxLevel);
 
 		/// Create a view of the texture identified by Face in the texture cube
-		texture2D operator[](size_type Face) const;
+		texture2d operator[](size_type Face) const;
 
 		/// Return the dimensions of a texture instance: width and height where both should be equal.
-		texelcoord_type dimensions(size_type Level = 0) const;
+		extent_type extent(size_type Level = 0) const;
 
 		/// Fetch a texel from a texture. The texture format must be uncompressed.
 		template <typename genType>
-		genType load(texelcoord_type const & TexelCoord, size_type Face, size_type Level) const;
+		genType load(extent_type const & TexelCoord, size_type Face, size_type Level) const;
 
 		/// Write a texel to a texture. The texture format must be uncompressed.
 		template <typename genType>
-		void store(texelcoord_type const & TexelCoord, size_type Face, size_type Level, genType const & Texel);
+		void store(extent_type const & TexelCoord, size_type Face, size_type Level, genType const & Texel);
 
 		/// Clear the entire texture storage with zeros
 		void clear();
@@ -76,7 +79,7 @@ namespace gli
 		struct cache
 		{
 			std::uint8_t* Data;
-			texelcoord_type Dim;
+			extent_type Extent;
 #			ifndef NDEBUG
 				size_type Size;
 #			endif

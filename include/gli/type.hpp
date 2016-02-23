@@ -34,10 +34,10 @@ namespace gli
 
 	using std::size_t;
 
-	typedef tvec1<size_t> dim1_t;
-	typedef tvec2<size_t> dim2_t;
-	typedef tvec3<size_t> dim3_t;
-	typedef tvec4<size_t> dim4_t;
+	typedef tvec1<int> extent1d;
+	typedef tvec2<int> extent2d;
+	typedef tvec3<int> extent3d;
+	typedef tvec4<int> extent4d;
 
 	template <typename T, precision P>
 	inline tvec4<T, P> make_vec4(tvec1<T, P> const & v)

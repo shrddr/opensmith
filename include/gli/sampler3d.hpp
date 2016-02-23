@@ -14,35 +14,35 @@ namespace gli
 	/// @tparam T Sampler can fetch, write and interpret any texture format but will expose and process the data through type T conversions.
 	/// @tparam P Precision in term of ULPs
 	template <typename T, precision P = defaultp>
-	class sampler3D : public sampler
+	class sampler3d : public sampler
 	{
 	private:
 		typedef typename detail::interpolate<T>::type interpolate_type;
 
 	public:
-		typedef texture3D texture_type;
+		typedef texture3d texture_type;
 		typedef typename texture_type::size_type size_type;
-		typedef typename texture_type::texelcoord_type texelcoord_type;
+		typedef typename texture_type::extent_type extent_type;
 		typedef interpolate_type level_type;
-		typedef tvec3<interpolate_type, P> samplecoord_type;
+		typedef tvec3<interpolate_type, P> normalized_type;
 		typedef tvec4<T, P> texel_type;
 
-		sampler3D(texture_type const & Texture, wrap Wrap, filter Mip = FILTER_NEAREST, filter Min = FILTER_NEAREST, texel_type const & BorderColor = texel_type(0, 0, 0, 1));
+		sampler3d(texture_type const& Texture, wrap Wrap, filter Mip = FILTER_NEAREST, filter Min = FILTER_NEAREST, texel_type const& BorderColor = texel_type(0, 0, 0, 1));
 
 		/// Access the sampler texture object
-		texture_type const & operator()() const;
+		texture_type const& operator()() const;
 
 		/// Fetch a texel from the sampler texture
-		texel_type texel_fetch(texelcoord_type const & TexelCoord, size_type const & Level) const;
+		texel_type texel_fetch(extent_type const& TexelCoord, size_type const& Level) const;
 
 		/// Write a texel in the sampler texture
-		void texel_write(texelcoord_type const & TexelCoord, size_type const & Level, texel_type const & Texel);
+		void texel_write(extent_type const& TexelCoord, size_type const & Level, texel_type const& Texel);
 
 		/// Clear the sampler texture with a uniform texel
-		void clear(texel_type const & Texel);
+		void clear(texel_type const& Texel);
 
 		/// Sample the sampler texture at a specific level
-		texel_type texture_lod(samplecoord_type const & SampleCoord, level_type Level) const;
+		texel_type texture_lod(normalized_type const& SampleCoord, level_type Level) const;
 
 		/// Generate all the mipmaps of the sampler texture from the texture base level
 		void generate_mipmaps(filter Minification);
@@ -54,7 +54,7 @@ namespace gli
 		typedef typename detail::convert<texture_type, T, P>::func convert_type;
 		typedef typename detail::convert<texture_type, T, P>::fetchFunc fetch_type;
 		typedef typename detail::convert<texture_type, T, P>::writeFunc write_type;
-		typedef typename detail::filterBase<detail::DIMENSION_3D, texture_type, interpolate_type, samplecoord_type, fetch_type, texel_type>::filterFunc filter_type;
+		typedef typename detail::filterBase<detail::DIMENSION_3D, texture_type, interpolate_type, normalized_type, fetch_type, texel_type>::filterFunc filter_type;
 
 		texture_type Texture;
 		convert_type Convert;
@@ -62,10 +62,10 @@ namespace gli
 		filter_type Filter;
 	};
 
-	typedef sampler3D<float> fsampler3D;
-	typedef sampler3D<double> dsampler3D;
-	typedef sampler3D<unsigned int> usampler3D;
-	typedef sampler3D<int> isampler3D;
+	typedef sampler3d<float> fsampler3D;
+	typedef sampler3d<double> dsampler3D;
+	typedef sampler3d<unsigned int> usampler3D;
+	typedef sampler3d<int> isampler3D;
 }//namespace gli
 
 #include "./core/sampler3d.inl"

@@ -4,9 +4,9 @@
 namespace gli{
 namespace detail
 {
-	inline D3D10_RESOURCE_DIMENSION getDimension(gli::target const & Target)
+	inline d3d10_resource_dimension get_dimension(gli::target const& Target)
 	{
-		static D3D10_RESOURCE_DIMENSION Table[] = //TARGET_COUNT
+		static d3d10_resource_dimension Table[] = //TARGET_COUNT
 		{
 			D3D10_RESOURCE_DIMENSION_TEXTURE1D,		//TARGET_1D,
 			D3D10_RESOURCE_DIMENSION_TEXTURE1D,		//TARGET_1D_ARRAY,
@@ -23,7 +23,7 @@ namespace detail
 		return Table[Target];
 	}
 	
-	inline dx::d3dFormat get_fourcc(bool RequireDX10Header, gli::format Format, dx::format const & DXFormat)
+	inline dx::d3dfmt get_fourcc(bool RequireDX10Header, gli::format Format, dx::format const& DXFormat)
 	{
 		if(RequireDX10Header)
 		{
@@ -39,28 +39,27 @@ namespace detail
 			return (DXFormat.DDPixelFormat & dx::DDPF_FOURCC) ? DXFormat.D3DFormat : dx::D3DFMT_UNKNOWN;
 		}
 	}
-	
 }//namespace detail
 
-	inline bool save_dds(texture const & Texture, std::vector<char> & Memory)
+	inline bool save_dds(texture const& Texture, std::vector<char>& Memory)
 	{
 		if(Texture.empty())
 			return false;
 
 		dx DX;
-		dx::format const & DXFormat = DX.translate(Texture.format());
+		dx::format const& DXFormat = DX.translate(Texture.format());
 
 		bool const RequireDX10Header = DXFormat.D3DFormat == dx::D3DFMT_GLI1 || DXFormat.D3DFormat == dx::D3DFMT_DX10 || is_target_array(Texture.target()) || is_target_1d(Texture.target());
 
-		Memory.resize(Texture.size() + sizeof(detail::FOURCC_DDS) + sizeof(detail::ddsHeader) + (RequireDX10Header ? sizeof(detail::ddsHeader10) : 0));
+		Memory.resize(Texture.size() + sizeof(detail::FOURCC_DDS) + sizeof(detail::dds_header) + (RequireDX10Header ? sizeof(detail::dds_header10) : 0));
 
 		memcpy(&Memory[0], detail::FOURCC_DDS, sizeof(detail::FOURCC_DDS));
 		std::size_t Offset = sizeof(detail::FOURCC_DDS);
 
-		detail::ddsHeader & Header = *reinterpret_cast<detail::ddsHeader*>(&Memory[0] + Offset);
-		Offset += sizeof(detail::ddsHeader);
+		detail::dds_header& Header = *reinterpret_cast<detail::dds_header*>(&Memory[0] + Offset);
+		Offset += sizeof(detail::dds_header);
 
-		detail::formatInfo const & Desc = detail::get_format_info(Texture.format());
+		detail::formatInfo const& Desc = detail::get_format_info(Texture.format());
 
 		std::uint32_t Caps = detail::DDSD_CAPS | detail::DDSD_WIDTH | detail::DDSD_PIXELFORMAT | detail::DDSD_MIPMAPCOUNT;
 		Caps |= !is_target_1d(Texture.target()) ? detail::DDSD_HEIGHT : 0;
@@ -70,14 +69,14 @@ namespace detail
 
 		memset(Header.Reserved1, 0, sizeof(Header.Reserved1));
 		memset(Header.Reserved2, 0, sizeof(Header.Reserved2));
-		Header.Size = sizeof(detail::ddsHeader);
+		Header.Size = sizeof(detail::dds_header);
 		Header.Flags = Caps;
-		Header.Width = static_cast<std::uint32_t>(Texture.dimensions().x);
-		Header.Height = static_cast<std::uint32_t>(Texture.dimensions().y);
+		Header.Width = static_cast<std::uint32_t>(Texture.extent().x);
+		Header.Height = static_cast<std::uint32_t>(Texture.extent().y);
 		Header.Pitch = static_cast<std::uint32_t>((Desc.Flags & detail::CAP_COMPRESSED_BIT) ? Texture.size() / Texture.faces() : 32);
-		Header.Depth = static_cast<std::uint32_t>(Texture.dimensions().z > 1 ? Texture.dimensions().z : 0);
+		Header.Depth = static_cast<std::uint32_t>(Texture.extent().z > 1 ? Texture.extent().z : 0);
 		Header.MipMapLevels = static_cast<std::uint32_t>(Texture.levels());
-		Header.Format.size = sizeof(detail::ddsPixelFormat);
+		Header.Format.size = sizeof(detail::dds_pixel_format);
 		Header.Format.flags = RequireDX10Header ? dx::DDPF_FOURCC : DXFormat.DDPixelFormat;
 		Header.Format.fourCC = detail::get_fourcc(RequireDX10Header, Texture.format(), DXFormat);
 		Header.Format.bpp = static_cast<std::uint32_t>(detail::bits_per_pixel(Texture.format()));
@@ -89,21 +88,21 @@ namespace detail
 		// Cubemap
 		if(Texture.faces() > 1)
 		{
-			assert(Texture.faces() == 6);
+			GLI_ASSERT(Texture.faces() == 6);
 			Header.CubemapFlags |= detail::DDSCAPS2_CUBEMAP_ALLFACES | detail::DDSCAPS2_CUBEMAP;
 		}
 
 		// Texture3D
-		if(Texture.dimensions().z > 1)
+		if(Texture.extent().z > 1)
 			Header.CubemapFlags |= detail::DDSCAPS2_VOLUME;
 
 		if(RequireDX10Header)
 		{
-			detail::ddsHeader10 & Header10 = *reinterpret_cast<detail::ddsHeader10*>(&Memory[0] + Offset);
-			Offset += sizeof(detail::ddsHeader10);
+			detail::dds_header10& Header10 = *reinterpret_cast<detail::dds_header10*>(&Memory[0] + Offset);
+			Offset += sizeof(detail::dds_header10);
 
 			Header10.ArraySize = static_cast<std::uint32_t>(Texture.layers());
-			Header10.ResourceDimension = detail::getDimension(Texture.target());
+			Header10.ResourceDimension = detail::get_dimension(Texture.target());
 			Header10.MiscFlag = 0;//Storage.levels() > 0 ? detail::D3D10_RESOURCE_MISC_GENERATE_MIPS : 0;
 			Header10.Format = DXFormat.DXGIFormat;
 			Header10.AlphaFlags = detail::DDS_ALPHA_MODE_UNKNOWN;
@@ -114,7 +113,7 @@ namespace detail
 		return true;
 	}
 
-	inline bool save_dds(texture const & Texture, char const * Filename)
+	inline bool save_dds(texture const& Texture, char const* Filename)
 	{
 		if(Texture.empty())
 			return false;
@@ -132,7 +131,7 @@ namespace detail
 		return Result;
 	}
 
-	inline bool save_dds(texture const & Texture, std::string const & Filename)
+	inline bool save_dds(texture const& Texture, std::string const& Filename)
 	{
 		return save_dds(Texture, Filename.c_str());
 	}

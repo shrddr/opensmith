@@ -1,83 +1,80 @@
 namespace gli{
 namespace detail
 {
-	template <typename T, precision P>
-	inline size_t texelLinearAdressing
+	inline size_t texel_linear_aAdressing
 	(
-		tvec1<T, P> const & Dimensions,
-		tvec1<T, P> const & TexelCoord
+		extent1d const& Extent,
+		extent1d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, Dimensions)));
+		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, Extent)));
 
 		return static_cast<size_t>(TexelCoord.x);
 	}
 
-	template <typename T, precision P>
-	inline size_t texelLinearAdressing
+	inline size_t texel_linear_adressing
 	(
-		tvec2<T, P> const & Dimensions,
-		tvec2<T, P> const & TexelCoord
+		extent2d const& Extent,
+		extent2d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(TexelCoord.x < Dimensions.x);
-		GLI_ASSERT(TexelCoord.y < Dimensions.y);
+		GLI_ASSERT(TexelCoord.x < Extent.x);
+		GLI_ASSERT(TexelCoord.y < Extent.y);
 
-		return static_cast<size_t>(TexelCoord.x + Dimensions.x * TexelCoord.y);
+		return static_cast<size_t>(TexelCoord.x + Extent.x * TexelCoord.y);
 	}
 
-	template <typename T, precision P>
-	inline size_t texelLinearAdressing
+	inline size_t texel_linear_adressing
 	(
-		tvec3<T, P> const & Dimensions,
-		tvec3<T, P> const & TexelCoord
+		extent3d const& Extent,
+		extent3d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(TexelCoord.x < Dimensions.x);
-		GLI_ASSERT(TexelCoord.y < Dimensions.y);
-		GLI_ASSERT(TexelCoord.z < Dimensions.z);
+		GLI_ASSERT(TexelCoord.x < Extent.x);
+		GLI_ASSERT(TexelCoord.y < Extent.y);
+		GLI_ASSERT(TexelCoord.z < Extent.z);
 
-		return static_cast<size_t>(TexelCoord.x + Dimensions.x * (TexelCoord.y + Dimensions.y * TexelCoord.z));
+		return static_cast<size_t>(TexelCoord.x + Extent.x * (TexelCoord.y + Extent.y * TexelCoord.z));
 	}
 
-	inline size_t texelMortonAdressing
+	inline size_t texel_morton_adressing
 	(
-		dim1_t const & Dimensions,
-		dim1_t const & TexelCoord
+		extent1d const& Extent,
+		extent1d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(TexelCoord.x < Dimensions.x);
+		GLI_ASSERT(TexelCoord.x < Extent.x);
 
 		return TexelCoord.x;
 	}
 
-	inline size_t texelMortonAdressing
+	inline size_t texel_morton_adressing
 	(
-		dim2_t const & Dimensions,
-		dim2_t const & TexelCoord
+		extent2d const& Extent,
+		extent2d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(TexelCoord.x < Dimensions.x && TexelCoord.x >= 0 && TexelCoord.x < std::numeric_limits<dim2_t::value_type>::max());
-		GLI_ASSERT(TexelCoord.y < Dimensions.y && TexelCoord.y >= 0 && TexelCoord.y < std::numeric_limits<dim2_t::value_type>::max());
+		GLI_ASSERT(TexelCoord.x < Extent.x && TexelCoord.x >= 0 && TexelCoord.x < std::numeric_limits<extent2d::value_type>::max());
+		GLI_ASSERT(TexelCoord.y < Extent.y && TexelCoord.y >= 0 && TexelCoord.y < std::numeric_limits<extent2d::value_type>::max());
 
 		glm::u32vec2 const Input(TexelCoord);
 
-		return glm::bitfieldInterleave(Input.x, Input.y);
+		return static_cast<size_t>(glm::bitfieldInterleave(Input.x, Input.y));
 	}
 
-	inline size_t texelMortonAdressing
+	inline size_t texel_morton_adressing
 	(
-		dim3_t const & Dimensions,
-		dim3_t const & TexelCoord
+		extent3d const& Extent,
+		extent3d const& TexelCoord
 	)
 	{
-		GLI_ASSERT(TexelCoord.x < Dimensions.x);
-		GLI_ASSERT(TexelCoord.y < Dimensions.y);
-		GLI_ASSERT(TexelCoord.z < Dimensions.z);
+		GLI_ASSERT(TexelCoord.x < Extent.x);
+		GLI_ASSERT(TexelCoord.y < Extent.y);
+		GLI_ASSERT(TexelCoord.z < Extent.z);
 
 		glm::u32vec3 const Input(TexelCoord);
 
-		return glm::bitfieldInterleave(Input.x, Input.y, Input.z);
+		return static_cast<size_t>(glm::bitfieldInterleave(Input.x, Input.y, Input.z));
 	}
 }//namespace detail
 
@@ -91,9 +88,9 @@ namespace detail
 	inline image::image
 	(
 		format_type Format,
-		texelcoord_type const & Dimensions
+		extent_type const& Extent
 	)
-		: Storage(std::make_shared<storage>(Format, Dimensions, 1, 1, 1))
+		: Storage(std::make_shared<storage>(Format, Extent, 1, 1, 1))
 		, Format(Format)
 		, BaseLevel(0)
 		, Data(Storage->data())
@@ -157,24 +154,24 @@ namespace detail
 		return this->Format;
 	}
 
-	inline image::texelcoord_type image::dimensions() const
+	inline image::extent_type image::extent() const
 	{
 		GLI_ASSERT(!this->empty());
 
-		storage::texelcoord_type const & SrcDimensions = this->Storage->dimensions(this->BaseLevel);
-		storage::texelcoord_type const & DstDimensions = SrcDimensions * block_dimensions(this->format()) / this->Storage->block_dimensions();
+		storage::extent_type const& SrcExtent = this->Storage->extent(this->BaseLevel);
+		storage::extent_type const& DstExtent = SrcExtent * block_extent(this->format()) / this->Storage->block_extent();
 
-		return glm::max(DstDimensions, storage::texelcoord_type(1));
+		return glm::max(DstExtent, storage::extent_type(1));
 	}
 
-	inline void * image::data()
+	inline void* image::data()
 	{
 		GLI_ASSERT(!this->empty());
 
 		return this->Data;
 	}
 
-	inline void const * image::data() const
+	inline void const* image::data() const
 	{
 		GLI_ASSERT(!this->empty());
 		
@@ -182,7 +179,7 @@ namespace detail
 	}
 
 	template <typename genType>
-	inline genType * image::data()
+	inline genType* image::data()
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(this->Storage->block_size() >= sizeof(genType));
@@ -191,7 +188,7 @@ namespace detail
 	}
 
 	template <typename genType>
-	inline genType const * image::data() const
+	inline genType const* image::data() const
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(this->Storage->block_size() >= sizeof(genType));
@@ -207,7 +204,7 @@ namespace detail
 	}
 
 	template <typename genType>
-	inline void image::clear(genType const & Texel)
+	inline void image::clear(genType const& Texel)
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(this->Storage->block_size() == sizeof(genType));
@@ -216,11 +213,11 @@ namespace detail
 			*(this->data<genType>() + TexelIndex) = Texel;
 	}
 
-	inline image::data_type * image::compute_data(size_type BaseLayer, size_type BaseFace, size_type BaseLevel)
+	inline image::data_type* image::compute_data(size_type BaseLayer, size_type BaseFace, size_type BaseLevel)
 	{
-		size_type const Offset = this->Storage->offset(BaseLayer, BaseFace, BaseLevel);
+		size_type const BaseOffset = this->Storage->base_offset(BaseLayer, BaseFace, BaseLevel);
 
-		return this->Storage->data() + Offset;
+		return this->Storage->data() + BaseOffset;
 	}
 
 	inline image::size_type image::compute_size(size_type Level) const
@@ -231,24 +228,24 @@ namespace detail
 	}
 
 	template <typename genType>
-	genType image::load(texelcoord_type const & TexelCoord)
+	genType image::load(extent_type const& TexelCoord)
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(!is_compressed(this->format()));
 		GLI_ASSERT(this->Storage->block_size() == sizeof(genType));
-		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, this->dimensions())));
+		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, this->extent())));
 
-		return *(this->data<genType>() + detail::texelLinearAdressing(this->dimensions(), TexelCoord));
+		return *(this->data<genType>() + detail::texel_linear_adressing(this->extent(), TexelCoord));
 	}
 
 	template <typename genType>
-	void image::store(texelcoord_type const & TexelCoord, genType const & Data)
+	void image::store(extent_type const& TexelCoord, genType const& Data)
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(!is_compressed(this->format()));
 		GLI_ASSERT(this->Storage->block_size() == sizeof(genType));
-		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, this->dimensions())));
+		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, this->extent())));
 
-		*(this->data<genType>() + detail::texelLinearAdressing(this->dimensions(), TexelCoord)) = Data;
+		*(this->data<genType>() + detail::texel_linear_adressing(this->extent(), TexelCoord)) = Data;
 	}
 }//namespace gli

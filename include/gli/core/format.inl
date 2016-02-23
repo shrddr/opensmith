@@ -24,7 +24,7 @@ namespace detail
 	struct formatInfo
 	{
 		std::uint8_t BlockSize;
-		glm::u8vec3 BlockDimensions;
+		glm::u8vec3 BlockExtent;
 		std::uint8_t Component;
 		swizzles Swizzles;
 		std::uint16_t Flags;
@@ -32,7 +32,7 @@ namespace detail
 
 	inline formatInfo const & get_format_info(format Format)
 	{
-		assert(Format >= FORMAT_FIRST && Format <= FORMAT_LAST);
+		GLI_ASSERT(Format >= FORMAT_FIRST && Format <= FORMAT_LAST);
 
 		static formatInfo const Table[] =
 		{
@@ -279,7 +279,7 @@ namespace detail
 		};
 
 		GLM_STATIC_ASSERT(sizeof(Table) / sizeof(Table[0]) == FORMAT_COUNT, "GLI error: format descriptor list doesn't match number of supported formats");
-		assert(Format != static_cast<format>(FORMAT_INVALID));
+		GLI_ASSERT(Format != static_cast<format>(FORMAT_INVALID));
 
 		return Table[Format - FORMAT_FIRST];
 	};
@@ -288,7 +288,7 @@ namespace detail
 	{
 		detail::formatInfo const & Info = detail::get_format_info(Format);
 
-		return Info.BlockSize * 8 / (Info.BlockDimensions.x * Info.BlockDimensions.y * Info.BlockDimensions.z);
+		return Info.BlockSize * 8 / (Info.BlockExtent.x * Info.BlockExtent.y * Info.BlockExtent.z);
 	}
 }//namespace detail
 
@@ -307,9 +307,9 @@ namespace detail
 		return detail::get_format_info(Format).BlockSize;
 	}
 
-	inline ivec3 block_dimensions(format Format)
+	inline ivec3 block_extent(format Format)
 	{
-		return gli::ivec3(detail::get_format_info(Format).BlockDimensions);
+		return gli::ivec3(detail::get_format_info(Format).BlockExtent);
 	}
 
 	inline size_t component_count(format Format)

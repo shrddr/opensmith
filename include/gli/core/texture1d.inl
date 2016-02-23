@@ -2,48 +2,50 @@
 
 namespace gli
 {
-	inline texture1D::texture1D()
+	inline texture1d::texture1d()
 	{}
 
-	inline texture1D::texture1D(format_type Format, texelcoord_type const & Dimensions)
-		: texture(TARGET_1D, Format, texture::texelcoord_type(Dimensions.x, 1, 1), 1, 1, gli::levels(Dimensions))
+	inline texture1d::texture1d(format_type Format, extent_type const& Extent, swizzles_type const& Swizzles)
+		: texture(TARGET_1D, Format, texture::extent_type(Extent.x, 1, 1), 1, 1, gli::levels(Extent), Swizzles)
 	{
 		this->build_cache();
 	}
 
-	inline texture1D::texture1D(format_type Format, texelcoord_type const & Dimensions, size_type Levels)
-		: texture(TARGET_1D, Format, texture::texelcoord_type(Dimensions.x, 1, 1), 1, 1, Levels)
+	inline texture1d::texture1d(format_type Format, extent_type const& Extent, size_type Levels, swizzles_type const& Swizzles)
+		: texture(TARGET_1D, Format, texture::extent_type(Extent.x, 1, 1), 1, 1, Levels, Swizzles)
 	{
 		this->build_cache();
 	}
 
-	inline texture1D::texture1D(texture const & Texture)
+	inline texture1d::texture1d(texture const & Texture)
 		: texture(Texture, TARGET_1D, Texture.format())
 	{
 		this->build_cache();
 	}
 
-	inline texture1D::texture1D
+	inline texture1d::texture1d
 	(
 		texture const & Texture,
 		format_type Format,
 		size_type BaseLayer, size_type MaxLayer,
 		size_type BaseFace, size_type MaxFace,
-		size_type BaseLevel, size_type MaxLevel
+		size_type BaseLevel, size_type MaxLevel,
+		swizzles_type const & Swizzles
 	)
 		: texture(
 			Texture, TARGET_1D,
 			Format,
 			BaseLayer, MaxLayer,
 			BaseFace, MaxFace,
-			BaseLevel, MaxLevel)
+			BaseLevel, MaxLevel,
+		Swizzles)
 	{
 		this->build_cache();
 	}
  
-	inline texture1D::texture1D
+	inline texture1d::texture1d
 	(
-		texture1D const & Texture,
+		texture1d const & Texture,
 		size_type BaseLevel, size_type MaxLevel
 	)
 		: texture(
@@ -56,7 +58,7 @@ namespace gli
 		this->build_cache();
 	}
 
-	inline image texture1D::operator[](texture1D::size_type Level) const
+	inline image texture1d::operator[](texture1d::size_type Level) const
 	{
 		GLI_ASSERT(Level < this->levels());
 
@@ -68,78 +70,77 @@ namespace gli
 			this->base_level() + Level);
 	}
 
-	inline texture1D::texelcoord_type texture1D::dimensions(size_type Level) const
+	inline texture1d::extent_type texture1d::extent(size_type Level) const
 	{
 		GLI_ASSERT(!this->empty());
 
-		return this->Caches[this->index_cache(Level)].Dim;
+		return this->Caches[this->index_cache(Level)].Extent;
 	}
 
-
 	template <typename genType>
-	inline genType texture1D::load(texelcoord_type const & TexelCoord, size_type Level) const
+	inline genType texture1d::load(extent_type const& TexelCoord, size_type Level) const
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(!is_compressed(this->format()));
 		GLI_ASSERT(block_size(this->format()) == sizeof(genType));
 
-		cache const & Cache = this->Caches[this->index_cache(Level)];
+		cache const& Cache = this->Caches[this->index_cache(Level)];
 
-		std::size_t const Index = linear_index(TexelCoord, Cache.Dim);
+		std::size_t const Index = linear_index(TexelCoord, Cache.Extent);
 		GLI_ASSERT(Index < Cache.Size / sizeof(genType));
 
 		return reinterpret_cast<genType const * const>(Cache.Data)[Index];
 	}
 
 	template <typename genType>
-	inline void texture1D::store(texelcoord_type const & TexelCoord, size_type Level, genType const & Texel)
+	inline void texture1d::store(extent_type const& TexelCoord, size_type Level, genType const& Texel)
 	{
 		GLI_ASSERT(!this->empty());
 		GLI_ASSERT(!is_compressed(this->format()));
 		GLI_ASSERT(block_size(this->format()) == sizeof(genType));
 
-		cache const & Cache = this->Caches[this->index_cache(Level)];
-		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, Cache.Dim)));
+		cache const& Cache = this->Caches[this->index_cache(Level)];
+		GLI_ASSERT(glm::all(glm::lessThan(TexelCoord, Cache.Extent)));
 
-		std::size_t const Index = linear_index(TexelCoord, Cache.Dim);
+		std::size_t const Index = linear_index(TexelCoord, Cache.Extent);
 		GLI_ASSERT(Index < Cache.Size / sizeof(genType));
 
 		reinterpret_cast<genType*>(Cache.Data)[Index] = Texel;
 	}
 
-	inline void texture1D::clear()
+	inline void texture1d::clear()
 	{
 		this->texture::clear();
 	}
 
 	template <typename genType>
-	inline void texture1D::clear(genType const & Texel)
+	inline void texture1d::clear(genType const& Texel)
 	{
 		this->texture::clear<genType>(Texel);
 	}
 
 	template <typename genType>
-	inline void texture1D::clear(size_type Level, genType const & Texel)
+	inline void texture1d::clear(size_type Level, genType const& Texel)
 	{
 		this->texture::clear<genType>(0, 0, Level, Texel);
 	}
 
-	inline texture1D::size_type texture1D::index_cache(size_type Level) const
+	inline texture1d::size_type texture1d::index_cache(size_type Level) const
 	{
 		return Level;
 	}
 
-	inline void texture1D::build_cache()
+	inline void texture1d::build_cache()
 	{
 		this->Caches.resize(this->levels());
 
-		for (size_type Level = 0; Level < this->levels(); ++Level)
+		for (size_type LevelIndex = 0, LevelCount = this->levels(); LevelIndex < LevelCount; ++LevelIndex)
 		{
-			cache& Cache = this->Caches[this->index_cache(Level)];
-			Cache.Data = this->data<std::uint8_t>(0, 0, Level);
-			Cache.Dim = glm::max(texelcoord_type(this->texture::dimensions(Level)), texelcoord_type(1));
+			cache& Cache = this->Caches[this->index_cache(LevelIndex)];
+			Cache.Data = this->data<std::uint8_t>(0, 0, LevelIndex);
+			Cache.Extent = glm::max(extent_type(this->texture::extent(LevelIndex)), extent_type(1));
 #			ifndef NDEBUG
-				Cache.Size = this->size(Level);
+				Cache.Size = this->size(LevelIndex);
 #			endif
 		}
 	}

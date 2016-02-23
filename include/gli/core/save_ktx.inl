@@ -8,7 +8,7 @@ namespace detail
 	inline texture::size_type compute_ktx_storage_size(texture const & Texture)
 	{
 		texture::size_type const BlockSize = block_size(Texture.format());
-		texture::size_type TotalSize = sizeof(detail::FOURCC_KTX10) + sizeof(detail::ktxHeader10);
+		texture::size_type TotalSize = sizeof(detail::FOURCC_KTX10) + sizeof(detail::ktx_header10);
 
 		for(texture::size_type Level = 0, Levels = Texture.levels(); Level < Levels; ++Level)
 		{
@@ -28,16 +28,16 @@ namespace detail
 	}
 }//namespace detail
 
-	inline bool save_ktx(texture const & Texture, std::vector<char> & Memory)
+	inline bool save_ktx(texture const& Texture, std::vector<char>& Memory)
 	{
 		if(Texture.empty())
 			return false;
 
-		gl GL;
-		gl::format const & Format = GL.translate(Texture.format());
+		gl GL(gl::PROFILE_KTX);
+		gl::format const& Format = GL.translate(Texture.format(), Texture.swizzles());
 		target const Target = Texture.target();
 
-		detail::formatInfo const & Desc = detail::get_format_info(Texture.format());
+		detail::formatInfo const& Desc = detail::get_format_info(Texture.format());
 
 		Memory.resize(detail::compute_ktx_storage_size(Texture));
 
@@ -45,22 +45,22 @@ namespace detail
 
 		std::size_t Offset = sizeof(detail::FOURCC_KTX10);
 
-		detail::ktxHeader10 & Header = *reinterpret_cast<detail::ktxHeader10*>(&Memory[0] + Offset);
+		detail::ktx_header10& Header = *reinterpret_cast<detail::ktx_header10*>(&Memory[0] + Offset);
 		Header.Endianness = 0x04030201;
 		Header.GLType = Format.Type;
 		Header.GLTypeSize = Format.Type == gl::TYPE_NONE ? 1 : Desc.BlockSize;
 		Header.GLFormat = Format.External;
 		Header.GLInternalFormat = Format.Internal;
 		Header.GLBaseInternalFormat = Format.External;
-		Header.PixelWidth = static_cast<std::uint32_t>(Texture.dimensions().x);
-		Header.PixelHeight = !is_target_1d(Target) ? static_cast<std::uint32_t>(Texture.dimensions().y) : 0;
-		Header.PixelDepth = Target == TARGET_3D ? static_cast<std::uint32_t>(Texture.dimensions().z) : 0;
+		Header.PixelWidth = static_cast<std::uint32_t>(Texture.extent().x);
+		Header.PixelHeight = !is_target_1d(Target) ? static_cast<std::uint32_t>(Texture.extent().y) : 0;
+		Header.PixelDepth = Target == TARGET_3D ? static_cast<std::uint32_t>(Texture.extent().z) : 0;
 		Header.NumberOfArrayElements = is_target_array(Target) ? static_cast<std::uint32_t>(Texture.layers()) : 0;
 		Header.NumberOfFaces = is_target_cube(Target) ? static_cast<std::uint32_t>(Texture.faces()) : 0;
 		Header.NumberOfMipmapLevels = static_cast<std::uint32_t>(Texture.levels());
 		Header.BytesOfKeyValueData = 0;
 
-		Offset += sizeof(detail::ktxHeader10);
+		Offset += sizeof(detail::ktx_header10);
 
 		for(texture::size_type Level = 0, Levels = Texture.levels(); Level < Levels; ++Level)
 		{
@@ -79,7 +79,7 @@ namespace detail
 				ImageSize += static_cast<std::uint32_t>(PaddedSize);
 				Offset += PaddedSize;
 
-				assert(Offset <= Memory.size());
+				GLI_ASSERT(Offset <= Memory.size());
 			}
 
 			ImageSize = glm::ceilMultiple(ImageSize, static_cast<std::uint32_t>(4));
@@ -88,7 +88,7 @@ namespace detail
 		return true;
 	}
 
-	inline bool save_ktx(texture const & Texture, char const * Filename)
+	inline bool save_ktx(texture const& Texture, char const* Filename)
 	{
 		if(Texture.empty())
 			return false;
@@ -106,7 +106,7 @@ namespace detail
 		return Result;
 	}
 
-	inline bool save_ktx(texture const & Texture, std::string const & Filename)
+	inline bool save_ktx(texture const& Texture, std::string const& Filename)
 	{
 		return save_ktx(Texture, Filename.c_str());
 	}

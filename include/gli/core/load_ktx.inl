@@ -8,7 +8,7 @@ namespace detail
 	static unsigned char const FOURCC_KTX10[] = {0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A};
 	static unsigned char const FOURCC_KTX20[] = {0xAB, 0x4B, 0x54, 0x58, 0x20, 0x32, 0x30, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A};
 
-	struct ktxHeader10
+	struct ktx_header10
 	{
 		std::uint32_t Endianness;
 		std::uint32_t GLType;
@@ -25,7 +25,7 @@ namespace detail
 		std::uint32_t BytesOfKeyValueData;
 	};
 
-	inline target getTarget(ktxHeader10 const & Header)
+	inline target get_target(ktx_header10 const& Header)
 	{
 		if(Header.NumberOfFaces > 1)
 		{
@@ -49,28 +49,28 @@ namespace detail
 			return TARGET_2D;
 	}
 
-	inline texture load_ktx10(char const * Data, std::size_t Size)
+	inline texture load_ktx10(char const* Data, std::size_t Size)
 	{
-		detail::ktxHeader10 const & Header(*reinterpret_cast<detail::ktxHeader10 const *>(Data));
+		detail::ktx_header10 const & Header(*reinterpret_cast<detail::ktx_header10 const*>(Data));
 
-		size_t Offset = sizeof(detail::ktxHeader10);
+		size_t Offset = sizeof(detail::ktx_header10);
 
 		// Skip key value data
 		Offset += Header.BytesOfKeyValueData;
 
-		gl GL;
+		gl GL(gl::PROFILE_KTX);
 		gli::format const Format = GL.find(
-			static_cast<gli::gl::internalFormat>(Header.GLInternalFormat),
-			static_cast<gli::gl::externalFormat>(Header.GLFormat),
-			static_cast<gli::gl::typeFormat>(Header.GLType));
-		assert(Format != static_cast<format>(gli::FORMAT_INVALID));
+			static_cast<gli::gl::internal_format>(Header.GLInternalFormat),
+			static_cast<gli::gl::external_format>(Header.GLFormat),
+			static_cast<gli::gl::type_format>(Header.GLType));
+		GLI_ASSERT(Format != static_cast<format>(gli::FORMAT_INVALID));
 		
 		texture::size_type const BlockSize = block_size(Format);
 
 		texture Texture(
-			detail::getTarget(Header),
+			detail::get_target(Header),
 			Format,
-			texture::texelcoord_type(
+			texture::extent_type(
 				Header.PixelWidth,
 				std::max<texture::size_type>(Header.PixelHeight, 1),
 				std::max<texture::size_type>(Header.PixelDepth, 1)),
@@ -97,9 +97,9 @@ namespace detail
 	}
 }//namespace detail
 
-	inline texture load_ktx(char const * Data, std::size_t Size)
+	inline texture load_ktx(char const* Data, std::size_t Size)
 	{
-		assert(Data && (Size >= sizeof(detail::ktxHeader10)));
+		GLI_ASSERT(Data && (Size >= sizeof(detail::ktx_header10)));
 
 		// KTX10
 		{
@@ -110,7 +110,7 @@ namespace detail
 		return texture();
 	}
 
-	inline texture load_ktx(char const * Filename)
+	inline texture load_ktx(char const* Filename)
 	{
 		FILE* File = std::fopen(Filename, "rb");
 		if(!File)
@@ -129,7 +129,7 @@ namespace detail
 		return load_ktx(&Data[0], Data.size());
 	}
 
-	inline texture load_ktx(std::string const & Filename)
+	inline texture load_ktx(std::string const& Filename)
 	{
 		return load_ktx(Filename.c_str());
 	}

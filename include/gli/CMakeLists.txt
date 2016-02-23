@@ -1,4 +1,4 @@
-set(NAME gli)
+set(NAME gli_dummy)
 
 file(GLOB ROOT_SOURCE *.cpp)
 file(GLOB ROOT_INLINE *.inl)

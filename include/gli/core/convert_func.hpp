@@ -46,110 +46,110 @@ namespace detail
 	{};
 
 	template <typename genType>
-	struct accessFunc<texture1D, genType>
+	struct accessFunc<texture1d, genType>
 	{
-		static genType load(texture1D const & Texture, texture1D::texelcoord_type const & TexelCoord, texture1D::size_type Layer, texture1D::size_type Face, texture1D::size_type Level)
+		static genType load(texture1d const & Texture, texture1d::extent_type const & TexelCoord, texture1d::size_type Layer, texture1d::size_type Face, texture1d::size_type Level)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			return Texture.load<genType>(TexelCoord, Level);
 		}
 
-		static void store(texture1D & Texture, texture1D::texelcoord_type const & TexelCoord, texture1D::size_type Layer, texture1D::size_type Face, texture1D::size_type Level, genType const & Texel)
+		static void store(texture1d & Texture, texture1d::extent_type const & TexelCoord, texture1d::size_type Layer, texture1d::size_type Face, texture1d::size_type Level, genType const & Texel)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			Texture.store<genType>(TexelCoord, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<texture1DArray, genType>
+	struct accessFunc<texture1d_array, genType>
 	{
-		static genType load(texture1DArray const & Texture, texture1DArray::texelcoord_type const & TexelCoord, texture1DArray::size_type Layer, texture1DArray::size_type Face, texture1DArray::size_type Level)
+		static genType load(texture1d_array const& Texture, texture1d_array::extent_type const& TexelCoord, texture1d_array::size_type Layer, texture1d_array::size_type Face, texture1d_array::size_type Level)
 		{
-			assert(Face == 0);
+			GLI_ASSERT(Face == 0);
 			return Texture.load<genType>(TexelCoord, Layer, Level);
 		}
 
-		static void store(texture1DArray & Texture, texture1DArray::texelcoord_type const & TexelCoord, texture1DArray::size_type Layer, texture1DArray::size_type Face, texture1DArray::size_type Level, genType const & Texel)
+		static void store(texture1d_array& Texture, texture1d_array::extent_type const& TexelCoord, texture1d_array::size_type Layer, texture1d_array::size_type Face, texture1d_array::size_type Level, genType const& Texel)
 		{
-			assert(Face == 0);
+			GLI_ASSERT(Face == 0);
 			Texture.store<genType>(TexelCoord, Layer, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<texture2D, genType>
+	struct accessFunc<texture2d, genType>
 	{
-		static genType load(texture2D const & Texture, texture2D::texelcoord_type const & TexelCoord, texture2D::size_type Layer, texture2D::size_type Face, texture2D::size_type Level)
+		static genType load(texture2d const & Texture, texture2d::extent_type const & TexelCoord, texture2d::size_type Layer, texture2d::size_type Face, texture2d::size_type Level)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			return Texture.load<genType>(TexelCoord, Level);
 		}
 
-		static void store(texture2D & Texture, texture2D::texelcoord_type const & TexelCoord, texture2D::size_type Layer, texture2D::size_type Face, texture2D::size_type Level, genType const & Texel)
+		static void store(texture2d & Texture, texture2d::extent_type const & TexelCoord, texture2d::size_type Layer, texture2d::size_type Face, texture2d::size_type Level, genType const & Texel)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			Texture.store<genType>(TexelCoord, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<texture2DArray, genType>
+	struct accessFunc<texture2d_array, genType>
 	{
-		static genType load(texture2DArray const & Texture, texture2DArray::texelcoord_type const & TexelCoord, texture2DArray::size_type Layer, texture2DArray::size_type Face, texture2DArray::size_type Level)
+		static genType load(texture2d_array const & Texture, texture2d_array::extent_type const & TexelCoord, texture2d_array::size_type Layer, texture2d_array::size_type Face, texture2d_array::size_type Level)
 		{
-			assert(Face == 0);
+			GLI_ASSERT(Face == 0);
 			return Texture.load<genType>(TexelCoord, Layer, Level);
 		}
 
-		static void store(texture2DArray & Texture, texture2DArray::texelcoord_type const & TexelCoord, texture2DArray::size_type Layer, texture2DArray::size_type Face, texture2DArray::size_type Level, genType const & Texel)
+		static void store(texture2d_array & Texture, texture2d_array::extent_type const & TexelCoord, texture2d_array::size_type Layer, texture2d_array::size_type Face, texture2d_array::size_type Level, genType const & Texel)
 		{
-			assert(Face == 0);
+			GLI_ASSERT(Face == 0);
 			Texture.store<genType>(TexelCoord, Layer, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<texture3D, genType>
+	struct accessFunc<texture3d, genType>
 	{
-		static genType load(texture3D const & Texture, texture3D::texelcoord_type const & TexelCoord, texture3D::size_type Layer, texture3D::size_type Face, texture3D::size_type Level)
+		static genType load(texture3d const & Texture, texture3d::extent_type const & TexelCoord, texture3d::size_type Layer, texture3d::size_type Face, texture3d::size_type Level)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			return Texture.load<genType>(TexelCoord, Level);
 		}
 
-		static void store(texture3D & Texture, texture3D::texelcoord_type const & TexelCoord, texture3D::size_type Layer, texture3D::size_type Face, texture3D::size_type Level, genType const & Texel)
+		static void store(texture3d & Texture, texture3d::extent_type const & TexelCoord, texture3d::size_type Layer, texture3d::size_type Face, texture3d::size_type Level, genType const & Texel)
 		{
-			assert(Layer == 0 && Face == 0);
+			GLI_ASSERT(Layer == 0 && Face == 0);
 			Texture.store<genType>(TexelCoord, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<textureCube, genType>
+	struct accessFunc<texture_cube, genType>
 	{
-		static genType load(textureCube const & Texture, textureCube::texelcoord_type const & TexelCoord, textureCube::size_type Layer, textureCube::size_type Face, textureCube::size_type Level)
+		static genType load(texture_cube const& Texture, texture_cube::extent_type const& TexelCoord, texture_cube::size_type Layer, texture_cube::size_type Face, texture_cube::size_type Level)
 		{
-			assert(Layer == 0);
+			GLI_ASSERT(Layer == 0);
 			return Texture.load<genType>(TexelCoord, Face, Level);
 		}
 
-		static void store(textureCube & Texture, textureCube::texelcoord_type const & TexelCoord, textureCube::size_type Layer, textureCube::size_type Face, textureCube::size_type Level, genType const & Texel)
+		static void store(texture_cube& Texture, texture_cube::extent_type const& TexelCoord, texture_cube::size_type Layer, texture_cube::size_type Face, texture_cube::size_type Level, genType const& Texel)
 		{
-			assert(Layer == 0);
+			GLI_ASSERT(Layer == 0);
 			Texture.store<genType>(TexelCoord, Face, Level, Texel);
 		}
 	};
 
 	template <typename genType>
-	struct accessFunc<textureCubeArray, genType>
+	struct accessFunc<texture_cube_array, genType>
 	{
-		static genType load(textureCubeArray const & Texture, textureCubeArray::texelcoord_type const & TexelCoord, textureCubeArray::size_type Layer, textureCubeArray::size_type Face, textureCubeArray::size_type Level)
+		static genType load(texture_cube_array const & Texture, texture_cube_array::extent_type const & TexelCoord, texture_cube_array::size_type Layer, texture_cube_array::size_type Face, texture_cube_array::size_type Level)
 		{
 			return Texture.load<genType>(TexelCoord, Layer, Face, Level);
 		}
 
-		static void store(textureCubeArray & Texture, textureCubeArray::texelcoord_type const & TexelCoord, textureCubeArray::size_type Layer, textureCubeArray::size_type Face, textureCubeArray::size_type Level, genType const & Texel)
+		static void store(texture_cube_array & Texture, texture_cube_array::extent_type const & TexelCoord, texture_cube_array::size_type Layer, texture_cube_array::size_type Face, texture_cube_array::size_type Level, genType const & Texel)
 		{
 			Texture.store<genType>(TexelCoord, Layer, Face, Level, Texel);
 		}
@@ -162,12 +162,12 @@ namespace detail
 	{
 		typedef accessFunc<textureType, vecType<T, P> > access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			return make_vec4<retType, P>(vecType<retType, P>(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			access::store(Texture, TexelCoord, Layer, Face, Level, vecType<T, P>(Texel));
 		}
@@ -176,12 +176,12 @@ namespace detail
 	template <typename textureType, typename retType, typename T, precision P, template <typename, precision> class vecType, bool isSamplerFloat>
 	struct convertFunc<textureType, retType, T, P, vecType, CONVERT_MODE_DEFAULT, isSamplerFloat>
 	{
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			return tvec4<retType, P>(0, 0, 0, 1);
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{}
 	};
 
@@ -190,13 +190,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, vecType<T, P> > access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_NORM requires a float sampler");
 			return make_vec4<retType, P>(compNormalize<retType>(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_NORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, compScale<T>(vecType<retType, P>(Texel)));
@@ -208,13 +208,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, vecType<T, P> > access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_SRGB requires a float sampler");
 			return make_vec4<retType, P>(convertSRGBToLinear(compNormalize<retType>(access::load(Texture, TexelCoord, Layer, Face, Level))));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_SRGB requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, gli::compScale<T>(convertLinearToSRGB(vecType<retType, P>(Texel))));
@@ -226,13 +226,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB9E5 requires a float sampler");
 			return tvec4<retType, P>(unpackF3x9_E1x5(access::load(Texture, TexelCoord, Layer, Face, Level)), static_cast<retType>(1));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB9E5 requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packF3x9_E1x5(tvec3<float, P>(Texel)));
@@ -244,13 +244,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RG11B10F requires a float sampler");
 			return tvec4<retType, P>(unpackF2x11_1x10(access::load(Texture, TexelCoord, Layer, Face, Level)), static_cast<retType>(1));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RG11B10F requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packF2x11_1x10(tvec3<float, P>(Texel)));
@@ -262,13 +262,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, vecType<uint16, P> > access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_HALF requires a float sampler");
 			return make_vec4<retType, P>(unpackHalf(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_HALF requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packHalf(vecType<float, P>(Texel)));
@@ -280,13 +280,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint8> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_44UNORM requires a float sampler");
 			return tvec4<retType, P>(tvec2<retType, P>(unpackUnorm2x4(access::load(Texture, TexelCoord, Layer, Face, Level))), static_cast<retType>(0), static_cast<retType>(1));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_44UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm2x4(tvec2<float, P>(Texel)));
@@ -298,13 +298,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint16> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_4444UNORM requires a float sampler");
 			return tvec4<retType, P>(unpackUnorm4x4(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_4444UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm4x4(tvec4<float, P>(Texel)));
@@ -316,13 +316,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint16> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_565UNORM requires a float sampler");
 			return tvec4<retType, P>(unpackUnorm1x5_1x6_1x5(access::load(Texture, TexelCoord, Layer, Face, Level)), static_cast<retType>(1));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_565UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm1x5_1x6_1x5(tvec3<float, P>(Texel)));
@@ -334,13 +334,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint16> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_5551UNORM requires a float sampler");
 			return tvec4<retType, P>(unpackUnorm3x5_1x1(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_5551UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm3x5_1x1(tvec4<float, P>(Texel)));
@@ -352,13 +352,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint8> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_332UNORM requires a float sampler");
 			return tvec4<retType, P>(unpackUnorm2x3_1x2(access::load(Texture, TexelCoord, Layer, Face, Level)), static_cast<retType>(1));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_332UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm2x3_1x2(tvec3<float, P>(Texel)));
@@ -370,13 +370,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2UNORM requires a float sampler");
 			return tvec4<retType, P>(unpackUnorm3x10_1x2(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2UNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packUnorm3x10_1x2(tvec4<float, P>(Texel)));
@@ -388,13 +388,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2SNORM requires a float sampler");
 			return tvec4<retType, P>(unpackSnorm3x10_1x2(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2SNORM requires a float sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packSnorm3x10_1x2(Texel));
@@ -406,7 +406,7 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2USCALE requires a float sampler");
 			glm::detail::u10u10u10u2 Unpack;
@@ -414,7 +414,7 @@ namespace detail
 			return tvec4<retType, P>(Unpack.data.x, Unpack.data.y, Unpack.data.z, Unpack.data.w);
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2USCALE requires a float sampler");
 			glm::detail::u10u10u10u2 Unpack;
@@ -431,7 +431,7 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2SSCALE requires a float sampler");
 			glm::detail::i10i10i10i2 Unpack;
@@ -439,7 +439,7 @@ namespace detail
 			return tvec4<retType, P>(Unpack.data.x, Unpack.data.y, Unpack.data.z, Unpack.data.w);
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_iec559, "CONVERT_MODE_RGB10A2SSCALE requires a float sampler");
 			glm::detail::i10i10i10i2 Unpack;
@@ -456,13 +456,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_integer, "CONVERT_MODE_RGB10A2UINT requires an integer sampler");
 			return tvec4<retType, P>(unpackU3x10_1x2(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_integer, "CONVERT_MODE_RGB10A2UINT requires an integer sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packU3x10_1x2(Texel));
@@ -474,13 +474,13 @@ namespace detail
 	{
 		typedef accessFunc<textureType, uint32> access;
 
-		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+		static tvec4<retType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 		{
 			static_assert(std::numeric_limits<retType>::is_integer, "CONVERT_MODE_RGB10A2SINT requires an integer sampler");
 			return tvec4<retType, P>(unpackI3x10_1x2(access::load(Texture, TexelCoord, Layer, Face, Level)));
 		}
 
-		static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
+		static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<retType, P> const & Texel)
 		{
 			static_assert(std::numeric_limits<retType>::is_integer, "CONVERT_MODE_RGB10A2SINT requires an integer sampler");
 			access::store(Texture, TexelCoord, Layer, Face, Level, packI3x10_1x2(Texel));
@@ -490,18 +490,18 @@ namespace detail
 	template <typename textureType, typename samplerValType, precision P>
 	struct convert
 	{
-		typedef glm::tvec4<samplerValType, P>(*fetchFunc)(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level);
-		typedef void(*writeFunc)(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, glm::tvec4<samplerValType, P> const & Texel);
+		typedef glm::tvec4<samplerValType, P>(*fetchFunc)(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level);
+		typedef void(*writeFunc)(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, glm::tvec4<samplerValType, P> const & Texel);
 
 		template <typename T, template <typename, precision> class vecType, convertMode mode>
 		struct conv
 		{
-			static tvec4<samplerValType, P> fetch(textureType const & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
+			static tvec4<samplerValType, P> fetch(textureType const & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level)
 			{
 				return convertFunc<textureType, samplerValType, T, P, vecType, mode, std::numeric_limits<samplerValType>::is_iec559>::fetch(Texture, TexelCoord, Layer, Face, Level);
 			}
 
-			static void write(textureType & Texture, typename textureType::texelcoord_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<samplerValType, P> const & Texel)
+			static void write(textureType & Texture, typename textureType::extent_type const & TexelCoord, typename textureType::size_type Layer, typename textureType::size_type Face, typename textureType::size_type Level, tvec4<samplerValType, P> const & Texel)
 			{
 				convertFunc<textureType, samplerValType, T, P, vecType, mode, std::numeric_limits<samplerValType>::is_iec559>::write(Texture, TexelCoord, Layer, Face, Level, Texel);
 			}
