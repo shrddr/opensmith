@@ -27,6 +27,8 @@ struct Settings
 	// audio
 	int inputDevice;
 	int outputDevice;
+	float signalRMS;
+	float noiseRMS;
 	float playbackVolume;
 	float instrumentVolume;
 };

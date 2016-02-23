@@ -1,10 +1,15 @@
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <algorithm>
 #include "Audio/Audio.h"
+#include "Audio/NoteDetector.h"
 #include "Settings/Settings.h"
 
 void askUser()
 {
 	std::cout << "Host APIs" << std::endl;
+	std::cout << "---------------" << std::endl;
 	PaHostApiIndex HostApi;
 	PaHostApiIndex HostApiCount = Pa_GetHostApiCount();
 	PaHostApiIndex DefaultHostApi = Pa_GetDefaultHostApi();
@@ -22,6 +27,7 @@ void askUser()
 	std::cout << std::endl;
 
 	std::cout << "Input Devices" << std::endl;
+	std::cout << "---------------" << std::endl;
 	PaDeviceIndex DeviceCount = Pa_GetDeviceCount();
 	const PaDeviceInfo *deviceInfo;
 	for (int i = 0; i < DeviceCount; i++)
@@ -41,6 +47,7 @@ void askUser()
 	std::cout << std::endl;
 
 	std::cout << "Output Devices" << std::endl;
+	std::cout << "---------------" << std::endl;
 	for (int i = 0; i < DeviceCount; i++)
 	{
 		deviceInfo = Pa_GetDeviceInfo(i);
@@ -68,8 +75,8 @@ bool yes()
 int main()
 {
 	Silence s;
-	Discard d;
-	InOut io{ &s, &d, 1, 1 };
+	NoteDetector* d = new NoteDetector(48000); // stack overflow
+	InOut io{ &s, d, 1, 1 };
 
 	while (true)
 	{
@@ -81,7 +88,6 @@ int main()
 		}
 
 		askUser();
-
 		Pa_Terminate();
 
 		Audio a(io, 48000);
@@ -95,12 +101,47 @@ int main()
 
 		a.start();
 
-		std::cout << std::endl << "Try it out. Good enough? (y/n) ";
+		std::cout << std::endl << "You should hear your guitar now. Use this device? (y/n) ";
+		if (!yes())
+			continue;
+
+		const int timeTotal = 5000;
+		const int timeDelta = 500;
+		int time = 0;
+		o.signalRMS = -200;
+		o.noiseRMS = 0;
+		std::cout.precision(0);
+
+		std::cout << std::endl << "Make some noise!" << std::endl;
+		while (time < timeTotal)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(timeDelta));
+			time += timeDelta;
+			float RMS = d->rms();
+			std::cout << RMS << "db" << std::endl;
+			o.signalRMS = std::max(RMS, o.signalRMS);
+		}
+
+		time = 0;
+		std::cout << std::endl << "Mute the strings!" << std::endl;
+		while (time < timeTotal)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(timeDelta));
+			time += timeDelta;
+			float RMS = d->rms();
+			std::cout << RMS << "db" << std::endl;
+			o.noiseRMS = std::min(RMS, o.noiseRMS);
+		}
+
+		float SNR = o.signalRMS - o.noiseRMS;
+		std::cout << std::endl << "SNR: " << SNR << "db" << std::endl;
+		std::cout << std::endl << "Good enough? (y/n) ";
 
 		if (yes())
 			break;
+			
 	}
-
+		
 	o.save();
-	
+	delete d;
 }

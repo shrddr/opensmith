@@ -24,6 +24,8 @@ Settings::Settings()
 	// audio
 	inputDevice = 0;
 	inputDevice = 0;
+	signalRMS = 0;
+	noiseRMS = 0;
 	playbackVolume = 0.2f;
 	instrumentVolume = 1.0f;
 }
@@ -33,8 +35,10 @@ void Settings::save()
 	std::ofstream file;
 	file.open("settings.txt");
 
-	file << o.inputDevice << std::endl;
-	file << o.outputDevice << std::endl;
+	file << inputDevice << std::endl;
+	file << outputDevice << std::endl;
+	file << signalRMS << std::endl;
+	file << noiseRMS << std::endl;
 
 	file.close();
 }
@@ -47,7 +51,9 @@ void Settings::load()
 		throw std::runtime_error("Settings file not found. Run setup first.");
 
 	file >> inputDevice;
-	file >> o.outputDevice;
+	file >> outputDevice;
+	file >> signalRMS;
+	file >> noiseRMS;
 
 	file.close();
 }
