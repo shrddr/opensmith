@@ -22,8 +22,9 @@ Contents:
 * Main executable
 
 Building:
-VS 2015 solution and prebuilt dependencies included.
-Mac/Linux should work too.
+VS 2015 solution and prebuilt Windows 7 dependencies included.
+Also comes with GCC makefile ([Ubuntu guide](Install.md)).
+MacOS should work too.
 
 Usage:
 Run setup first and select the fastest audio device. After that, run `opensmith songfile.psarc`. Add `-rhythm` parameter to play rhythm instead of lead, `-dx` to set difficulty x (0-30 depending on the song), `-f` to go fullscreen.
