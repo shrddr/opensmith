@@ -21,31 +21,42 @@ int SngReader::readTo(std::istream& inStream, std::vector<char>& storage)
 	BinaryReader HeadReader(inStream);
 	uint32_t head;
 	head = HeadReader.readUint32();
-	if (0x4A != head)
-		throw "not a PC SNG"; // pc file -> little-endian, xbox file -> big endian
+	if (0x4A != head) // pc file -> little endian, xbox file -> big endian
+		throw std::runtime_error("SNG: PC header not found");
 	
 	inStream.seekg(0, std::ios_base::end);
 	size_t fileSize = inStream.tellg();
 	inStream.seekg(headerSize);
-
-	char iv[16];
-	HeadReader.readBytes(iv, 16);
-	int cipherSize = fileSize - headerSize - 16;
-
-	char* plainText = new char[cipherSize];
-	inStream.read(plainText, cipherSize);
-	decrypt(plainText, cipherSize, iv);
 	
-	membuf membufSng(plainText, plainText + cipherSize);
-	std::istream streamSng(&membufSng);
-	BinaryReader ReaderSng(streamSng);
-	uint32_t dataSize = ReaderSng.readUint32();
-	uint16_t xU = ReaderSng.readUint16();
-	if (xU != 0xDA78 && xU != 0x78DA) throw "not zlib"; //LE 55928 //BE 30938
+	char iv[blockSize];
+	HeadReader.readBytes(iv, blockSize);
+	int cipherSize = fileSize - headerSize - blockSize;
+	char* plainText = new char[cipherSize];
+
+	uint32_t dataSize;
+	bool decryptSuccess = false;
+	for (size_t i = 0; !decryptSuccess && i < keys::sngCount; i++) // try both pc and mac keys
+	{
+		inStream.seekg(headerSize + blockSize);
+		inStream.read(plainText, cipherSize);
+		decrypt(plainText, cipherSize, iv, keys::sng[i]);
+
+		membuf membufSng(plainText, plainText + cipherSize);
+		std::istream streamSng(&membufSng);
+		BinaryReader ReaderSng(streamSng);
+		dataSize = ReaderSng.readUint32();
+		uint16_t xU = ReaderSng.readUint16();
+		if (xU == 0xDA78 || xU == 0x78DA) // RFC 1950 CMF+FLG
+			decryptSuccess = true;
+	}
+
+	if (!decryptSuccess)
+		throw std::runtime_error("SNG: zlib header not found.\n");
 
 	storage.reserve(dataSize);
 	int ret = inflateBytes(plainText + 4, cipherSize - 4, storage);
-	if (ret != Z_OK) throw "inflate fail";
+	if (ret != Z_OK) 
+		throw std::runtime_error("SNG: inflate fail\n");
 	
 }
 
@@ -96,13 +107,13 @@ int SngReader::inflateBytes(char* source, int srcLen, std::vector<char>& dest)
 	return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
 }
 
-void SngReader::decrypt(char* output, long len, char* iv)
+void SngReader::decrypt(char* output, long len, char* iv, const unsigned char* key)
 {
 	const int keyBits = 256;
 	const int blockSize = 16;
 
 	unsigned long rk[RKLENGTH(keyBits)];
-	int nrounds = rijndaelSetupEncrypt(rk, keys::sngPC, keyBits);
+	int nrounds = rijndaelSetupEncrypt(rk, key, keyBits);
 
 	int i;
 	char* p;

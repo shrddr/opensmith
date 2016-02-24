@@ -5,12 +5,13 @@
 namespace SngReader
 {
 	const int headerSize = 8;
+	const int blockSize = 16;
 
 	int readTo(std::istream& inStream, std::vector<char>& storage);
 	int inflateBytes(char* source, int srcLen, std::vector<char>& dest);
 
 	//move out to crypto.h
-	void decrypt(char* output, long len, char* iv);
+	void decrypt(char* output, long len, char* iv, const unsigned char* key);
 	void blockIncrement(char* out, int blockSize = 16);
 	void blockXor(char* out, char const* buf, int blockSize = 16);
 }
