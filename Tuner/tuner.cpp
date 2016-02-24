@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include "math.h"
 #include "Audio/Audio.h"
 #include "Audio/CircularBuffer.h"
 extern "C" { 

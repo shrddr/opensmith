@@ -15,7 +15,7 @@ static Controller* pController = NULL;
 
 static void error_callback(int error, const char* description)
 {
-	std::cerr << "GLFW Error: " << description;
+	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

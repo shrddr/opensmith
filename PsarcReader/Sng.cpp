@@ -1,5 +1,6 @@
 #include <vector>
 #include <cassert>
+#include <stdexcept>
 #include "BigEndianReader.h"
 #include "Rijndael/rijndael.h"
 #include "zlib/zlib.h"
@@ -22,7 +23,7 @@ int SngReader::readTo(std::istream& inStream, std::vector<char>& storage)
 	uint32_t head;
 	head = HeadReader.readUint32();
 	if (0x4A != head) // pc file -> little endian, xbox file -> big endian
-		throw std::runtime_error("SNG: PC header not found");
+		throw std::runtime_error("SNG: PC header not found.\n");
 	
 	inStream.seekg(0, std::ios_base::end);
 	size_t fileSize = inStream.tellg();
