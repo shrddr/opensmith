@@ -70,7 +70,7 @@ void Hud::paint(float currentTime)
 {
 	char textBuf[64];
 	sprintf(textBuf, "%.2fs", currentTime);
-	text.print(textBuf, 2, 582, 16);
+	text.print(textBuf, 0 + 2, 1080 - 2 - 32, 32);
 
 	for (size_t i = 0; i < 144; i++)
 	{

@@ -8,8 +8,8 @@ v 1.0 8.1 0.0
 v 1.0 8.1 1.0
 vt 0.0 0.0
 vt 0.0 1.0
-vt 1.0 1.0
-vt 1.0 0.0
+vt 4.0 1.0
+vt 4.0 0.0
 vn 0.0 1.0 0.0
 usemtl Material_ray.png
 s off

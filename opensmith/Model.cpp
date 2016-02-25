@@ -216,14 +216,18 @@ void Model::update(float glfwTime)
 
 	noteDetector->analyze(hud.detected);
 
-	for (auto note = visuals.notes.begin(); note != visuals.notes.end() && note->time - o.detectionTimeWindow/2 < currentTime; ++note)
-		if (!note->hit)
+	for (auto note = visuals.notes.begin(); note != visuals.notes.end() && note->time - o.detectionTimeWindow / 2 < currentTime; /* nop */)
+		if (note->hit)
+			note = visuals.notes.erase(note);
+		else
 		{
-			if (note->hit = noteDetector->confirm(note->string, note->fret, note->time))
+			note->hit = noteDetector->confirm(note->string, note->fret, note->time);
+			if (note->hit)
 			{
 				Visuals::Ghost newGhost = { note->fret, note->string, note->time, true };
 				visuals.ghosts.push_back(newGhost);
 			}
+			++note;
 		}
 
 	v.show(visuals, hud, currentTime);
@@ -233,18 +237,16 @@ void Model::update(float glfwTime)
 	while (!visuals.beats.empty() && visuals.beats.front().time < currentTime)
 		visuals.beats.pop_front();
 
-	while (!visuals.notes.empty() && visuals.notes.front().time + o.detectionTimeWindow/2 < currentTime)
+	while (!visuals.notes.empty() && visuals.notes.front().time + o.detectionTimeWindow / 2 < currentTime)
 	{
-		Visuals::Ghost newGhost = { visuals.notes.front().fret, visuals.notes.front().string, visuals.notes.front().time, false };
+		Visuals::Ghost newGhost = { visuals.notes.front().fret, visuals.notes.front().string, visuals.notes.front().time + o.detectionTimeWindow / 2, false };
 		visuals.ghosts.push_back(newGhost);
 		visuals.notes.pop_front();
 	}
 		
-
 	while (!visuals.sustains.empty() && visuals.sustains.front().time + visuals.sustains.front().length < currentTime)
 		visuals.sustains.pop_front();
 		
-
 	while (!visuals.anchors.empty() && visuals.anchors.front().endTime < currentTime)
 		visuals.anchors.pop_front();
 

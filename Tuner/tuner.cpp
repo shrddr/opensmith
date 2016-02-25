@@ -2,7 +2,9 @@
 #include <chrono>
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <map>
+#include "Settings/Settings.h"
 #include "Audio/Audio.h"
 #include "Audio/CircularBuffer.h"
 extern "C" { 
@@ -144,7 +146,7 @@ private:
 
 int main()
 {
-	char* NOTES[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+	std::string NOTES[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	float note[128];
 	for (int i = 0; i < 128; i++)
 	{
@@ -155,6 +157,7 @@ int main()
 	Silence s;
 	ACDetector d(4096);
 	InOut io { &s, &d, 1, 1 };
+	o.load();
 	Audio a(io, SAMPLE_RATE);
 	a.start();
 
@@ -177,7 +180,7 @@ int main()
 			}
 		}
 
-		char* noteName = NOTES[noteIndex % 12];
+		std::string noteName = NOTES[noteIndex % 12];
 		float cents = 1200 * log2(freq / note[noteIndex]);
 
 		std::cout << freq << " " << noteName << " " << cents << std::endl;

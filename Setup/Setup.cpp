@@ -110,7 +110,6 @@ int main()
 		int time = 0;
 		o.signalRMS = -200;
 		o.noiseRMS = 0;
-		std::cout.precision(0);
 
 		std::cout << std::endl << "Make some noise!" << std::endl;
 		while (time < timeTotal)

@@ -76,12 +76,14 @@ private:
 	void drawOpenSustain(float x, float y, float z, float dz, int tint);
 	void drawStrings(float z);
 	void drawFrets(float z);
-	void setTint(int string);
+	void setTint(int string, float brightness = 1);
 
 	GLuint vertexArrayId;
 	GLuint vertexBuffer;
 	GLuint uvBuffer;
 	GLuint programID;
+
+	GLuint anchorTexture;
 	GLuint noteTexture;
 	GLuint missTexture;
 	GLuint openSustainTexture;

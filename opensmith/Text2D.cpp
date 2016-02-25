@@ -21,12 +21,15 @@ void Text2D::print(const char* text, float x, float y, float size)
 	// Fill buffers
 	std::vector<glm::vec2> vertices;
 	std::vector<glm::vec2> UVs;
+	float left = x;
+
 	for (size_t i = 0; i < length; i++)
 	{
-		glm::vec2 vertex_up_left = glm::vec2(x + i * size, y + size);
-		glm::vec2 vertex_up_right = glm::vec2(x + i * size + size, y + size);
-		glm::vec2 vertex_down_right = glm::vec2(x + i * size + size, y);
-		glm::vec2 vertex_down_left = glm::vec2(x + i * size, y);
+		glm::vec2 vertex_up_left = glm::vec2(left, y + size);
+		glm::vec2 vertex_up_right = glm::vec2(left + size / 2, y + size);
+		glm::vec2 vertex_down_right = glm::vec2(left + size / 2, y);
+		glm::vec2 vertex_down_left = glm::vec2(left, y);
+		left += size / 2;
 
 		vertices.push_back(vertex_up_left);
 		vertices.push_back(vertex_down_left);

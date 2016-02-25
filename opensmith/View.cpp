@@ -28,6 +28,7 @@ View::View(GLFWwindow& window):
 	uniformLocationTex = glGetUniformLocation(programID, "myTextureSampler");
 	uniformLocationTint = glGetUniformLocation(programID, "tint");
 	
+	anchorTexture = loadTexture("../resources/textures/anchor.dds");
 	noteTexture = loadTexture("../resources/textures/note.dds");
 	missTexture = loadTexture("../resources/textures/note_miss.dds");
 	openSustainTexture = loadTexture("../resources/textures/open_sustain.dds");
@@ -51,6 +52,7 @@ View::~View()
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteVertexArrays(1, &vertexArrayId);
 	glDeleteProgram(programID);
+	glDeleteTextures(1, &anchorTexture);
 	glDeleteTextures(1, &noteTexture);
 	glDeleteTextures(1, &missTexture);
 	glDeleteTextures(1, &openSustainTexture);
@@ -90,7 +92,9 @@ void View::drawAnchor(float x, int df, float z, float dz)
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform3f(uniformLocationTint, 0.0f, 0.1f, 0.2f);
 
+	glBindTexture(GL_TEXTURE_2D, anchorTexture);
 	glDrawArrays(GL_TRIANGLES, anchorMesh->getOffset(), anchorMesh->getCount());
+	glBindTexture(GL_TEXTURE_2D, noteTexture);
 }
 
 void View::drawBeat(float z)
@@ -116,17 +120,20 @@ void View::drawNote(float x, float y, float z, int tint)
 void View::drawGhost(float x, float y, float z, int tint, bool hit, float t)
 {
 	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z)); 
-	Model = glm::scale(Model, glm::vec3(t*10, t*10, t*10));
-
 	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
-	setTint(tint);
-
+	
 	if (hit)
+	{
 		glBindTexture(GL_TEXTURE_2D, noteTexture);
+		setTint(tint, 1.0 / (0.33 + t * 10));		// 3 -> 1
+	}
 	else
+	{
 		glBindTexture(GL_TEXTURE_2D, missTexture);
-
+		setTint(tint, 1.0 / (1.0 + t * 10));		// 1 -> 1/3
+	}
+		
 	glDrawArrays(GL_TRIANGLES, noteMesh->getOffset(), noteMesh->getCount());
 	glBindTexture(GL_TEXTURE_2D, noteTexture);
 }
@@ -204,30 +211,30 @@ void View::drawFrets(float z)
 	}
 }
 
-void View::setTint(int string)
+void View::setTint(int string, float b)
 {
 	switch (string)
 	{
 	case 0:
-		glUniform3f(uniformLocationTint, 1, 0.1f, 0.1f);
+		glUniform3f(uniformLocationTint, 1*b, 0.1f*b, 0.1f*b);
 		break;
 	case 1:
-		glUniform3f(uniformLocationTint, 1, 1, 0.1f);
+		glUniform3f(uniformLocationTint, 1 * b, 1 * b, 0.1f*b);
 		break;
 	case 2:
-		glUniform3f(uniformLocationTint, 0.2f, 0.2f, 1);
+		glUniform3f(uniformLocationTint, 0.2f*b, 0.2f*b, 1 * b);
 		break;
 	case 3:
-		glUniform3f(uniformLocationTint, 1, 0.7f, 0.1f);
+		glUniform3f(uniformLocationTint, 1 * b, 0.7f*b, 0.1f*b);
 		break;
 	case 4:
-		glUniform3f(uniformLocationTint, 0.1f, 1, 0.1f);
+		glUniform3f(uniformLocationTint, 0.1f*b, 1 * b, 0.1f*b);
 		break;
 	case 5:
-		glUniform3f(uniformLocationTint, 0.7f, 0.1f, 0.7f);
+		glUniform3f(uniformLocationTint, 0.7f*b, 0.1f*b, 0.7f*b);
 		break;
 	default:
-		glUniform3f(uniformLocationTint, 1, 1, 1);
+		glUniform3f(uniformLocationTint, 0.5f*b, 0.5f*b, 0.5f*b);
 		break;
 	}
 }
@@ -263,16 +270,17 @@ void View::show(Visuals& visuals, Hud& hud, float currentTime)
 	//	drawBeat(it.time * o.zSpeed);
 
 	for (auto it : visuals.notes)
-		if (it.fret == 0)
-			drawOpenNote(it.anchorFret * o.noteStep,
-				it.string * o.stringStep,
-				it.time * o.zSpeed,
-				it.string);
-		else
-			drawNote(it.fret * o.noteStep,
-				it.string * o.stringStep,
-				it.time * o.zSpeed,
-				it.string);
+		if (it.time > currentTime)		// notes do go past the string - symmetrical detection window; just hide them
+			if (it.fret == 0)
+				drawOpenNote(it.anchorFret * o.noteStep,
+					it.string * o.stringStep,
+					it.time * o.zSpeed,
+					it.string);
+			else
+				drawNote(it.fret * o.noteStep,
+					it.string * o.stringStep,
+					it.time * o.zSpeed,
+					it.string);
 
 	for (auto it : visuals.sustains)
 		if (it.startFret == 0)

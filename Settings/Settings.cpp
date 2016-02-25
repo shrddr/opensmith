@@ -16,9 +16,9 @@ Settings::Settings()
 	zSpeed = 40.0f;
 
 	cameraX = 18.0f;
-	cameraY = -12.0f;
+	cameraY = -10.0f;
 	cameraZ = -30.0f;
-	cameraHorizontalAngle = 3.0f;
+	cameraHorizontalAngle = 3.1f;
 	cameraVerticalAngle = 2.8f;
 
 	// audio

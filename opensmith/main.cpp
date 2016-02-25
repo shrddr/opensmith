@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 		window = glfwCreateWindow(mode->width, mode->height, "opensmith", glfwGetPrimaryMonitor(), NULL);
 	}
 	else
-		window = glfwCreateWindow(1024, 768, "opensmith", NULL, NULL);
+		window = glfwCreateWindow(960, 540, "opensmith", NULL, NULL);
 	
 	if (!window)
 	{

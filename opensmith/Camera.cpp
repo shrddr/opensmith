@@ -25,7 +25,7 @@ Camera::Camera(GLFWwindow& window) :
 	glfwGetFramebufferSize(&window, &windowWidth, &windowHeight);
 	windowRatio = windowWidth / (float)windowHeight;
 
-	Projection = glm::perspective(45.0f, windowRatio, 0.1f, 1000.0f);
+	Projection = glm::perspective(50.0f * glm::two_pi<float>() / 360, windowRatio, 0.1f, 1000.0f);
 }
 
 void Camera::update()
