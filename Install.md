@@ -40,7 +40,6 @@ This one also needs building from source.
 * `./opensmith PATH/TO/songfile.psarc`
 
 ### Mac OS X 10.8
-OpenGl 3.2
 
 #### glew
 * `git clone https://github.com/nigels-com/glew.git`
