@@ -1,6 +1,5 @@
 #pragma once
 #include <istream>
-#include <array>
 
 class BinaryReader
 {

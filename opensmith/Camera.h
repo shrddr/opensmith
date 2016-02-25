@@ -1,5 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#define GLM_FORCE_CXX98
 #include <glm/glm.hpp>
 
 class Camera

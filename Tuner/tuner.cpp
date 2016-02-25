@@ -4,7 +4,11 @@
 #include <iostream>
 #include <string>
 #include <map>
+<<<<<<< HEAD
 #include "Settings/Settings.h"
+=======
+#include "math.h"
+>>>>>>> ba94336288f11f8de8cab82d475f3070592815cc
 #include "Audio/Audio.h"
 #include "Audio/CircularBuffer.h"
 extern "C" { 

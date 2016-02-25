@@ -2,6 +2,7 @@
 #include <cstring>
 #include <fstream>
 #include <algorithm>
+#include <stdexcept>
 #include "Rijndael/rijndael.h"
 #include "zlib/zlib.h"
 #include "PSARC.h"
@@ -18,8 +19,9 @@ struct membuf : std::streambuf
 PSARC::PSARC(char const* fileName):
 	Reader(stream)
 {
-	stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	stream.open(fileName, std::ifstream::in | std::ifstream::binary);
+	if (!stream.good())
+		throw std::runtime_error("PSARC file not found.\n");
 
 	uint32_t MagicNumber = Reader.readUint32();
 	uint32_t VersionNumber = Reader.readUint32();

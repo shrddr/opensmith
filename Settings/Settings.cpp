@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include <fstream>
+#include <stdexcept>
 
 Settings::Settings()
 {

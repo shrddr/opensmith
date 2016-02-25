@@ -15,7 +15,7 @@ static Controller* pController = NULL;
 
 static void error_callback(int error, const char* description)
 {
-	std::cerr << "GLFW Error: " << description;
+	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -56,6 +56,8 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* window;
 	if (paramFullsreen)
