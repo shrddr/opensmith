@@ -1,7 +1,8 @@
 #pragma once
+#include <fstream>
+#include <vector>
 #include "Audio.h"
 #include "CircularBuffer.h"
-#include <fstream>
 
 /* MIDI note codes:
 standard guitar tuning EADGBE = 40 45 50 55 59 64..88
@@ -21,15 +22,10 @@ E 082 087 092 098 104
 #define NOTE_DISTANCE 1.059463094359
 #define PI 3.14159265358979323846
 
-const int tuning[] = { 40, 45, 50, 55, 59, 64 };
-const size_t noteFirst = tuning[0] - 1; // edge note to compare the lowest E
-const size_t noteCount = 50; // 4 octaves + 2 edge notes
-const size_t inputSize = 3200;
-
 class NoteDetector : public AudioConsumer
 {
 public:
-	NoteDetector(size_t sampleRate);
+	NoteDetector(size_t sampleRate, std::vector<int16_t>& tuningDeltas, bool isBass);
 	void setPCM(const float in);
 	float rms();
 	void analyze(float(&)[144]);
@@ -38,6 +34,10 @@ public:
 private:
 	size_t sampleRate;
 	CircularBuffer<float> samples;
+	int tuning[6];
+	size_t noteFirst;
+	static const size_t noteCount = 50;
+	static const size_t inputSize = 3200;
 
 	float noteFreq[noteCount];
 	float noteSin[noteCount][inputSize];

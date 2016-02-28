@@ -44,6 +44,8 @@ int main(int argc, char** argv)
 	{
 		if (strcmp("-rhythm", argv[i]) == 0)
 			paramRole = rhythm;
+		if (strcmp("-bass", argv[i]) == 0)
+			paramRole = bass;
 		if (strcmp("-f", argv[i]) == 0)
 			paramFullsreen = true;
 		sscanf(argv[i], "-d%i", &o.difficulty);

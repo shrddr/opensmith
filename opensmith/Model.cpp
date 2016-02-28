@@ -12,7 +12,7 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 	int entryAudio = -1;
 	uint64_t entryAudioLength = 0;
 	int entrySng = -1;
-	
+
 	for (size_t i = 0; i < psarc->Entries.size(); i++)
 	{
 		auto e = psarc->Entries[i];
@@ -22,14 +22,19 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 				entryAudioLength = e->Length;  // pick the largest
 				entryAudio = i;
 			}
-				
+		
 		if (role == lead && e->name.find("lead.sng") != std::string::npos)
 			entrySng = i;
 
 		if (role == rhythm && e->name.find("rhythm.sng") != std::string::npos)
 			entrySng = i;
+
+		if (role == bass && e->name.find("bass.sng") != std::string::npos)
+			entrySng = i;
 	}
 
+	if (entrySng == -1)
+		throw std::runtime_error("SNG entry not found.\n");
 
 	// get sng
 
@@ -49,6 +54,13 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 	s.parse(sngStorage);
 
 	std::cout << glfwGetTime() << " > SNG parsed" << std::endl;
+	std::cout << "Tuning: "
+		<< s.metadata.tuning[0]
+		<< s.metadata.tuning[1]
+		<< s.metadata.tuning[2]
+		<< s.metadata.tuning[3]
+		<< s.metadata.tuning[4]
+		<< s.metadata.tuning[5] << std::endl;
 
 	preloadSNG();
 
@@ -74,7 +86,7 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	// init detector
 
-	noteDetector = new NoteDetector(w.getSampleRate());
+	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, (role == bass));
 	std::cout << glfwGetTime() << " > NoteDetector init" << std::endl;
 
 	// start portaudio

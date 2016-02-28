@@ -3,10 +3,15 @@
 #include <iostream>
 #include "Settings/Settings.h"
 
-NoteDetector::NoteDetector(size_t sampleRate):
+NoteDetector::NoteDetector(size_t sampleRate, std::vector<int16_t>& tuningDeltas, bool isBass):
 	sampleRate(sampleRate),
 	samples(inputSize)
 {
+	const int standardTuning[6] = { 40, 45, 50, 55, 59, 64 };
+	for (size_t i = 0; i < 6; i++)
+		tuning[i] = standardTuning[i] - tuningDeltas[i] - (isBass ? 12 : 0);
+	noteFirst = tuning[0];
+
 	for (size_t note = 0; note < noteCount; note++)
 	{
 		int midiNote = noteFirst + note;

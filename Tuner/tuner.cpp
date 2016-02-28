@@ -165,7 +165,7 @@ int main()
 	while (true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		float freq = d.detect(70, 400);
+		float freq = d.detect(30, 400);
 		if (isnan(freq))
 			continue;
 
@@ -185,9 +185,9 @@ int main()
 		float cents = 1200 * log2(freq / note[noteIndex]);
 
 		std::cout << freq << " " << noteName << " " << cents << std::endl;
+
 	}
 	
-
 	std::cin.get();
 	return 0;
 }
