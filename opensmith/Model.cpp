@@ -70,13 +70,17 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	std::vector<char> audioEntryStorage;
 	psarc->Entries[entryAudio]->Data->readTo(audioEntryStorage);
-	std::ofstream outWemFile("../resources/temp.wem", std::ios::binary);
-	outWemFile.write(audioEntryStorage.data(), audioEntryStorage.size());
-	outWemFile.close();
 
+	if (o.dumpWem)
+	{
+		std::ofstream outWemFile("../resources/temp.wem", std::ios::binary);
+		outWemFile.write(audioEntryStorage.data(), audioEntryStorage.size());
+		outWemFile.close();
+	}
+	
 	std::cout << glfwGetTime() << " > WEM extracted from PSARC" << std::endl;
 
-	Wem w("../resources/temp.wem");
+	Wem w(audioEntryStorage);
 	w.generateOgg(oggStorage);
 
 	std::cout << glfwGetTime() << " > WEM to OGG" << std::endl;

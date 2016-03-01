@@ -5,12 +5,26 @@ struct membuf : std::streambuf
 {
 	membuf(char* begin, char* end)
 	{
+		pos = 0;
 		this->setg(begin, begin, end);
 	}
 	membuf(char* begin, size_t size)
 	{
 		this->setg(begin, begin, begin+size);
 	}
+	std::streampos seekpos(std::streampos sp, std::ios_base::openmode which)
+	{
+		pos = sp;
+		this->setg(this->eback(), this->eback() + pos, this->egptr());
+		return pos;
+	}
+	std::streampos seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode which)
+	{
+		pos += off;
+		this->setg(this->eback(), this->eback() + pos, this->egptr());
+		return pos;
+	}
+	std::streampos pos;
 };
 
 class StreamReaderLE

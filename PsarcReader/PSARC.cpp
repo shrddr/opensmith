@@ -60,7 +60,9 @@ PSARC::PSARC(char const* fileName):
 	if (blockSize > 0x1000000) b = 4;
 
 	int decMax = (archiveFlags == 4) ? 32 : 0;
-	int zLengthsCount = (TotalTOCSize - ((int)ReaderTOC.pBaseStream.tellg() + decMax)) / b;
+	//int pos = (int)ReaderTOC.pBaseStream.tellg();
+	int pos = -1; // WTF?
+	int zLengthsCount = (TotalTOCSize - (pos + decMax)) / b;
 	zLengths.reserve(zLengthsCount);
 
 	for (int i = 0; i < zLengthsCount; i++)

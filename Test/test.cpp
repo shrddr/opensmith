@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <chrono>
 #include "Wem/Wem.h"
 #include "PsarcReader/PSARC.h"
 #include "PsarcReader/Sng.h"
@@ -8,8 +9,8 @@
 // test if end of file is handled correctly
 bool testDecoderEof(const char* fileName)
 {
-	std::vector<char> oggStorage;
 	Wem w(fileName);
+	std::vector<char> oggStorage;
 	w.generateOgg(oggStorage);
 	VorbisDecoder decoder(oggStorage);
 
@@ -102,11 +103,38 @@ bool testPsarcWemStream(const char* fileName, const int entry)
 
 void testWemPerformance(const char* fileName)
 {
-	for (size_t i = 0; i < 10; i++)
+	for (size_t i = 0; i < 100; i++)
 	{
-		std::vector<char> oggStorage;
 		Wem w(fileName);
+		std::vector<char> oggStorage;
 		w.generateOgg(oggStorage);
+	}
+}
+
+void testWemMPerformance(const char* fileName)
+{
+	std::ifstream file;
+	file.open(fileName, std::ios::binary);
+	file.seekg(0, std::ios_base::end);
+	std::streampos fileSize = file.tellg();
+
+	std::vector<char> vec;
+	vec.resize(fileSize);
+	file.seekg(0, std::ios_base::beg);
+	file.read(&vec[0], fileSize);
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		try
+		{
+			std::vector<char> oggStorage;
+			Wem w(vec);
+			w.generateOgg(oggStorage);
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << e.what();
+		}
 	}
 }
 
@@ -121,7 +149,13 @@ int main()
 
 	//std::cout << testPsarcWemStream("../../../rhcp_p.psarc", 0) << std::endl;
 
+	auto t1 = std::chrono::high_resolution_clock::now();
 	testWemPerformance("../resources/temp.wem");
+	auto t2 = std::chrono::high_resolution_clock::now();
+	std::cout << std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1).count() << std::endl;
+	testWemMPerformance("../resources/temp.wem");
+	auto t3 = std::chrono::high_resolution_clock::now();
+	std::cout << std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2).count() << std::endl;
 
 	std::cin.get();
 }

@@ -3,15 +3,12 @@
 #include "Wem.h"
 #include <fstream>
 #include <cstring>
-#include "bitstream.h"
-#include "PsarcReader/StreamReader.h"
 #include "codebook.h"
-
 
 class Packet
 {
 public:
-	Packet(std::ifstream& i, long o, bool little_endian, bool no_granule = false) : 
+	Packet(std::istream& i, long o, bool little_endian, bool no_granule = false) : 
 		_offset(o),
 		_size(-1),
 		_absoluteGranule(0),
@@ -47,48 +44,63 @@ private:
 	bool _noGranule;
 };
 
-
-Wem::Wem(char const* fileName):
-	fmtOffset(-1),
-	_cue_offset(-1),
-	_LIST_offset(-1),
-	_smpl_offset(-1),
-	_vorb_offset(-1),
-	dataOffset(-1),
-	fmtSize(-1),
-	_cue_size(-1),
-	_LIST_size(-1),
-	_smpl_size(-1),
-	_vorb_size(-1),
-	dataSize(-1),
-	noGranule(false)
+Wem::Wem(char const* fileName)
 {
-	inStream.open(fileName, std::ifstream::in | std::ifstream::binary);
-	if (!inStream.good())
+	data = 0;
+	inStream = new std::ifstream;
+	std::ifstream* f = (std::ifstream*)inStream;
+	f->open(fileName, std::ifstream::in | std::ifstream::binary);
+	if (!f->good())
 		throw std::runtime_error("WEM file not found.\n");
 
-	inStream.seekg(0, std::ifstream::end);
-	fileSize = inStream.tellg();
-	inStream.seekg(0);
+	f->seekg(0, std::ifstream::end);
+	fileSize = f->tellg();
+	f->seekg(0);
+	init();
+}
 
-	StreamReaderLE r(inStream);
+Wem::Wem(std::vector<char>& input)
+{
+	data = new membuf(input.data(), input.data() + input.size());
+	inStream = new std::istream(data);
+	fileSize = input.size();
+	init();
+}
+
+Wem::~Wem()
+{
+	if (data != 0)
+		delete data;
+	delete inStream;
+}
+
+void Wem::init()
+{
+	fmtOffset = -1;
+	dataOffset = -1;
+	fmtSize = -1;
+	dataSize = -1;
+	noGranule = false;
+
+	StreamReaderLE r(*inStream);
 
 	// check RIFF header
 	{
 		char riffHeader[4], waveHeader[4];
-		inStream.read(riffHeader, 4);
+		r.readBytes(riffHeader, 4);
 
 		if (std::memcmp(riffHeader, "RIFF", 4))
-			throw std::string("missing RIFF");
+			throw std::runtime_error("missing RIFF");
 		else
 			littleEndian = true;
 
 		riffSize = r.readInt32() + 8;
-		if (riffSize > fileSize) throw std::string("RIFF truncated");
+		if (riffSize > fileSize)
+			throw std::runtime_error("RIFF truncated");
 
 		r.readBytes(waveHeader, 4);
 		if (std::memcmp(waveHeader, "WAVE", 4))
-			throw std::string("missing WAVE");
+			throw std::runtime_error("missing WAVE");
 	}
 
 	// read chunks
@@ -98,7 +110,7 @@ Wem::Wem(char const* fileName):
 		r.setPos(chunkOffset);
 
 		if (chunkOffset + 8 > riffSize)
-			throw std::string("chunk header truncated");
+			throw std::runtime_error("chunk header truncated");
 
 		char chunkType[4];
 		r.readBytes(chunkType, 4);
@@ -111,26 +123,6 @@ Wem::Wem(char const* fileName):
 			fmtOffset = r.pos;
 			fmtSize = chunkSize;
 		}
-		else if (!std::memcmp(chunkType, "cue ", 4))
-		{
-			_cue_offset = r.pos;
-			_cue_size = chunkSize;
-		}
-		else if (!std::memcmp(chunkType, "LIST", 4))
-		{
-			_LIST_offset = r.pos;
-			_LIST_size = chunkSize;
-		}
-		else if (!std::memcmp(chunkType, "smpl", 4))
-		{
-			_smpl_offset = r.pos;
-			_smpl_size = chunkSize;
-		}
-		else if (!std::memcmp(chunkType, "vorb", 4))
-		{
-			_vorb_offset = r.pos;
-			_vorb_size = chunkSize;
-		}
 		else if (!std::memcmp(chunkType, "data", 4))
 		{
 			dataOffset = r.pos;
@@ -141,36 +133,30 @@ Wem::Wem(char const* fileName):
 	}
 
 	if (chunkOffset > riffSize)
-		throw std::string("chunk truncated");
+		throw std::runtime_error("chunk truncated");
 
 	// check that we have the chunks we're expecting
 	if (-1 == fmtOffset && -1 == dataOffset)
-		throw std::string("expected fmt, data chunks");
+		throw std::runtime_error("expected fmt, data chunks");
 
 	// read fmt
-	if (-1 == _vorb_offset && 0x42 != fmtSize)
-		throw std::string("expected 0x42 fmt if vorb missing");
-
-	if (-1 != _vorb_offset && 0x28 != fmtSize && 0x18 != fmtSize && 0x12 != fmtSize)
-		throw std::string("bad fmt size");
-
-	if (-1 == _vorb_offset && 0x42 == fmtSize)
-		_vorb_offset = fmtOffset + 0x18;
+	if (0x42 != fmtSize)
+		throw std::runtime_error("expected 0x42 fmt if vorb missing");	
 
 	r.setPos(fmtOffset);
 	if (0xFFFF != r.readUint16())
-		throw std::string("bad codec id");
+		throw std::runtime_error("bad codec id");
 
 	// RIFF fmt
 	channels = r.readUint16();
 	sampleRate = r.readUint32();
 	avgBytesPerSecond = r.readUint32();
 	if (0U != r.readUint16())
-		throw std::string("bad block align");
+		throw std::runtime_error("bad block align");
 	if (0U != r.readUint16())
-		throw std::string("expected 0 bps");
+		throw std::runtime_error("expected 0 bps");
 	if (fmtSize - 0x12 != r.readUint16())
-		throw std::string("bad extra fmt length");
+		throw std::runtime_error("bad extra fmt length");
 
 	// RIFF extended fmt
 	if (fmtSize - 0x12 >= 2)
@@ -180,34 +166,25 @@ Wem::Wem(char const* fileName):
 			_subtype = r.readUint32();
 	}
 
-	if (fmtSize == 0x28)
-	{
-		char whoknowsbuf[16];
-		const unsigned char whoknowsbuf_check[16] = { 1,0,0,0, 0,0,0x10,0, 0x80,0,0,0xAA, 0,0x38,0x9b,0x71 };
-		r.readBytes(whoknowsbuf, 16);
-		if (memcmp(whoknowsbuf, whoknowsbuf_check, 16))
-			throw std::string("expected signature in extra fmt?");
-	}
-
-	// read cue
-	// read LIST
-	// read smpl
 	// read vorb (from now on assuming vorbSize == -1)
-	r.setPos(_vorb_offset + 0x00);
+	long vorbOffset = fmtOffset + 0x18;
+	r.setPos(vorbOffset + 0x00);
 	sampleCount = r.readUint32();
 	noGranule = true;
 
-	r.setPos(_vorb_offset + 0x4);
+	r.setPos(vorbOffset + 0x4);
 	uint32_t mod_signal = r.readUint32();
 	if (0x4A != mod_signal &&
 		0x4B != mod_signal &&
 		0x69 != mod_signal &&
-		0x70 != mod_signal) { modPackets = true; }
-	r.setPos(_vorb_offset + 0x10);
+		0x70 != mod_signal) {
+		modPackets = true;
+	}
+	r.setPos(vorbOffset + 0x10);
 	setupPacketOffset = r.readUint32();
 	firstAudioPacketOffset = r.readUint32();
 
-	r.setPos(_vorb_offset + 0x24);
+	r.setPos(vorbOffset + 0x24);
 	_uid = r.readUint32();
 	_blocksize_0_pow = r.readInt8();
 	_blocksize_1_pow = r.readInt8();
@@ -228,7 +205,7 @@ void Wem::generateOgg(std::vector<char>& storage)
 		long offset = dataOffset + firstAudioPacketOffset;
 		while (offset < dataOffset + dataSize)
 		{
-			Packet audioPacket(inStream, offset, littleEndian, noGranule);
+			Packet audioPacket(*inStream, offset, littleEndian, noGranule);
 			long packetHeaderSize = audioPacket.header_size();
 			long size = audioPacket.size();
 			long packetPayloadOffset = audioPacket.offset();
@@ -236,11 +213,11 @@ void Wem::generateOgg(std::vector<char>& storage)
 			long nextOffset = audioPacket.next_offset();
 
 			if (offset + packetHeaderSize > dataOffset + dataSize)
-				throw std::string("page header truncated");
+				throw std::runtime_error("page header truncated");
 
 			offset = packetPayloadOffset;
 
-			inStream.seekg(offset);
+			inStream->seekg(offset);
 
 			// HACK: don't know what to do here
 			if (granule == UINT32_C(0xFFFFFFFF))
@@ -253,7 +230,7 @@ void Wem::generateOgg(std::vector<char>& storage)
 			{
 				// need to rebuild packet type and window info
 				if (!modeBlockflag)
-					throw std::string("didn't load mode_blockflag");
+					throw std::runtime_error("didn't load mode_blockflag");
 
 				// OUT: 1 bit packet type (0 == audio)
 				BitUint<1> packetType(0);
@@ -264,7 +241,7 @@ void Wem::generateOgg(std::vector<char>& storage)
 
 				{
 					// collect mode number from first byte
-					BitStream ss(inStream);
+					BitStream ss(*inStream);
 
 					modeNumberP = new BitUintRuntime(modeBits);
 					ss >> *modeNumberP;
@@ -278,17 +255,17 @@ void Wem::generateOgg(std::vector<char>& storage)
 				{
 					// long window, peek at next frame
 
-					inStream.seekg(nextOffset);
+					inStream->seekg(nextOffset);
 					bool nextBlockflag = false;
 					if (nextOffset + packetHeaderSize <= dataOffset + dataSize)
 					{
-						Packet audioPacket(inStream, nextOffset, littleEndian, noGranule);
+						Packet audioPacket(*inStream, nextOffset, littleEndian, noGranule);
 						uint32_t nextPacketSize = audioPacket.size();
 						if (nextPacketSize > 0)
 						{
-							inStream.seekg(audioPacket.offset());
+							inStream->seekg(audioPacket.offset());
 
-							BitStream ss(inStream);
+							BitStream ss(*inStream);
 							BitUintRuntime nextModeNumber(modeBits);
 
 							ss >> nextModeNumber;
@@ -304,7 +281,7 @@ void Wem::generateOgg(std::vector<char>& storage)
 					os << next_window_type;
 
 					// fix seek for rest of stream
-					inStream.seekg(offset + 1);
+					inStream->seekg(offset + 1);
 				}
 
 				prevBlockflag = modeBlockflag[*modeNumberP];
@@ -317,9 +294,9 @@ void Wem::generateOgg(std::vector<char>& storage)
 			else
 			{
 				// nothing unusual for first byte
-				int v = inStream.get();
+				int v = inStream->get();
 				if (v < 0)
-					throw std::string("file truncated");
+					throw std::runtime_error("file truncated");
 				BitUint<8> c(v);
 				os << c;
 			}
@@ -327,9 +304,9 @@ void Wem::generateOgg(std::vector<char>& storage)
 			// remainder of packet
 			for (int i = 1; i < size; i++)
 			{
-				int v = inStream.get();
+				int v = inStream->get();
 				if (v < 0)
-					throw std::string("file truncated");
+					throw std::runtime_error("file truncated");
 				BitUint<8> c(v);
 				os << c;
 			}
@@ -339,7 +316,7 @@ void Wem::generateOgg(std::vector<char>& storage)
 		}
 
 		if (offset > dataOffset + dataSize)
-			throw std::string("page truncated");
+			throw std::runtime_error("page truncated");
 	}
 
 	delete[] modeBlockflag;
@@ -403,12 +380,12 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 		VorbisPacketHeader vhead(5);
 		os << vhead;
 
-		Packet setup_packet(inStream, dataOffset + setupPacketOffset, littleEndian, noGranule);
+		Packet setup_packet(*inStream, dataOffset + setupPacketOffset, littleEndian, noGranule);
 		if (setup_packet.granule() != 0)
-			throw std::string("setup packet granule != 0");
+			throw std::runtime_error("setup packet granule != 0");
 
-		inStream.seekg(dataOffset + setupPacketOffset + (noGranule ? 2 : 6));
-		BitStream is(inStream);
+		inStream->seekg(dataOffset + setupPacketOffset + (noGranule ? 2 : 6));
+		BitStream is(*inStream);
 
 		// codebook count
 		BitUint<8> codebook_count_less1;
@@ -490,7 +467,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 					os << masterbook;
 
 					if (masterbook >= codebook_count)
-						throw std::string("invalid floor1 masterbook");
+						throw std::runtime_error("invalid floor1 masterbook");
 				}
 
 				for (unsigned int k = 0; k < (1U << class_subclasses); k++)
@@ -501,7 +478,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 
 					int subclass_book = static_cast<int>(subclass_book_plus1) - 1;
 					if (subclass_book >= 0 && static_cast<unsigned int>(subclass_book) >= codebook_count)
-						throw std::string("invalid floor1 subclass book");
+						throw std::runtime_error("invalid floor1 subclass book");
 				}
 			}
 
@@ -542,7 +519,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 			os << BitUint<16>(residue_type);
 
 			if (residue_type > 2)
-				throw std::string("invalid residue type");
+				throw std::runtime_error("invalid residue type");
 
 			BitUint<24> residue_begin, residue_end, residue_partition_size_less1;
 			BitUint<6> residue_classifications_less1;
@@ -553,7 +530,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 			os << residue_begin << residue_end << residue_partition_size_less1 << residue_classifications_less1 << residue_classbook;
 
 			if (residue_classbook >= codebook_count)
-				throw std::string("invalid residue classbook");
+				throw std::runtime_error("invalid residue classbook");
 
 			unsigned int * residue_cascade = new unsigned int[residue_classifications];
 
@@ -588,7 +565,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 						os << residue_book;
 
 						if (residue_book >= codebook_count)
-							throw std::string("invalid residue book");
+							throw std::runtime_error("invalid residue book");
 					}
 				}
 			}
@@ -642,7 +619,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 					os << magnitude << angle;
 
 					if (angle == magnitude || magnitude >= channels || angle >= channels)
-						throw std::string("invalid coupling");
+						throw std::runtime_error("invalid coupling");
 				}
 			}
 
@@ -651,7 +628,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 			is >> mapping_reserved;
 			os << mapping_reserved;
 			if (0 != mapping_reserved)
-				throw std::string("mapping reserved field nonzero");
+				throw std::runtime_error("mapping reserved field nonzero");
 
 			if (submaps > 1)
 			{
@@ -662,7 +639,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 					os << mapping_mux;
 
 					if (mapping_mux >= submaps)
-						throw std::string("mapping_mux >= submaps");
+						throw std::runtime_error("mapping_mux >= submaps");
 				}
 			}
 
@@ -677,13 +654,13 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 				is >> floor_number;
 				os << floor_number;
 				if (floor_number >= floor_count)
-					throw std::string("invalid floor mapping");
+					throw std::runtime_error("invalid floor mapping");
 
 				BitUint<8> residue_number;
 				is >> residue_number;
 				os << residue_number;
 				if (residue_number >= residue_count)
-					throw std::string("invalid residue mapping");
+					throw std::runtime_error("invalid residue mapping");
 			}
 		}
 
@@ -714,7 +691,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 			is >> mapping;
 			os << mapping;
 			if (mapping >= mapping_count)
-				throw std::string("invalid mode mapping");
+				throw std::runtime_error("invalid mode mapping");
 		}
 
 		BitUint<1> framing(1);
@@ -726,9 +703,4 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 
 	}
 }
-
-Wem::~Wem()
-{
-}
-
 

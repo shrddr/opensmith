@@ -1,5 +1,6 @@
 #pragma once
 #include "bitstream.h"
+#include "PsarcReader/StreamReader.h"
 
 class VorbisPacketHeader
 {
@@ -23,22 +24,24 @@ private:
 	static const char vorbis_str[6];
 };
 
-
 class Wem
 {
 public:
 	Wem(char const* fileName);
+	Wem(std::vector<char>& input);
 	~Wem();
+	void init();
 	void generateOgg(std::vector<char>& storage);
 	void generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits);
 	uint32_t getSampleRate() { return sampleRate; }
 private:
-	std::ifstream inStream;
+	std::istream* inStream;
+	membuf* data;
 	long fileSize;
 	bool littleEndian;
 	long riffSize;
-	long fmtOffset, _cue_offset, _LIST_offset, _smpl_offset, _vorb_offset, dataOffset;
-	long fmtSize, _cue_size, _LIST_size, _smpl_size, _vorb_size, dataSize;
+	long fmtOffset, dataOffset;
+	long fmtSize, dataSize;
 	// RIFF fmt
 	uint16_t channels;
 	uint32_t sampleRate;
@@ -55,4 +58,3 @@ private:
 	uint8_t _blocksize_1_pow;
 	bool noGranule, modPackets;
 };
-
