@@ -8,14 +8,6 @@
 #include "PSARC.h"
 #include "Keys.h"
 
-struct membuf : std::streambuf
-{
-	membuf(char* begin, char* end) 
-	{
-		this->setg(begin, begin, end);
-	}
-};
-
 PSARC::PSARC(char const* fileName):
 	Reader(stream)
 {
@@ -47,7 +39,7 @@ PSARC::PSARC(char const* fileName):
 		decryptTOC(bufferTOC, cipherSize);
 	}
 		
-	BigEndianReader ReaderTOC(streamTOC);
+	StreamReaderBE ReaderTOC(streamTOC);
 
 	uint32_t numFile = 0;
 	while (numFile < numFiles)

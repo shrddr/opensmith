@@ -1,24 +1,24 @@
-#include "BigEndianReader.h"
+#include "StreamReader.h"
 
-void BinaryReader::setPos(uint64_t position)
+void StreamReaderLE::setPos(uint64_t position)
 {
 	pBaseStream.seekg(position);
 	pos = pBaseStream.tellg();
 }
 
-void BinaryReader::addPos(int delta)
+void StreamReaderLE::addPos(int delta)
 {
 	pBaseStream.seekg(delta, pBaseStream.cur);
 	pos = pBaseStream.tellg();
 }
 
-void BinaryReader::readBytes(char* dest, int count)
+void StreamReaderLE::readBytes(char* dest, int count)
 {
 	pos += count;
 	pBaseStream.read(dest, count);
 }
 
-uint32_t BinaryReader::readUint16()
+uint32_t StreamReaderLE::readUint16()
 {
 	pos += 2;
 	char buf[4];
@@ -28,7 +28,7 @@ uint32_t BinaryReader::readUint16()
 	return *result;
 }
 
-uint32_t BinaryReader::readUint24()
+uint32_t StreamReaderLE::readUint24()
 {
 	pos += 3;
 	char buf[4];
@@ -38,7 +38,7 @@ uint32_t BinaryReader::readUint24()
 	return *result;
 }
 
-uint32_t BinaryReader::readUint32()
+uint32_t StreamReaderLE::readUint32()
 {
 	pos += 4;
 	char buf[4];
@@ -47,7 +47,7 @@ uint32_t BinaryReader::readUint32()
 	return *result;
 }
 
-uint64_t BinaryReader::readUint40()
+uint64_t StreamReaderLE::readUint40()
 {
 	pos += 5;
 	char buf[8];
@@ -57,7 +57,7 @@ uint64_t BinaryReader::readUint40()
 	return *result;
 }
 
-float BinaryReader::readSingle()
+float StreamReaderLE::readSingle()
 {
 	pos += 4;
 	char buf[4];
@@ -66,7 +66,7 @@ float BinaryReader::readSingle()
 	return *result;
 }
 
-float BinaryReader::readDouble()
+float StreamReaderLE::readDouble()
 {
 	pos += 8;
 	char buf[8];
@@ -75,7 +75,7 @@ float BinaryReader::readDouble()
 	return *result;
 }
 
-int8_t BinaryReader::readInt8()
+int8_t StreamReaderLE::readInt8()
 {
 	pos += 1;
 	char buf[1];
@@ -84,7 +84,7 @@ int8_t BinaryReader::readInt8()
 	return *result;
 }
 
-int16_t BinaryReader::readInt16()
+int16_t StreamReaderLE::readInt16()
 {
 	pos += 2;
 	char buf[2];
@@ -93,7 +93,7 @@ int16_t BinaryReader::readInt16()
 	return *result;
 }
 
-int32_t BinaryReader::readInt32()
+int32_t StreamReaderLE::readInt32()
 {
 	pos += 4;
 	char buf[4];
@@ -104,7 +104,7 @@ int32_t BinaryReader::readInt32()
 
 //---------------------
 
-uint32_t BigEndianReader::readUint16()
+uint32_t StreamReaderBE::readUint16()
 {
 	char buf[4];
 	pBaseStream.read(buf, 2);
@@ -116,7 +116,7 @@ uint32_t BigEndianReader::readUint16()
 	return result;
 }
 
-uint32_t BigEndianReader::readUint24()
+uint32_t StreamReaderBE::readUint24()
 {
 	char buf[4];
 	pBaseStream.read(buf, 3);
@@ -129,7 +129,7 @@ uint32_t BigEndianReader::readUint24()
 	return result;
 }
 
-uint32_t BigEndianReader::readUint32()
+uint32_t StreamReaderBE::readUint32()
 {
 	char buf[4];
 	pBaseStream.read(buf, 4);
@@ -143,7 +143,7 @@ uint32_t BigEndianReader::readUint32()
 	return result;
 }
 
-uint64_t BigEndianReader::readUint40()
+uint64_t StreamReaderBE::readUint40()
 {
 	char buf[8];
 	pBaseStream.read(buf, 5);

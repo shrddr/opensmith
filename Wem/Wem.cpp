@@ -4,7 +4,7 @@
 #include <fstream>
 #include <cstring>
 #include "bitstream.h"
-#include "PsarcReader/BigEndianReader.h"
+#include "PsarcReader/StreamReader.h"
 #include "codebook.h"
 
 
@@ -21,14 +21,14 @@ public:
 
 		if (little_endian)
 		{
-			BinaryReader r(i);
+			StreamReaderLE r(i);
 			_size = r.readUint16();
 			if (!_noGranule)
 				_absoluteGranule = r.readUint32();
 		}
 		else
 		{
-			BigEndianReader r(i);
+			StreamReaderBE r(i);
 			_size = r.readUint16();
 			if (!_noGranule)
 				_absoluteGranule = r.readUint32();
@@ -63,14 +63,15 @@ Wem::Wem(char const* fileName):
 	dataSize(-1),
 	noGranule(false)
 {
-	inStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	inStream.open(fileName, std::ifstream::in | std::ifstream::binary);
+	if (!inStream.good())
+		throw std::runtime_error("WEM file not found.\n");
 
 	inStream.seekg(0, std::ifstream::end);
 	fileSize = inStream.tellg();
 	inStream.seekg(0);
 
-	BinaryReader r(inStream);
+	StreamReaderLE r(inStream);
 
 	// check RIFF header
 	{

@@ -1,7 +1,7 @@
 #include <fstream>
 #include "codebook.h"
 #include "bitstream.h"
-#include "PsarcReader/BigEndianReader.h"
+#include "PsarcReader/StreamReader.h"
 
 unsigned int _book_maptype1_quantvals(unsigned int entries, unsigned int dimensions) {
 	/* get us a starting hint, we'll polish it below */
@@ -41,7 +41,7 @@ CodebookLibrary::CodebookLibrary(const char* fileName):
 	is.seekg(0, std::ios::end);
 	long file_size = is.tellg();
 
-	BinaryReader r(is);
+	StreamReaderLE r(is);
 	r.setPos(file_size - 4);
 
 	long offsetOffset = r.readInt32();

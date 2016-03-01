@@ -3,8 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <memory>
-#include "BigEndianReader.h"
-
+#include "StreamReader.h"
 
 class PSARC
 {
@@ -31,7 +30,7 @@ public:
 		class DataPointer
 		{
 		public:
-			DataPointer(Entry& E, BigEndianReader& R, std::vector<uint32_t>& z, uint32_t b) :
+			DataPointer(Entry& E, StreamReaderBE& R, std::vector<uint32_t>& z, uint32_t b) :
 				_Entry(E),
 				Reader(R),
 				zLengths(z),
@@ -41,7 +40,7 @@ public:
 			void readTo(std::vector<char>& storage);
 		private:
 			Entry& _Entry;
-			BigEndianReader& Reader;
+			StreamReaderBE& Reader;
 			std::vector<uint32_t>& zLengths;
 			uint32_t blockSize;
 		};
@@ -50,7 +49,7 @@ public:
 	};
 
 	std::ifstream stream;
-	BigEndianReader Reader;
+	StreamReaderBE Reader;
 	std::vector<Entry*> Entries;
 	std::vector<uint32_t> zLengths;
 

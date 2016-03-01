@@ -31,6 +31,10 @@ struct Settings
 	float noiseRMS;
 	float playbackVolume;
 	float instrumentVolume;
+
+	// debug
+	bool dumpSng;
+	bool dumpWem;
 };
 
 extern Settings o;

@@ -5,7 +5,7 @@
 Settings::Settings()
 {
 	// gameplay
-	difficulty = 8;
+	difficulty = 30;
 	visualsPreloadTime = 30.0f;
 	ghostStayTime = 0.2f;
 	detectionTimeWindow = 0.15f;
@@ -29,6 +29,10 @@ Settings::Settings()
 	noiseRMS = 0;
 	playbackVolume = 0.2f;
 	instrumentVolume = 1.0f;
+
+	// debug
+	dumpSng = false;
+	dumpWem = false;
 }
 
 void Settings::save()

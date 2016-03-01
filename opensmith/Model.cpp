@@ -40,20 +40,22 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	std::vector<char> sngEntryStorage;
 	psarc->Entries[entrySng]->Data->readTo(sngEntryStorage);
-	std::ofstream outSngFile("../resources/temp.sng", std::ios::binary);
-	outSngFile.write(sngEntryStorage.data(), sngEntryStorage.size());
-	outSngFile.close();
+
+	if (o.dumpSng)
+	{
+		std::ofstream outSngFile("../resources/temp.sng", std::ios::binary);
+		outSngFile.write(sngEntryStorage.data(), sngEntryStorage.size());
+		outSngFile.close();
+	}
 
 	std::cout << glfwGetTime() << " > SNG extracted from PSARC" << std::endl;
 
-	std::ifstream inSngFile;
-	inSngFile.open("../resources/temp.sng", std::ios::binary);
 	std::vector<char> sngStorage;
-	SngReader::readTo(inSngFile, sngStorage);
-
+	SngReader::readTo(sngEntryStorage, sngStorage);
 	s.parse(sngStorage);
 
 	std::cout << glfwGetTime() << " > SNG parsed" << std::endl;
+
 	std::cout << "Tuning: "
 		<< s.metadata.tuning[0]
 		<< s.metadata.tuning[1]

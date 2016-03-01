@@ -16,11 +16,12 @@ libRijndael:
 	rm bin/rijndael.o
 
 libPsarcReader:
-	g++ $(CXXFLAGS) -c PsarcReader/BigEndianReader.cpp -o bin/BigEndianReader.o
+    g++ $(CXXFLAGS) -c PsarcReader/MemoryReader.cpp -o bin/MemoryReader.o
+	g++ $(CXXFLAGS) -c PsarcReader/StreamReader.cpp -o bin/StreamReader.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude PsarcReader/PSARC.cpp -o bin/PSARC.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude PsarcReader/Sng.cpp -o bin/Sng.o
-	ar rcs bin/libPsarcReader.a bin/BigEndianReader.o bin/PSARC.o bin/Sng.o
-	rm bin/BigEndianReader.o bin/PSARC.o bin/Sng.o
+	ar rcs bin/libPsarcReader.a bin/MemoryReader.o bin/StreamReader.o bin/PSARC.o bin/Sng.o
+	rm bin/MemoryReader.o bin/StreamReader.o bin/PSARC.o bin/Sng.o
 
 libSettings:
 	g++ $(CXXFLAGS) -c Settings/Settings.cpp -o bin/Settings.o

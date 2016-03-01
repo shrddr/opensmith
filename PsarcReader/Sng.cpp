@@ -1,36 +1,25 @@
 #include <vector>
 #include <cassert>
 #include <stdexcept>
-#include "BigEndianReader.h"
+#include "StreamReader.h"
+#include "MemoryReader.h"
 #include "Rijndael/rijndael.h"
 #include "zlib/zlib.h"
 #include "Keys.h"
 #include "Sng.h"
 
-
-struct membuf : std::streambuf
+int SngReader::readTo(std::vector<char>& input, std::vector<char>& storage)
 {
-	membuf(char* begin, char* end)
-	{
-		this->setg(begin, begin, end);
-	}
-};
-
-
-int SngReader::readTo(std::istream& inStream, std::vector<char>& storage)
-{
-	BinaryReader HeadReader(inStream);
-	uint32_t head;
-	head = HeadReader.readUint32();
+	MemoryReaderLE SourceReader(input);
+	uint32_t head = SourceReader.readUint32();
 	if (0x4A != head) // pc file -> little endian, xbox file -> big endian
 		throw std::runtime_error("SNG: PC header not found.\n");
-	
-	inStream.seekg(0, std::ios_base::end);
-	size_t fileSize = inStream.tellg();
-	inStream.seekg(headerSize);
-	
+
+	size_t fileSize = input.size();
+	SourceReader.setPos(headerSize);
+
 	char iv[blockSize];
-	HeadReader.readBytes(iv, blockSize);
+	SourceReader.readBytes(iv, blockSize);
 	int cipherSize = fileSize - headerSize - blockSize;
 	char* plainText = new char[cipherSize];
 
@@ -38,15 +27,13 @@ int SngReader::readTo(std::istream& inStream, std::vector<char>& storage)
 	bool decryptSuccess = false;
 	for (size_t i = 0; !decryptSuccess && i < keys::sngCount; i++) // try both pc and mac keys
 	{
-		inStream.seekg(headerSize + blockSize);
-		inStream.read(plainText, cipherSize);
+		SourceReader.setPos(headerSize + blockSize);
+		SourceReader.readBytes(plainText, cipherSize);
 		decrypt(plainText, cipherSize, iv, keys::sng[i]);
 
-		membuf membufSng(plainText, plainText + cipherSize);
-		std::istream streamSng(&membufSng);
-		BinaryReader ReaderSng(streamSng);
-		dataSize = ReaderSng.readUint32();
-		uint16_t xU = ReaderSng.readUint16();
+		MemoryReaderLE PlaintextReader(plainText);
+		dataSize = PlaintextReader.readUint32();
+		uint16_t xU = PlaintextReader.readUint16();
 		if (xU == 0xDA78 || xU == 0x78DA) // RFC 1950 CMF+FLG
 			decryptSuccess = true;
 	}
@@ -56,9 +43,10 @@ int SngReader::readTo(std::istream& inStream, std::vector<char>& storage)
 
 	storage.reserve(dataSize);
 	int ret = inflateBytes(plainText + 4, cipherSize - 4, storage);
-	if (ret != Z_OK) 
+	if (ret != Z_OK)
 		throw std::runtime_error("SNG: inflate fail\n");
-	
+
+	delete [] plainText;
 }
 
 int SngReader::inflateBytes(char* source, int srcLen, std::vector<char>& dest)
@@ -154,7 +142,7 @@ void Sng::parse(std::vector<char>& storage)
 {
 	membuf m(storage.data(), storage.data() + storage.size());
 	std::istream s(&m);
-	BinaryReader r(s);
+	StreamReaderLE r(s);
 
 	//std::cout << r.pos << std::endl;
 

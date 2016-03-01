@@ -1,15 +1,27 @@
 #pragma once
 #include <istream>
 
-class BinaryReader
+struct membuf : std::streambuf
+{
+	membuf(char* begin, char* end)
+	{
+		this->setg(begin, begin, end);
+	}
+	membuf(char* begin, size_t size)
+	{
+		this->setg(begin, begin, begin+size);
+	}
+};
+
+class StreamReaderLE
 {
 public:
-	BinaryReader(std::istream& input) :
+	StreamReaderLE(std::istream& input) :
 		pBaseStream(input) 
 	{
 		pos = 0; 
 	}
-	~BinaryReader() {}
+	~StreamReaderLE() {}
 	int pos; // for memory streams
 	void setPos(uint64_t position);
 	void addPos(int delta);
@@ -26,11 +38,11 @@ public:
 	int32_t readInt32();
 };
 
-class BigEndianReader : public BinaryReader
+class StreamReaderBE : public StreamReaderLE
 {
 public:
-	BigEndianReader(std::istream& input) :
-		BinaryReader(input) {}
+	StreamReaderBE(std::istream& input) :
+		StreamReaderLE(input) {}
 	uint32_t readUint16();
 	uint32_t readUint24();
 	uint32_t readUint32();

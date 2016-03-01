@@ -4,8 +4,6 @@
 #include <fstream>
 #include "crc.h"
 
-
-
 class OggStream
 {
 public:
@@ -107,10 +105,10 @@ class array_streambuf : public std::streambuf
 	array_streambuf& operator=(const array_streambuf& rhs);
 	array_streambuf(const array_streambuf &rhs);
 
-	char * arr;
+	char* arr;
 
 public:
-	array_streambuf(const char * a, int l) : arr(0)
+	array_streambuf(const char* a, int l) : arr(0)
 	{
 		arr = new char[l];
 		for (int i = 0; i < l; i++)
