@@ -16,7 +16,7 @@ libRijndael:
 	rm bin/rijndael.o
 
 libPsarcReader:
-    g++ $(CXXFLAGS) -c PsarcReader/MemoryReader.cpp -o bin/MemoryReader.o
+	g++ $(CXXFLAGS) -c PsarcReader/MemoryReader.cpp -o bin/MemoryReader.o
 	g++ $(CXXFLAGS) -c PsarcReader/StreamReader.cpp -o bin/StreamReader.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude PsarcReader/PSARC.cpp -o bin/PSARC.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude PsarcReader/Sng.cpp -o bin/Sng.o

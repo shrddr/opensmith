@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <cstdint>
+#include <cstdlib>
 class MemoryReaderLE
 {
 public:
