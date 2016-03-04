@@ -33,6 +33,10 @@ Settings::Settings()
 	// debug
 	dumpSng = false;
 	dumpWem = false;
+
+	// last session
+	paramSongFile = "";
+	paramRole = lead;
 }
 
 void Settings::save()

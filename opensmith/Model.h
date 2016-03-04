@@ -9,8 +9,6 @@
 #include "PsarcReader/PSARC.h"
 #include "PsarcReader/Sng.h"
 
-enum SngRole { lead, rhythm, bass };
-
 class Model
 {
 public:

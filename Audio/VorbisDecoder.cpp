@@ -8,17 +8,17 @@ void VorbisDecoder::getData()
 {
 	char* buffer = ogg_sync_buffer(&syncState, 4096); //can return NULL on error
 	
-	static size_t pos = 0;
 	size_t numRead = 4096;
-	if (pos + 4096 > data.size()) numRead = data.size() - pos;
+	if (dataPos + 4096 > data.size())
+		numRead = data.size() - dataPos;
 	if (numRead == 0)
 	{
 		eos = unexpectedEos;
 		return;
 	}
 
-	std::memcpy(buffer, &data[pos], numRead);
-	pos += numRead;
+	std::memcpy(buffer, &data[dataPos], numRead);
+	dataPos += numRead;
 
 	ogg_sync_wrote(&syncState, numRead);
 }
@@ -26,6 +26,7 @@ void VorbisDecoder::getData()
 
 VorbisDecoder::VorbisDecoder(std::vector<char>& inStorage):
 	data(inStorage),
+	dataPos(0),
 	eos(notEos),
 	granulePos(0),
 	lastBlockSize(0)
@@ -77,6 +78,16 @@ VorbisDecoder::VorbisDecoder(std::vector<char>& inStorage):
 	vorbis_synthesis_init(&vds, &vi);
 	vorbis_block_init(&vds, &vb);
 
+}
+
+VorbisDecoder::~VorbisDecoder()
+{
+	vorbis_block_clear(&vb);
+	vorbis_dsp_clear(&vds);
+	ogg_stream_clear(&streamState);
+	vorbis_comment_clear(&vc);
+	vorbis_info_clear(&vi);
+	ogg_sync_clear(&syncState);
 }
 
 void VorbisDecoder::getPage()

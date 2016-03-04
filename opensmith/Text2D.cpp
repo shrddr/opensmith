@@ -6,6 +6,9 @@
 
 Text2D::Text2D(const char* texturePath)
 {
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
 	TextureID = loadTexture(texturePath);
 	glGenBuffers(1, &VertexBufferID);
 	glGenBuffers(1, &UVBufferID);
@@ -98,4 +101,5 @@ Text2D::~Text2D()
 	glDeleteBuffers(1, &UVBufferID);
 	glDeleteTextures(1, &TextureID);
 	glDeleteProgram(ShaderID);
+	glDeleteVertexArrays(1, &VertexArrayID);
 }

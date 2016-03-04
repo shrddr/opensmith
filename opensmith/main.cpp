@@ -6,12 +6,11 @@
 
 #include "Audio/Audio.h"
 #include "Settings/Settings.h"
-#include "View.h"
-#include "Model.h"
-#include "Controller.h"
+#include "GameState.h"
+#include "Menu.h"
 
-
-static Controller* pController = NULL;
+GLFWwindow* GameState::window = 0;
+GameState* GameState::gameState = 0;
 
 static void error_callback(int error, const char* description)
 {
@@ -20,12 +19,8 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	if (action == GLFW_PRESS)
-		pController->key_callback(key);
-	//if (action == GLFW_REPEAT)
-	//	pController->key_callback(key);
+	if (action == GLFW_PRESS || action == GLFW_REPEAT)
+		GameState::gameState->keyPressed(key);
 }
 
 int main(int argc, char** argv)
@@ -36,16 +31,15 @@ int main(int argc, char** argv)
 		exit(-1);
 	}
 
-	const char* paramSongFile = argv[1];
+	o.paramSongFile = argv[1];
 	bool paramFullsreen = false;
-	SngRole paramRole = lead;
 
 	for (size_t i = 2; i < argc; i++)
 	{
 		if (strcmp("-rhythm", argv[i]) == 0)
-			paramRole = rhythm;
+			o.paramRole = rhythm;
 		if (strcmp("-bass", argv[i]) == 0)
-			paramRole = bass;
+			o.paramRole = bass;
 		if (strcmp("-f", argv[i]) == 0)
 			paramFullsreen = true;
 		sscanf(argv[i], "-d%i", &o.difficulty);
@@ -92,33 +86,19 @@ int main(int argc, char** argv)
 	
 	std::cout << glfwGetTime() << " > GLEW loaded" << std::endl;
 	
-	try
+	GameState state;
+	GameState::window = window;
+	GameState::gameState = new MainMenu;
+	glfwSetKeyCallback(window, key_callback);
+
+	// main loop
+
+	while (!glfwWindowShouldClose(window) && GameState::gameState != 0)
 	{
-		o.load();
-		View v(*window);
-		Controller c(*window);
-		Model m(v, c, paramSongFile, paramRole);
+		GameState::gameState->draw(glfwGetTime());
 
-		pController = &c;
-		glfwSetKeyCallback(window, key_callback);
-
-		// main loop
-
-		while (!glfwWindowShouldClose(window))
-		{
-			double preFrame = glfwGetTime();
-			m.update(preFrame);
-			double frameTime = glfwGetTime() - preFrame;
-			/*if (frameTime > 1 / 60.0f)
-				std::cout << preFrame << " > " << frameTime << std::endl;*/
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-		}
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what();
-		exit(-1);
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
 	// cleanup

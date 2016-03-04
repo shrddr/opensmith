@@ -11,6 +11,8 @@
     <ClCompile Include="View.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -23,5 +25,7 @@
     <ClInclude Include="Hud.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="Menu.h" />
   </ItemGroup>
 </Project>

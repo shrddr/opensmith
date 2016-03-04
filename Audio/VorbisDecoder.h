@@ -10,12 +10,14 @@ class VorbisDecoder
 {
 public:
 	VorbisDecoder(std::vector<char>& inStorage);
+	~VorbisDecoder();
 	bool getPCM(float*** data, ogg_int64_t& timestamp, int& count);
 	void gotPCM(int count);
 	bool ready() { return eos == notEos; }
 	long getRate() { return vi.rate; }
 private:
 	std::vector<char>& data;
+	size_t dataPos;
 	enum { notEos, expectedEos, unexpectedEos } eos;
 	void getData();
 	void getPage();

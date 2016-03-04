@@ -1,5 +1,7 @@
 #pragma once
 
+enum SngRole { lead, rhythm, bass };
+
 struct Settings
 {
 	Settings();
@@ -35,6 +37,10 @@ struct Settings
 	// debug
 	bool dumpSng;
 	bool dumpWem;
+
+	// last session
+	const char* paramSongFile;
+	SngRole paramRole;
 };
 
 extern Settings o;

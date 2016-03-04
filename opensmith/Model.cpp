@@ -114,6 +114,7 @@ Model::~Model()
 {
 	delete audio;
 	delete io;
+	delete noteDetector;
 	delete buffer;
 	delete decoder;
 }
