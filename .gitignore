@@ -3,6 +3,7 @@ bin/*.lib
 bin/*.iobj
 bin/*.ipdb
 bin/*.a
+resources/dlc
 resources/temp.*
 resources/settings
 

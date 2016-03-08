@@ -5,7 +5,7 @@
 Settings::Settings()
 {
 	// gameplay
-	difficulty = 30;
+	preferredDifficulty = 30;
 	visualsPreloadTime = 30.0f;
 	ghostStayTime = 0.2f;
 	detectionTimeWindow = 0.15f;
@@ -34,9 +34,12 @@ Settings::Settings()
 	dumpSng = false;
 	dumpWem = false;
 
-	// last session
-	paramSongFile = "";
-	paramRole = lead;
+	// files
+	psarcDirectory = "../resources/dlc/";
+	psarcFile = "";
+	sngEntry = -1;
+	difficulty = 30;
+	role = lead;
 }
 
 void Settings::save()

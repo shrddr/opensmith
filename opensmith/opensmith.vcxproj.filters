@@ -13,6 +13,8 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Filesystem.cpp" />
+    <ClCompile Include="Tuner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -27,5 +29,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Filesystem.h" />
+    <ClInclude Include="Tuner.h" />
   </ItemGroup>
 </Project>

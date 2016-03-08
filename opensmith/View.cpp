@@ -22,11 +22,11 @@ View::View(GLFWwindow& window):
 
 	createVertexBuffer();
 
-	programID = loadShaders("../resources/shaders/main.vs",
+	programId = loadShaders("../resources/shaders/main.vs",
 		"../resources/shaders/main.fs");
-	uniformLocationMVP = glGetUniformLocation(programID, "MVP");
-	uniformLocationTex = glGetUniformLocation(programID, "myTextureSampler");
-	uniformLocationTint = glGetUniformLocation(programID, "tint");
+	uniformLocationMVP = glGetUniformLocation(programId, "MVP");
+	uniformLocationTex = glGetUniformLocation(programId, "myTextureSampler");
+	uniformLocationTint = glGetUniformLocation(programId, "tint");
 	
 	anchorTexture = loadTexture("../resources/textures/anchor.dds");
 	noteTexture = loadTexture("../resources/textures/note.dds");
@@ -49,9 +49,9 @@ View::~View()
 	delete noteOpenSustainMesh;
 	delete stringMesh;
 	delete fretMesh;
-	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &vertexBufferId);
 	glDeleteVertexArrays(1, &vertexArrayId);
-	glDeleteProgram(programID);
+	glDeleteProgram(programId);
 	glDeleteTextures(1, &anchorTexture);
 	glDeleteTextures(1, &noteTexture);
 	glDeleteTextures(1, &missTexture);
@@ -74,12 +74,12 @@ void View::createVertexBuffer()
 	stringMesh = new Mesh("../resources/models/string.obj");
 	fretMesh = new Mesh("../resources/models/fret.obj");
 
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glGenBuffers(1, &vertexBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 	glBufferData(GL_ARRAY_BUFFER, Mesh::getSize() * sizeof(glm::vec3), Mesh::getVertices(), GL_STATIC_DRAW);
 
-	glGenBuffers(1, &uvBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+	glGenBuffers(1, &uvBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, uvBufferId);
 	glBufferData(GL_ARRAY_BUFFER, Mesh::getSize() * sizeof(glm::vec2), Mesh::getUVs(), GL_STATIC_DRAW);
 }
 
@@ -242,17 +242,17 @@ void View::setTint(int string, float b)
 void View::show(Visuals& visuals, Hud& hud, float currentTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(programID);
+	glUseProgram(programId);
 
 	camera.setZ(-20 + currentTime * o.zSpeed);
 	camera.update();
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvBufferId);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -309,8 +309,11 @@ void View::show(Visuals& visuals, Hud& hud, float currentTime)
 	drawFrets(currentTime * o.zSpeed);
 
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
-	hud.paint(currentTime);
+	hud.drawTime(currentTime);
+	hud.drawTimeline(currentTime);
+	hud.drawNotes();
 }
 
 

@@ -79,9 +79,9 @@ private:
 	void setTint(int string, float brightness = 1);
 
 	GLuint vertexArrayId;
-	GLuint vertexBuffer;
-	GLuint uvBuffer;
-	GLuint programID;
+	GLuint vertexBufferId;
+	GLuint uvBufferId;
+	GLuint programId;
 
 	GLuint anchorTexture;
 	GLuint noteTexture;

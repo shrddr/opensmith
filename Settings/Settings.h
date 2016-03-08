@@ -1,6 +1,7 @@
 #pragma once
+#include <string>
 
-enum SngRole { lead, rhythm, bass };
+enum SngRole { lead, rhythm, bass, any };
 
 struct Settings
 {
@@ -9,7 +10,7 @@ struct Settings
 	void load();
 
 	// gameplay
-	int difficulty;
+	int preferredDifficulty;
 	float visualsPreloadTime;
 	float ghostStayTime;
 	float detectionTimeWindow;
@@ -38,9 +39,12 @@ struct Settings
 	bool dumpSng;
 	bool dumpWem;
 
-	// last session
-	const char* paramSongFile;
-	SngRole paramRole;
+	// files
+	std::string psarcDirectory;
+	std::string psarcFile;
+	int sngEntry;
+	int difficulty;
+	SngRole role;
 };
 
 extern Settings o;

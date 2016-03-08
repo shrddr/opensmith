@@ -65,12 +65,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Filesystem.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="main.cpp" />
@@ -118,12 +119,14 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Text2D.cpp" />
+    <ClCompile Include="Tuner.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="Filesystem.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="resource.h" />
@@ -132,6 +135,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Text2D.h" />
+    <ClInclude Include="Tuner.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="View.h" />
   </ItemGroup>

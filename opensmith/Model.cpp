@@ -1,17 +1,18 @@
 #include "Model.h"
 #include <iostream>
+#include <algorithm>
+#include "Settings/Settings.h"
 #include "Wem/Wem.h"
 
-Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
+Model::Model(View& v, Controller& c):
 	v(v),
 	c(c)
 {
-	PSARC* psarc = new PSARC(fileName);
+	PSARC* psarc = new PSARC(o.psarcFile.c_str());
 	std::cout << glfwGetTime() << " > PSARC header parsed" << std::endl;
 
 	int entryAudio = -1;
 	uint64_t entryAudioLength = 0;
-	int entrySng = -1;
 
 	for (size_t i = 0; i < psarc->Entries.size(); i++)
 	{
@@ -19,27 +20,17 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 		if (e->name.find(".wem") != std::string::npos)
 			if (e->Length > entryAudioLength)
 			{
-				entryAudioLength = e->Length;  // pick the largest
+				entryAudioLength = e->Length;  // HACK: pick the largest
 				entryAudio = i;
 			}
-		
-		if (role == lead && e->name.find("lead.sng") != std::string::npos)
-			entrySng = i;
-
-		if (role == rhythm && e->name.find("rhythm.sng") != std::string::npos)
-			entrySng = i;
-
-		if (role == bass && e->name.find("bass.sng") != std::string::npos)
-			entrySng = i;
 	}
 
-	if (entrySng == -1)
-		throw std::runtime_error("SNG entry not found.\n");
+	bool isBass = (psarc->Entries[o.sngEntry]->name.find("bass.sng") != std::string::npos);
 
 	// get sng
 
 	std::vector<char> sngEntryStorage;
-	psarc->Entries[entrySng]->Data->readTo(sngEntryStorage);
+	psarc->Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
 
 	if (o.dumpSng)
 	{
@@ -92,7 +83,7 @@ Model::Model(View& v, Controller& c, const char* fileName, SngRole role):
 
 	// init detector
 
-	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, (role == bass));
+	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, isBass);
 	std::cout << glfwGetTime() << " > NoteDetector init" << std::endl;
 
 	// start portaudio
@@ -126,13 +117,17 @@ void Model::preloadSNG()
 
 	for (auto iteration : s.PhraseIterations)
 	{
-		Hud::Iteration newIteration = { iteration.startTime, 0, iteration.difficulty[2], false, false };
+		int thisDifficulty = std::min(o.difficulty, iteration.difficulty[2]);
+		float barHeight = thisDifficulty / (float)s.metadata.maxDifficulty;
+		bool isMax = (thisDifficulty == iteration.difficulty[2]);
+		Hud::Iteration newIteration = { iteration.startTime, 0, barHeight, false, false, isMax };
 		if (!hud.iterations.empty())
 			hud.iterations.back().endTime = iteration.startTime;
 		hud.iterations.push_back(newIteration);
 	}
 	hud.iterations.back().endTime = s.metadata.songLength;
-	hud.initialize(s.metadata.songLength);
+	hud.initTimeline(s.metadata.songLength, 200, 980, 80);
+	hud.initNotes();
 }
 
 void Model::update(float glfwTime)
@@ -150,7 +145,7 @@ void Model::update(float glfwTime)
 
 	while (itIteration != s.PhraseIterations.end() && itIteration->startTime < maxTime)
 	{
-		int difficulty = o.difficulty < itIteration->difficulty[2] ? o.difficulty : itIteration->difficulty[2];
+		int difficulty = std::min(o.difficulty, itIteration->difficulty[2]);
 		Sng::Arrangement a = s.Arrangements[difficulty];
 
 		for (auto anchor : a.Anchors)

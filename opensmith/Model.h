@@ -12,7 +12,7 @@
 class Model
 {
 public:
-	Model(View& v, Controller& c, const char* fileName, SngRole role);
+	Model(View& v, Controller& c);
 	~Model();
 	void update(float currentTime);
 private:

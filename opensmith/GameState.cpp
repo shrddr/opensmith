@@ -13,7 +13,7 @@ Session::Session()
 		o.load();
 		v = new View(*window);
 		c = new Controller(*window);
-		m = new Model(*v, *c, o.paramSongFile, o.paramRole);
+		m = new Model(*v, *c);
 	}
 	catch (const std::exception& e)
 	{

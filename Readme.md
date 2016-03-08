@@ -10,6 +10,7 @@ Dependencies:
 * [portaudio](http://www.portaudio.com/) - audio API
 * [ogg](https://xiph.org/ogg/) - song container
 * [vorbis](https://xiph.org/vorbis/) - song codec
+* [dirent](https://github.com/tronkko/dirent) - filesystem api
 
 Contents:
 * PSARC and SNG parser

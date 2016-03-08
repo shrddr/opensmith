@@ -8,17 +8,21 @@ class Hud
 {
 public:
 	Hud();
-	void initialize(float songLength);
-	void paint(float currentTime);
+	void initTimeline(float songLength, float left, float bottom, float height);
+	void initNotes();
+	void drawTime(float currentTime);
+	void drawTimeline(float currentTime);
+	void drawNotes();
 	~Hud();
 
 	struct Iteration
 	{
 		float startTime;
 		float endTime;
-		int maxDifficulty;
+		float difficulty;
 		bool current;
 		bool passed;
+		bool maxDifficulty;
 	};
 
 	size_t currentIteration;

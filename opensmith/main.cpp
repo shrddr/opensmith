@@ -31,15 +31,15 @@ int main(int argc, char** argv)
 		exit(-1);
 	}
 
-	o.paramSongFile = argv[1];
+	o.psarcFile = argv[1];
 	bool paramFullsreen = false;
 
 	for (size_t i = 2; i < argc; i++)
 	{
 		if (strcmp("-rhythm", argv[i]) == 0)
-			o.paramRole = rhythm;
+			o.role = rhythm;
 		if (strcmp("-bass", argv[i]) == 0)
-			o.paramRole = bass;
+			o.role = bass;
 		if (strcmp("-f", argv[i]) == 0)
 			paramFullsreen = true;
 		sscanf(argv[i], "-d%i", &o.difficulty);
@@ -86,7 +86,6 @@ int main(int argc, char** argv)
 	
 	std::cout << glfwGetTime() << " > GLEW loaded" << std::endl;
 	
-	GameState state;
 	GameState::window = window;
 	GameState::gameState = new MainMenu;
 	glfwSetKeyCallback(window, key_callback);
@@ -103,6 +102,7 @@ int main(int argc, char** argv)
 
 	// cleanup
 
+	delete GameState::gameState;
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(0);
