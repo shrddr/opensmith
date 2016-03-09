@@ -45,6 +45,10 @@ struct Settings
 	int sngEntry;
 	int difficulty;
 	SngRole role;
+
+	// tuner
+	float precisionCentDelta;
+	float precisionHoldTime;
 };
 
 extern Settings o;

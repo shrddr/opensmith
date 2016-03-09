@@ -40,6 +40,10 @@ Settings::Settings()
 	sngEntry = -1;
 	difficulty = 30;
 	role = lead;
+
+	// tuner
+	precisionCentDelta = 5.0f;
+	precisionHoldTime = 1.0f;
 }
 
 void Settings::save()

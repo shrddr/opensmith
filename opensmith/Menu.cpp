@@ -92,7 +92,14 @@ void MainMenu::keyPressed(int key)
 	if (key == GLFW_KEY_ENTER && selectedItem == 2)
 	{
 		delete gameState;
-		gameState = new Tuner(std::vector<int>(0));
+		std::vector<int> tuning;
+		tuning.push_back(40);
+		tuning.push_back(45);
+		tuning.push_back(50);
+		tuning.push_back(55);
+		tuning.push_back(59);
+		tuning.push_back(64);
+		gameState = new Tuner(tuning);
 	}
 	if ((key == GLFW_KEY_ENTER && selectedItem == 3) || key == GLFW_KEY_ESCAPE)
 	{

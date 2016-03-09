@@ -11,32 +11,22 @@ protected:
 	CircularBuffer<float> buf;
 };
 
-class Wave : public FreqDetector
+class TunerDetector : public FreqDetector
 {
 public:
-	Wave(size_t bufferSize) : FreqDetector(bufferSize)
-	{
-		vertexBuffer.resize(buf.size() * 4);
-	}
-	void* data()
-	{
-		float x = 100;
-		float y = 540 + 540 * buf[0];
-		for (size_t sample = 0, v = 0; sample < buf.size(); sample++)
-		{
-			vertexBuffer[v++] = x;
-			vertexBuffer[v++] = y;
-			x = x + 1;
-			y = 540 + 540 * buf[sample];
-			vertexBuffer[v++] = x;
-			vertexBuffer[v++] = y;
-		}	
-		return vertexBuffer.data();
-	}
-	int size() { return vertexBuffer.size() * sizeof(float); }
-	int vertexCount() { return buf.size() * 2; }
+	TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount);
+	void prepare(int note);
+	float analyze();
 private:
-	std::vector<float> vertexBuffer;
+	size_t sampleRate;
+	size_t inputSize;
+	float frequency;
+	static const size_t pitchSteps = 10;
+	static const size_t tableCount = pitchSteps + 1 + pitchSteps;
+	std::vector<float> sinTables;
+	std::vector<float> cosTables;
+	void updateTable(size_t table, float freq);
+	CircularBuffer<float> results;
 };
 
 class Tuner : public GameState
@@ -47,17 +37,24 @@ public:
 	void Tuner::draw(double time);
 	~Tuner();
 private:
-	std::vector<int>& notes;
+	static const size_t sampleRate = 48000;
+	std::vector<int> notes;
 	std::vector<int>::iterator note;
-	
 
+	bool hit;
+	double hitStart;
+	void nextNote();
+
+	std::vector<float> vertices;
 	GLuint vertexArrayId;
 	GLuint vertexBufferId;
 	GLuint programId;
 
+	Text2D text;
+
 	Silence s;
-	Wave w;
-	InOut io{ &s, &w, 1, 1 };
+	TunerDetector d;
+	InOut io{ &s, &d, 1, 1 };
 	Audio* a;
 };
 

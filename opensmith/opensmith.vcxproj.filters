@@ -15,6 +15,7 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Filesystem.cpp" />
     <ClCompile Include="Tuner.cpp" />
+    <ClCompile Include="Wave.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -31,5 +32,6 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Filesystem.h" />
     <ClInclude Include="Tuner.h" />
+    <ClInclude Include="Wave.h" />
   </ItemGroup>
 </Project>
