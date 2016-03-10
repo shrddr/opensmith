@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <GL/glew.h>
 #include "Tuner.h"
 #include "Menu.h"
@@ -17,10 +18,10 @@ Tuner::Tuner(std::vector<int> tuning):
 	glBindVertexArray(vertexArrayId);
 	glGenBuffers(1, &vertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	vertices.push_back(0);
-	vertices.push_back(0);
-	vertices.push_back(0);
-	vertices.push_back(0);
+	vertices.push_back(960);
+	vertices.push_back(540);
+	vertices.push_back(960 + 400);
+	vertices.push_back(540);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	programId = loadShaders("../resources/shaders/gauge.vs",
 		"../resources/shaders/gauge.fs");
@@ -63,18 +64,22 @@ void Tuner::draw(double time)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	text.print(noteNames[*note % 12].c_str(), 960 - 140, 540 - 16, 32);
+
 	float cents = d.analyze();
 	char textBuf[64];
 	sprintf(textBuf, "%.0f", cents);
 	text.print(textBuf, 960 - 100, 540 - 16, 32);
-	sprintf(textBuf, "%d", *note);
-	text.print(textBuf, 960 - 140, 540 - 16, 32);
-
+	
 	glUseProgram(programId);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	vertices[2] = cos(cents / 50 * PI / 4);
-	vertices[3] = sin(cents / 50 * PI / 4);
+	// clamp to -50 .. +50
+	float clamped = std::min(std::max(cents, -50.0f), 50.0f);
+	// scale to -45° .. +45°
+	float angle = clamped / 50.0f * PI / 4;
+	vertices[2] = 960 + 400 * cos(angle);
+	vertices[3] = 540 + 400 * sin(angle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glDrawArrays(GL_LINES, 0, 2);
@@ -93,7 +98,6 @@ void Tuner::draw(double time)
 	{
 		nextNote();
 	}
-		
 }
 
 TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount) :
@@ -121,7 +125,7 @@ void TunerDetector::prepare(int note)
 	// table 10 is target sine
 	updateTable(pitchSteps, frequency);
 
-	// tables 11..20 are sharp from +1 to +512 cents
+	// tables 11..20 are sharps
 	for (size_t table = pitchSteps + 1; table < tableCount; table++)
 	{
 		float centOffset = pow(2, table - pitchSteps - 1); // 1, 2, ... , 256, 512

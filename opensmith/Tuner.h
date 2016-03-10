@@ -40,6 +40,7 @@ private:
 	static const size_t sampleRate = 48000;
 	std::vector<int> notes;
 	std::vector<int>::iterator note;
+	const std::string noteNames[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
 	bool hit;
 	double hitStart;

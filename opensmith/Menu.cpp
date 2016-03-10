@@ -16,34 +16,60 @@ Menu::Menu() :
 void Menu::keyPressed(int key)
 {
 	if (key == GLFW_KEY_W || key == GLFW_KEY_UP)
-	{
-		selectedItem--;
-		if (selectedItem < 0)
-			selectedItem += items.size();
-		checkScroll();
-	}
-
-	if (key == GLFW_KEY_PAGE_UP)
-	{
-		selectedItem -= pageLines;
-		if (selectedItem < 0)
-			selectedItem += items.size();
-		checkScroll();
-	}
+		keyUp();
 
 	if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN)
-	{
-		selectedItem++;
-		selectedItem %= items.size();
-		checkScroll();
-	}
+		keyDown();
 		
+	if (key == GLFW_KEY_PAGE_UP)
+		keyPgUp();
+
 	if (key == GLFW_KEY_PAGE_DOWN)
-	{
-		selectedItem += pageLines;
-		selectedItem %= items.size();
-		checkScroll();
-	}
+		keyPgDown();
+
+	if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
+		keyEnter();
+
+	if (key == GLFW_KEY_ESCAPE)
+		keyEsc();
+}
+
+void Menu::keyUp()
+{
+	selectedItem--;
+	if (selectedItem < 0)
+		selectedItem += items.size();
+	checkScroll();
+}
+
+void Menu::keyDown()
+{
+	selectedItem++;
+	selectedItem %= items.size();
+	checkScroll();
+}
+
+void Menu::keyPgUp()
+{
+	selectedItem -= pageLines;
+	if (selectedItem < 0)
+		selectedItem += items.size();
+	checkScroll();
+}
+
+void Menu::keyPgDown()
+{
+	selectedItem += pageLines;
+	selectedItem %= items.size();
+	checkScroll();
+}
+
+void Menu::keyEnter()
+{
+}
+
+void Menu::keyEsc()
+{
 }
 
 void Menu::checkScroll()
@@ -80,16 +106,14 @@ MainMenu::MainMenu()
 	items.push_back("Exit");
 }
 
-void MainMenu::keyPressed(int key)
+void MainMenu::keyEnter()
 {
-	Menu::keyPressed(key);
-
-	if (key == GLFW_KEY_ENTER && selectedItem == 0)
+	if (selectedItem == 0)
 	{
 		delete gameState;
 		gameState = new FileMenu;
 	}
-	if (key == GLFW_KEY_ENTER && selectedItem == 2)
+	if (selectedItem == 2)
 	{
 		delete gameState;
 		std::vector<int> tuning;
@@ -101,11 +125,17 @@ void MainMenu::keyPressed(int key)
 		tuning.push_back(64);
 		gameState = new Tuner(tuning);
 	}
-	if ((key == GLFW_KEY_ENTER && selectedItem == 3) || key == GLFW_KEY_ESCAPE)
+	if (selectedItem == 3)
 	{
 		delete gameState;
 		gameState = 0;
 	}
+}
+
+void MainMenu::keyEsc()
+{
+	delete gameState;
+	gameState = 0;
 }
 
 // File menu: show all psarc files in dlc directory, select one
@@ -115,24 +145,19 @@ FileMenu::FileMenu()
 	getFiles(items);
 }
 
-void FileMenu::keyPressed(int key)
+void FileMenu::keyEnter()
 {
-	Menu::keyPressed(key);
+	o.psarcFile = o.psarcDirectory + items[selectedItem];
+	std::shared_ptr<PSARC> psarc(new PSARC(o.psarcFile.c_str()));
 
-	if (key == GLFW_KEY_ENTER)
-	{
-		o.psarcFile = o.psarcDirectory + items[selectedItem];
-		std::shared_ptr<PSARC> psarc(new PSARC(o.psarcFile.c_str()));
+	delete gameState;
+	gameState = new RoleMenu(psarc);
+}
 
-		delete gameState;
-		gameState = new RoleMenu(psarc);
-	}
-
-	if (key == GLFW_KEY_ESCAPE)
-	{
-		delete gameState;
-		gameState = new MainMenu;
-	}
+void FileMenu::keyEsc()
+{
+	delete gameState;
+	gameState = new MainMenu;
 }
 
 // Role menu: show available SNG's, select one (lead/rhythm/bass)
@@ -161,30 +186,25 @@ RoleMenu::RoleMenu(std::shared_ptr<PSARC> psarc) :
 	}
 }
 
-void RoleMenu::keyPressed(int key)
+void RoleMenu::keyEnter()
 {
-	Menu::keyPressed(key);
+	o.sngEntry = itemEntry[selectedItem];
 
-	if (key == GLFW_KEY_ENTER)
-	{
-		o.sngEntry = itemEntry[selectedItem];
+	std::vector<char> sngEntryStorage;
+	psarc->Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
+	std::vector<char> sngStorage;
+	SngReader::readTo(sngEntryStorage, sngStorage);
+	std::shared_ptr<Sng> s(new Sng);
+	s->parse(sngStorage);
 
-		std::vector<char> sngEntryStorage;
-		psarc->Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
-		std::vector<char> sngStorage;
-		SngReader::readTo(sngEntryStorage, sngStorage);
-		std::shared_ptr<Sng> s(new Sng);
-		s->parse(sngStorage);
+	delete gameState;
+	gameState = new DiffMenu(s);
+}
 
-		delete gameState;
-		gameState = new DiffMenu(s);
-	}
-
-	if (key == GLFW_KEY_ESCAPE)
-	{
-		delete gameState;
-		gameState = new FileMenu;
-	}
+void RoleMenu::keyEsc()
+{
+	delete gameState;
+	gameState = new FileMenu;
 }
 
 // Difficulty menu: show SNG overview, select difficulty
@@ -195,32 +215,29 @@ DiffMenu::DiffMenu(std::shared_ptr<Sng> sng) :
 	updateTimeline();
 }
 
-void DiffMenu::keyPressed(int key)
+void DiffMenu::keyUp()
 {
-	if (key == GLFW_KEY_W || key == GLFW_KEY_UP)
-	{
-		o.difficulty++;
-		updateTimeline();
-	}
+	o.difficulty++;
+	updateTimeline();
+}
 
-	if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN)
-	{
-		if (o.difficulty > 0)
-			o.difficulty--;
-		updateTimeline();
-	}
+void DiffMenu::keyDown()
+{
+	if (o.difficulty > 0)
+		o.difficulty--;
+	updateTimeline();
+}
 
-	if (key == GLFW_KEY_ENTER)
-	{
-		delete gameState;
-		gameState = new Session;
-	}
+void DiffMenu::keyEnter()
+{
+	delete gameState;
+	gameState = new Session;
+}
 
-	if (key == GLFW_KEY_ESCAPE)
-	{
-		delete gameState;
-		gameState = new MainMenu;
-	}
+void DiffMenu::keyEsc()
+{
+	delete gameState;
+	gameState = new MainMenu;
 }
 
 void DiffMenu::draw(double time)
