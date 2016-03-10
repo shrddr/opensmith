@@ -25,7 +25,7 @@ E 082 087 092 098 104
 class NoteDetector : public AudioConsumer
 {
 public:
-	NoteDetector(size_t sampleRate, std::vector<int16_t>& tuningDeltas, bool isBass);
+	NoteDetector(size_t sampleRate, std::vector<int>& sngTuning, bool isBass);
 	void setPCM(const float in);
 	float rms();
 	void analyze(float(&)[144]);

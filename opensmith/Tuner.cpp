@@ -4,12 +4,14 @@
 #include "Menu.h"
 #include "util.h"
 #include "Settings/Settings.h"
+#include "Audio/notes.h"
 
-Tuner::Tuner(std::vector<int> tuning):
+Tuner::Tuner(std::vector<int> tuning, bool preSession):
 	notes(tuning),
 	d(sampleRate, 3200, 10),
 	text("../resources/textures/text_Inconsolata29.dds"),
-	hit(false)
+	hit(false),
+	preSession(preSession)
 {
 	note = notes.begin();
 	d.prepare(*note);
@@ -45,8 +47,17 @@ void Tuner::nextNote()
 	++note;
 	if (note == notes.end())
 	{
+		o.lastTuning = notes;
+
+		bool preSessionSafe = preSession;
+
 		delete gameState;
-		gameState = new MainMenu;
+
+		// can't use Tuner members now
+		if (preSessionSafe)
+			gameState = new Session;
+		else
+			gameState = new MainMenu;
 		return;
 	}
 	d.prepare(*note);
@@ -60,6 +71,7 @@ void Tuner::keyPressed(int key)
 		gameState = new MainMenu;
 	}
 }
+
 void Tuner::draw(double time)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -100,36 +112,26 @@ void Tuner::draw(double time)
 	}
 }
 
+const int TunerDetector::cents[] = { -500, -200, -100, -50, -20, -10, -5, -2, 0, 2, 5, 10, 20, 50, 100, 200, 500 };
+const int TunerDetector::centsCount = sizeof(cents) / sizeof(int);
+
 TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount) :
 	sampleRate(sampleRate),
 	inputSize(bufferSize),
 	FreqDetector(bufferSize),
 	results(bufferCount)
 {
-	sinTables.resize(tableCount * bufferSize);
-	cosTables.resize(tableCount * bufferSize);
+	sinTables.resize(centsCount * bufferSize);
+	cosTables.resize(centsCount * bufferSize);
 }
 
 void TunerDetector::prepare(int note)
 {
 	frequency = 440 * pow(2.0, (note - 69) / 12.0);
 
-	// tables 0..9 are flat
-	for (size_t table = 0; table < pitchSteps; table++)
+	for (size_t table = 0; table < centsCount; table++)
 	{
-		float centOffset = -pow(2, table); // -1, -2, ... , -256, -512
-		float stepFrequency = frequency * pow(2, (centOffset / 1200));
-		updateTable(table, stepFrequency);
-	}
-
-	// table 10 is target sine
-	updateTable(pitchSteps, frequency);
-
-	// tables 11..20 are sharps
-	for (size_t table = pitchSteps + 1; table < tableCount; table++)
-	{
-		float centOffset = pow(2, table - pitchSteps - 1); // 1, 2, ... , 256, 512
-		float stepFrequency = frequency * pow(2, (centOffset / 1200.0f));
+		float stepFrequency = frequency * pow(2, (cents[table] / 1200.0f));
 		updateTable(table, stepFrequency);
 	}
 
@@ -152,7 +154,7 @@ float TunerDetector::analyze()
 	float maxPower = 0;
 	std::vector<float> powers;
 
-	for (size_t table = 0; table < tableCount; table++)
+	for (size_t table = 0; table < centsCount; table++)
 	{
 		float amplitudeSin = 0;
 		float amplitudeCos = 0;
@@ -171,13 +173,8 @@ float TunerDetector::analyze()
 		}
 	}
 
-	float cents = 0;
-	if (maxTable < pitchSteps)
-		cents = -pow(2, maxTable);
-	if (maxTable > pitchSteps)
-		cents = pow(2, maxTable - pitchSteps - 1);
-
-	results.push_back(cents);
+	float result = cents[maxTable];
+	results.push_back(result);
 
 	float average = 0;
 	for (size_t i = 0; i < results.size(); i++)

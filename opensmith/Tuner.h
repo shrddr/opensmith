@@ -21,8 +21,8 @@ private:
 	size_t sampleRate;
 	size_t inputSize;
 	float frequency;
-	static const size_t pitchSteps = 10;
-	static const size_t tableCount = pitchSteps + 1 + pitchSteps;
+	static const int cents[];
+	static const int centsCount;
 	std::vector<float> sinTables;
 	std::vector<float> cosTables;
 	void updateTable(size_t table, float freq);
@@ -32,7 +32,7 @@ private:
 class Tuner : public GameState
 {
 public:
-	Tuner(std::vector<int> notes);
+	Tuner(std::vector<int> tuning, bool preSession = false);
 	void Tuner::keyPressed(int key);
 	void Tuner::draw(double time);
 	~Tuner();
@@ -40,7 +40,6 @@ private:
 	static const size_t sampleRate = 48000;
 	std::vector<int> notes;
 	std::vector<int>::iterator note;
-	const std::string noteNames[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
 	bool hit;
 	double hitStart;
@@ -57,5 +56,7 @@ private:
 	TunerDetector d;
 	InOut io{ &s, &d, 1, 1 };
 	Audio* a;
+
+	bool preSession;
 };
 

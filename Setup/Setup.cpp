@@ -75,7 +75,7 @@ bool yes()
 int main()
 {
 	Silence s;
-	std::vector<int16_t> tuning(6);
+	std::vector<int> tuning(6);
 	NoteDetector* d = new NoteDetector(48000, tuning, true); // stack overflow
 	InOut io{ &s, d, 1, 1 };
 

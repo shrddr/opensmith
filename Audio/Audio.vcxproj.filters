@@ -4,11 +4,13 @@
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="NoteDetector.cpp" />
     <ClCompile Include="VorbisDecoder.cpp" />
+    <ClCompile Include="notes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
     <ClInclude Include="NoteDetector.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="VorbisDecoder.h" />
+    <ClInclude Include="notes.h" />
   </ItemGroup>
 </Project>

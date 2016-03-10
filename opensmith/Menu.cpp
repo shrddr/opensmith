@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "Filesystem.h"
 #include "Tuner.h"
+#include "Audio/notes.h"
 
 Menu::Menu() :
 	text("../resources/textures/text_Inconsolata29.dds"),
@@ -196,6 +197,7 @@ void RoleMenu::keyEnter()
 	SngReader::readTo(sngEntryStorage, sngStorage);
 	std::shared_ptr<Sng> s(new Sng);
 	s->parse(sngStorage);
+	convertTuningAbsolute(s->metadata.tuning);
 
 	delete gameState;
 	gameState = new DiffMenu(s);
@@ -230,8 +232,31 @@ void DiffMenu::keyDown()
 
 void DiffMenu::keyEnter()
 {
+	bool needTuner;
+	if (o.lastTuning.empty())
+		needTuner = true;
+	else
+	{
+		needTuner = false;
+		for (size_t n = 0; n < sng->metadata.tuning.size(); n++)
+		{
+			if (sng->metadata.tuning[n] != o.lastTuning[n])
+			{
+				needTuner = true;
+				break;
+			}	
+		}
+	}
+	
+	GameState* newState;
+
+	if (needTuner)
+		newState = new Tuner(sng->metadata.tuning, true);
+	else
+		newState = new Session;
+
 	delete gameState;
-	gameState = new Session;
+	gameState = newState;
 }
 
 void DiffMenu::keyEsc()

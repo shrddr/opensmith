@@ -274,7 +274,7 @@ public:
 		int16_t part;
 		float songLength;
 		int32_t stringCount;
-		std::vector<int16_t> tuning;
+		std::vector<int> tuning;
 		float unk1_firstNoteTime;
 		float unk2_firstNoteTime;
 		int32_t maxDifficulty;

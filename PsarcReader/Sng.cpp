@@ -1,3 +1,5 @@
+/* Original code by https://github.com/rscustom/rocksmith-custom-song-toolkit */
+
 #include <vector>
 #include <cassert>
 #include <stdexcept>
@@ -137,7 +139,6 @@ void SngReader::blockIncrement(char* out, int blockSize)
 		carry = ((out[i] = (uint8_t)(out[i] + 1)) == 0);
 }
 
-// RocksmithToolkitLib\Sng\Sng2014File.cs ReadSng() -> Read()
 void Sng::parse(std::vector<char>& storage)
 {
 	membuf m(storage.data(), storage.data() + storage.size());

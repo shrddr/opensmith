@@ -42,6 +42,7 @@ Settings::Settings()
 	role = lead;
 
 	// tuner
+	lastTuning.clear();
 	precisionCentDelta = 5.0f;
 	precisionHoldTime = 1.0f;
 }

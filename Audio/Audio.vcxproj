@@ -128,12 +128,14 @@
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="NoteDetector.cpp" />
+    <ClCompile Include="notes.cpp" />
     <ClCompile Include="VorbisDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="NoteDetector.h" />
+    <ClInclude Include="notes.h" />
     <ClInclude Include="VorbisDecoder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

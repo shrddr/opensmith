@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "Settings/Settings.h"
 #include "Wem/Wem.h"
+#include "Audio/notes.h"
 
 Model::Model(View& v, Controller& c):
 	v(v),
@@ -44,16 +45,11 @@ Model::Model(View& v, Controller& c):
 	std::vector<char> sngStorage;
 	SngReader::readTo(sngEntryStorage, sngStorage);
 	s.parse(sngStorage);
+	convertTuningAbsolute(s.metadata.tuning);
 
 	std::cout << glfwGetTime() << " > SNG parsed" << std::endl;
 
-	std::cout << "Tuning: "
-		<< s.metadata.tuning[0]
-		<< s.metadata.tuning[1]
-		<< s.metadata.tuning[2]
-		<< s.metadata.tuning[3]
-		<< s.metadata.tuning[4]
-		<< s.metadata.tuning[5] << std::endl;
+	std::cout << "Tuning: " << tuningString(s.metadata.tuning) << std::endl;
 
 	preloadSNG();
 

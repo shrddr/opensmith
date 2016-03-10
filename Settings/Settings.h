@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 enum SngRole { lead, rhythm, bass, any };
 
@@ -47,6 +48,7 @@ struct Settings
 	SngRole role;
 
 	// tuner
+	std::vector<int> lastTuning;
 	float precisionCentDelta;
 	float precisionHoldTime;
 };
