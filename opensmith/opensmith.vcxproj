@@ -117,6 +117,7 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Setup.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Text2D.cpp" />
     <ClCompile Include="Tuner.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Hud.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Setup.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Text2D.h" />
     <ClInclude Include="Tuner.h" />

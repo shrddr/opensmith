@@ -6,12 +6,12 @@
 #include "Settings/Settings.h"
 #include "Audio/notes.h"
 
-Tuner::Tuner(std::vector<int> tuning, bool preSession):
+Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 	notes(tuning),
 	d(sampleRate, 3200, 10),
 	text("../resources/textures/text_Inconsolata29.dds"),
 	hit(false),
-	preSession(preSession)
+	returnToMenu(returnToMenu)
 {
 	note = notes.begin();
 	d.prepare(*note);
@@ -49,15 +49,15 @@ void Tuner::nextNote()
 	{
 		o.lastTuning = notes;
 
-		bool preSessionSafe = preSession;
+		bool returnToMenuSafe = returnToMenu;
 
 		delete gameState;
 
 		// can't use Tuner members now
-		if (preSessionSafe)
-			gameState = new Session;
-		else
+		if (returnToMenuSafe)
 			gameState = new MainMenu;
+		else
+			gameState = new Session;
 		return;
 	}
 	d.prepare(*note);
@@ -118,7 +118,7 @@ const int TunerDetector::centsCount = sizeof(cents) / sizeof(int);
 TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount) :
 	sampleRate(sampleRate),
 	inputSize(bufferSize),
-	FreqDetector(bufferSize),
+	AudioInputBuffer(bufferSize),
 	results(bufferCount)
 {
 	sinTables.resize(centsCount * bufferSize);

@@ -14,7 +14,6 @@ WaveDemo::WaveDemo() :
 	programId = loadShaders("../resources/shaders/waveform.vs",
 		"../resources/shaders/waveform.fs");
 
-	o.load();
 	a = new Audio(io, 48000);
 	a->start();
 }

@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "GameState.h"
 #include "Filesystem.h"
+#include "Setup.h"
 #include "Tuner.h"
 #include "Audio/notes.h"
 
@@ -89,8 +90,8 @@ void Menu::draw(double time)
 	for (size_t item = topItem; item < items.size(); item++)
 	{
 		if (item == selectedItem)
-			text.print(menuMarker, menuLeft - menuFont / 2, menuTop - line * menuFont, menuFont);
-		text.print(items[item].c_str(), menuLeft, menuTop - line * menuFont, menuFont);
+			text.print(menuMarker, menuLeft - fontSize / 2, menuTop - line * fontSize, fontSize);
+		text.print(items[item].c_str(), menuLeft, menuTop - line * fontSize, fontSize);
 		line++;
 		if (line == pageLines)
 			break;
@@ -114,17 +115,15 @@ void MainMenu::keyEnter()
 		delete gameState;
 		gameState = new FileMenu;
 	}
+	if (selectedItem == 1)
+	{
+		delete gameState;
+		gameState = new Setup;
+	}
 	if (selectedItem == 2)
 	{
 		delete gameState;
-		std::vector<int> tuning;
-		tuning.push_back(40);
-		tuning.push_back(45);
-		tuning.push_back(50);
-		tuning.push_back(55);
-		tuning.push_back(59);
-		tuning.push_back(64);
-		gameState = new Tuner(tuning);
+		gameState = new TuningMenu();
 	}
 	if (selectedItem == 3)
 	{
@@ -251,7 +250,7 @@ void DiffMenu::keyEnter()
 	GameState* newState;
 
 	if (needTuner)
-		newState = new Tuner(sng->metadata.tuning, true);
+		newState = new Tuner(sng->metadata.tuning);
 	else
 		newState = new Session;
 
@@ -289,4 +288,59 @@ void DiffMenu::updateTimeline()
 	}
 	hud.iterations.back().endTime = sng->metadata.songLength;
 	hud.initTimeline(sng->metadata.songLength, 100, 780, 200);
+}
+
+// Tuning menu - select tuning before running standalone tuner
+
+TuningMenu::TuningMenu()
+{
+	items.push_back("E Standard");
+	items.push_back("Eb Standard");
+	items.push_back("Drop D");
+}
+
+void TuningMenu::keyEnter()
+{
+	if (selectedItem == 0)
+	{
+		delete gameState;
+		std::vector<int> tuning;
+		tuning.push_back(40);
+		tuning.push_back(45);
+		tuning.push_back(50);
+		tuning.push_back(55);
+		tuning.push_back(59);
+		tuning.push_back(64);
+		gameState = new Tuner(tuning, true);
+	}
+	if (selectedItem == 1)
+	{
+		delete gameState;
+		std::vector<int> tuning;
+		tuning.push_back(39);
+		tuning.push_back(44);
+		tuning.push_back(49);
+		tuning.push_back(54);
+		tuning.push_back(58);
+		tuning.push_back(63);
+		gameState = new Tuner(tuning, true);
+	}
+	if (selectedItem == 2)
+	{
+		delete gameState;
+		std::vector<int> tuning;
+		tuning.push_back(38);
+		tuning.push_back(45);
+		tuning.push_back(50);
+		tuning.push_back(55);
+		tuning.push_back(59);
+		tuning.push_back(64);
+		gameState = new Tuner(tuning, true);
+	}
+}
+
+void TuningMenu::keyEsc()
+{
+	delete gameState;
+	gameState = new MainMenu;
 }

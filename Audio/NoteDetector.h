@@ -22,18 +22,16 @@ E 082 087 092 098 104
 #define NOTE_DISTANCE 1.059463094359
 #define PI 3.14159265358979323846
 
-class NoteDetector : public AudioConsumer
+class NoteDetector : public AudioInputBuffer
 {
 public:
 	NoteDetector(size_t sampleRate, std::vector<int>& sngTuning, bool isBass);
 	void setPCM(const float in);
-	float rms();
 	void analyze(float(&)[144]);
 	bool confirm(int string, int fret, float time);
 	~NoteDetector();
 private:
 	size_t sampleRate;
-	CircularBuffer<float> samples;
 	int tuning[6];
 	size_t noteFirst;
 	static const size_t noteCount = 50;

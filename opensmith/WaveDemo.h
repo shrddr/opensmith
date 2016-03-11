@@ -1,20 +1,12 @@
 #pragma once
 #include <vector>
 #include "GameState.h"
+#include "Audio/Audio.h"
 
-class FreqDetector : public AudioConsumer
+class Wave : public AudioInputBuffer
 {
 public:
-	FreqDetector(size_t bufferSize) : buf(bufferSize) {}
-	void setPCM(const float in) { buf.push_back(in); }
-protected:
-	CircularBuffer<float> buf;
-};
-
-class Wave : public FreqDetector
-{
-public:
-	Wave(size_t bufferSize) : FreqDetector(bufferSize)
+	Wave(size_t bufferSize) : AudioInputBuffer(bufferSize)
 	{
 		vertexBuffer.resize(buf.size() * 4);
 	}

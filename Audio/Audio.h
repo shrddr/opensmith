@@ -1,6 +1,7 @@
 #pragma once
 #include "portaudio.h"
 #include "stdint.h"
+#include "CircularBuffer.h"
 
 struct AudioProducer
 {
@@ -21,6 +22,24 @@ struct AudioConsumer
 struct Discard : public AudioConsumer
 {
 	void setPCM(const float) {}
+};
+
+class AudioInputBuffer : public AudioConsumer
+{
+public:
+	AudioInputBuffer(size_t bufferSize) : buf(bufferSize) {}
+	void setPCM(const float in) { buf.push_back(in); }
+	float rms()
+	{
+		float res = 0.0f;
+		for (size_t sample = 0; sample < buf.size(); sample++)
+			res += buf[sample] * buf[sample];
+		res = sqrt(res / buf.size());
+		res = 20 * log10(res);
+		return res;
+	}
+protected:
+	CircularBuffer<float> buf;
 };
 
 struct InOut

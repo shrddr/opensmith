@@ -1,17 +1,9 @@
 #pragma once
 #include <vector>
 #include "GameState.h"
+#include "Audio/Audio.h"
 
-class FreqDetector : public AudioConsumer
-{
-public:
-	FreqDetector(size_t bufferSize) : buf(bufferSize) {}
-	void setPCM(const float in) { buf.push_back(in); }
-protected:
-	CircularBuffer<float> buf;
-};
-
-class TunerDetector : public FreqDetector
+class TunerDetector : public AudioInputBuffer
 {
 public:
 	TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount);
@@ -32,7 +24,7 @@ private:
 class Tuner : public GameState
 {
 public:
-	Tuner(std::vector<int> tuning, bool preSession = false);
+	Tuner(std::vector<int> tuning, bool returnToMenu = false);
 	void Tuner::keyPressed(int key);
 	void Tuner::draw(double time);
 	~Tuner();
@@ -57,6 +49,6 @@ private:
 	InOut io{ &s, &d, 1, 1 };
 	Audio* a;
 
-	bool preSession;
+	bool returnToMenu;
 };
 

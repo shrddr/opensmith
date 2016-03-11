@@ -26,7 +26,7 @@ private:
 	void checkScroll();
 	const float menuLeft = 100;
 	const float menuTop = 980;
-	const float menuFont = 32;
+	const float fontSize = 32;
 	const int pageLines = 880 / 32;
 	const char* menuMarker = ">";
 };
@@ -71,4 +71,12 @@ private:
 	std::shared_ptr<Sng> sng;
 	void updateTimeline();
 	Hud hud;
+};
+
+class TuningMenu : public Menu
+{
+public:
+	TuningMenu();
+	void keyEnter();
+	void keyEsc();
 };
