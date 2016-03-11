@@ -39,12 +39,13 @@ libWem:
 libAudio:
 	g++ $(CXXFLAGS) -c -I. -Iinclude Audio/Audio.cpp -o bin/Audio.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude Audio/NoteDetector.cpp -o bin/NoteDetector.o
+	g++ $(CXXFLAGS) -c -I. -Iinclude Audio/notes.cpp -o bin/notes.o
 	g++ $(CXXFLAGS) -c -I. -Iinclude Audio/VorbisDecoder.cpp -o bin/VorbisDecoder.o
-	ar rcs bin/libAudio.a bin/Audio.o bin/NoteDetector.o bin/VorbisDecoder.o
-	rm bin/Audio.o bin/NoteDetector.o bin/VorbisDecoder.o
+	ar rcs bin/libAudio.a bin/Audio.o bin/NoteDetector.o bin/notes.o bin/VorbisDecoder.o
+	rm bin/Audio.o bin/NoteDetector.o bin/notes.o bin/VorbisDecoder.o
 
 exeopensmith:
-	g++ $(CXXFLAGS) -I. -Iinclude opensmith/Camera.cpp opensmith/Controller.cpp opensmith/Hud.cpp opensmith/main.cpp opensmith/Mesh.cpp opensmith/Model.cpp opensmith/Sprite.cpp opensmith/Text2D.cpp opensmith/util.cpp opensmith/View.cpp bin/libAudio.a bin/libPsarcReader.a bin/libRijndael.a bin/libSettings.a bin/libWem.a $(PORTAUDIO) -lz `pkg-config --static --libs glew` `pkg-config --static --libs glfw3` `pkg-config --static --libs ogg` `pkg-config --static --libs vorbis` $(OSXGL) -o bin/opensmith
+	g++ $(CXXFLAGS) -I. -Iinclude opensmith/Camera.cpp opensmith/Controller.cpp opensmith/Filesystem.cpp opensmith/GameState.cpp opensmith/Hud.cpp opensmith/main.cpp opensmith/Menu.cpp opensmith/Mesh.cpp opensmith/Model.cpp opensmith/Setup.cpp opensmith/Sprite.cpp opensmith/Text2D.cpp opensmith/Tuner.cpp opensmith/util.cpp opensmith/View.cpp bin/libAudio.a bin/libPsarcReader.a bin/libRijndael.a bin/libSettings.a bin/libWem.a $(PORTAUDIO) -lz `pkg-config --static --libs glew` `pkg-config --static --libs glfw3` `pkg-config --static --libs ogg` `pkg-config --static --libs vorbis` $(OSXGL) -o bin/opensmith
 
 exeSetup:
 	g++ $(CXXFLAGS) -I. -Iinclude Setup/Setup.cpp bin/libAudio.a bin/libSettings.a $(PORTAUDIO) -o bin/Setup

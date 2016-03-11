@@ -29,15 +29,7 @@ class AudioInputBuffer : public AudioConsumer
 public:
 	AudioInputBuffer(size_t bufferSize) : buf(bufferSize) {}
 	void setPCM(const float in) { buf.push_back(in); }
-	float rms()
-	{
-		float res = 0.0f;
-		for (size_t sample = 0; sample < buf.size(); sample++)
-			res += buf[sample] * buf[sample];
-		res = sqrt(res / buf.size());
-		res = 20 * log10(res);
-		return res;
-	}
+	float rms();
 protected:
 	CircularBuffer<float> buf;
 };

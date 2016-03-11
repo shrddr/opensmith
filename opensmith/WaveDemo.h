@@ -35,8 +35,8 @@ class WaveDemo : public GameState
 {
 public:
 	WaveDemo();
-	void WaveDemo::keyPressed(int key);
-	void WaveDemo::draw(double time);
+	void keyPressed(int key);
+	void draw(double time);
 	~WaveDemo();
 private:
 

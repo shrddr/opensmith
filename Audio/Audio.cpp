@@ -1,8 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cmath>
 #include "Audio.h"
 #include "Settings/Settings.h"
+
+float AudioInputBuffer::rms()
+{
+	float res = 0.0f;
+	for (size_t sample = 0; sample < buf.size(); sample++)
+		res += buf[sample] * buf[sample];
+	res = sqrt(res / buf.size());
+	res = 20 * log10(res);
+	return res;
+}
 
 /* This routine will be called by the PortAudio engine when audio is needed.
 ** It may called at interrupt level on some machines so don't do anything

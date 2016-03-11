@@ -25,17 +25,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-	if (argc < 2)
-	{
-		std::cout << "usage: opensmith songfile.psarc [-rhythm] [-d##] [-f]" << std::endl;
-		exit(-1);
-	}
-
-	o.psarcFile = argv[1];
 	bool paramFullsreen = false;
 
-	for (size_t i = 2; i < argc; i++)
+	for (size_t i = 1; i < argc; i++)
 	{
+		if (i == 1)
+			o.psarcFile = argv[i];
 		if (strcmp("-rhythm", argv[i]) == 0)
 			o.role = rhythm;
 		if (strcmp("-bass", argv[i]) == 0)

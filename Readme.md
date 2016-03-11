@@ -27,5 +27,6 @@ VS 2015 solution and prebuilt dependencies included.
 Also comes with GCC makefile, tested on Ubuntu and Mac OS X ([Building guide](Install.md)).
 
 Usage:
-Run setup first and select the fastest audio device. After that, run `opensmith songfile.psarc`. Add `-rhythm` parameter to play rhythm instead of lead, `-dx` to set difficulty x (0-30 depending on the song), `-f` to go fullscreen.
-You can use Ubisoft DLCs as well as custom DLCs (https://github.com/rscustom/rocksmith-custom-song-toolkit), PC/Mac format.
+Put .psarc song files into `resources/dlc` directory. You can use Ubisoft DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC/Mac format.
+After that change directory to `bin` and run `opensmith`. Use `-f` switch to run fullscreen. Select setup first and choose the audio device. Then load up a song and have fun.
+

@@ -25,8 +25,8 @@ class Tuner : public GameState
 {
 public:
 	Tuner(std::vector<int> tuning, bool returnToMenu = false);
-	void Tuner::keyPressed(int key);
-	void Tuner::draw(double time);
+	void keyPressed(int key);
+	void draw(double time);
 	~Tuner();
 private:
 	static const size_t sampleRate = 48000;

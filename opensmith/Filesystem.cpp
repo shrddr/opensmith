@@ -1,6 +1,10 @@
 #include "Filesystem.h"
-#include <dirent.h>
 #include "Settings/Settings.h"
+#ifdef _WIN32
+#include <dirent-win.h>
+#else
+#include <dirent.h>
+#endif
 
 void getFiles(std::vector<std::string>& fileList)
 {

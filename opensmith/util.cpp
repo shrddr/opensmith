@@ -54,7 +54,7 @@ void addShader(GLuint ShaderProgram, const char* pFileName, GLenum ShaderType)
 	}
 	else
 	{
-		std::cerr << "File not found: " << pFileName;
+		std::cerr << "File not found: " << pFileName << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
