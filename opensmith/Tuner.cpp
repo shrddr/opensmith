@@ -113,7 +113,7 @@ void Tuner::draw(double time)
 }
 
 const int TunerDetector::cents[] = { -500, -200, -100, -50, -20, -10, -5, -2, 0, 2, 5, 10, 20, 50, 100, 200, 500 };
-const int TunerDetector::centsCount = sizeof(cents) / sizeof(int);
+const int TunerDetector::centsCount = sizeof(cents) / sizeof(cents[0]);
 
 TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount) :
 	sampleRate(sampleRate),
@@ -150,6 +150,7 @@ void TunerDetector::updateTable(size_t table, float freq)
 
 float TunerDetector::analyze()
 {
+	// TODO: don't analyze if the RMS is too low
 	size_t maxTable = 0;
 	float maxPower = 0;
 	std::vector<float> powers;
@@ -179,8 +180,9 @@ float TunerDetector::analyze()
 	float average = 0;
 	for (size_t i = 0; i < results.size(); i++)
 		average += results[i];
+
 	average /= results.size();
-	
+
 	return average;
 }
 

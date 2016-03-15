@@ -17,6 +17,7 @@
     <ClCompile Include="Tuner.cpp" />
     <ClCompile Include="WaveDemo.cpp" />
     <ClCompile Include="Setup.cpp" />
+    <ClCompile Include="Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -35,5 +36,6 @@
     <ClInclude Include="Tuner.h" />
     <ClInclude Include="WaveDemo.h" />
     <ClInclude Include="Setup.h" />
+    <ClInclude Include="Logger.h" />
   </ItemGroup>
 </Project>

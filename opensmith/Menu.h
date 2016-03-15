@@ -19,16 +19,19 @@ public:
 	void draw(double time);
 protected:
 	Text2D text;
+	std::string header;
 	std::vector<std::string> items;
 	int selectedItem;
 	int topItem;
 private:
 	void checkScroll();
-	const float menuLeft = 100;
-	const float menuTop = 980;
+	const float headerLeft = 150;
+	const float itemsLeft = 100;
+	const float headerTop = 1080 - 90;
+	const float itemsTop = 1080 - 170;
 	const float fontSize = 32;
-	const int pageLines = 880 / 32;
-	const char* menuMarker = ">";
+	const int pageItems = 880 / 32;
+	const char* itemMarker = ">";
 };
 
 class MainMenu : public Menu

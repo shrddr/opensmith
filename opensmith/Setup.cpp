@@ -34,6 +34,7 @@ Setup::~Setup()
 
 void Setup::showApis()
 {
+	header = "audio API";
 	PaHostApiIndex HostApi;
 	PaHostApiIndex HostApiCount = Pa_GetHostApiCount();
 	PaHostApiIndex DefaultHostApi = Pa_GetDefaultHostApi();
@@ -55,6 +56,7 @@ void Setup::showApis()
 
 void Setup::showInputDevices()
 {
+	header = "input device";
 	items.clear();
 	itemData.clear();
 	PaDeviceIndex DeviceCount = Pa_GetDeviceCount();
@@ -79,6 +81,7 @@ void Setup::showInputDevices()
 
 void Setup::showOutputDevices()
 {
+	header = "output device";
 	items.clear();
 	itemData.clear();
 	PaDeviceIndex DeviceCount = Pa_GetDeviceCount();
@@ -103,6 +106,7 @@ void Setup::showOutputDevices()
 
 void Setup::showConfirm()
 {
+	header = "try it out";
 	items.clear();
 	items.push_back("Save");
 	items.push_back("Choose again");

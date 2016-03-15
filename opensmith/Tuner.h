@@ -2,6 +2,7 @@
 #include <vector>
 #include "GameState.h"
 #include "Audio/Audio.h"
+#include "Logger.h"
 
 class TunerDetector : public AudioInputBuffer
 {

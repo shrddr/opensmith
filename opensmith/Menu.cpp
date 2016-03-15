@@ -53,7 +53,7 @@ void Menu::keyDown()
 
 void Menu::keyPgUp()
 {
-	selectedItem -= pageLines;
+	selectedItem -= pageItems;
 	if (selectedItem < 0)
 		selectedItem += items.size();
 	checkScroll();
@@ -61,7 +61,7 @@ void Menu::keyPgUp()
 
 void Menu::keyPgDown()
 {
-	selectedItem += pageLines;
+	selectedItem += pageItems;
 	selectedItem %= items.size();
 	checkScroll();
 }
@@ -76,8 +76,8 @@ void Menu::keyEsc()
 
 void Menu::checkScroll()
 {
-	if (selectedItem >= topItem + pageLines)
-		topItem = selectedItem - pageLines + 1;
+	if (selectedItem >= topItem + pageItems)
+		topItem = selectedItem - pageItems + 1;
 	if (selectedItem < topItem)
 		topItem = selectedItem;
 }
@@ -86,14 +86,16 @@ void Menu::draw(double time)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	text.print(header.c_str(), headerLeft, headerTop, fontSize);
+
 	size_t line = 0;
 	for (size_t item = topItem; item < items.size(); item++)
 	{
 		if (item == selectedItem)
-			text.print(menuMarker, menuLeft - fontSize / 2, menuTop - line * fontSize, fontSize);
-		text.print(items[item].c_str(), menuLeft, menuTop - line * fontSize, fontSize);
+			text.print(itemMarker, itemsLeft - fontSize / 2, itemsTop - line * fontSize, fontSize);
+		text.print(items[item].c_str(), itemsLeft, itemsTop - line * fontSize, fontSize);
 		line++;
-		if (line == pageLines)
+		if (line == pageItems)
 			break;
 	}
 }
@@ -102,6 +104,7 @@ void Menu::draw(double time)
 
 MainMenu::MainMenu()
 {
+	header = "opensmith";
 	items.push_back("Learn");
 	items.push_back("Setup");
 	items.push_back("Tuner");
@@ -142,6 +145,7 @@ void MainMenu::keyEsc()
 
 FileMenu::FileMenu()
 {
+	header = "pick a song";
 	getFiles(items);
 }
 
@@ -165,6 +169,8 @@ void FileMenu::keyEsc()
 RoleMenu::RoleMenu(std::shared_ptr<PSARC> psarc) :
 	psarc(psarc)
 {
+	header = "select your path";
+
 	for (size_t i = 0; i < psarc->Entries.size(); i++)
 	{
 		auto e = psarc->Entries[i];
@@ -213,6 +219,7 @@ void RoleMenu::keyEsc()
 DiffMenu::DiffMenu(std::shared_ptr<Sng> sng) :
 	sng(sng)
 {
+	header = "adjust difficulty";
 	updateTimeline();
 }
 
@@ -294,6 +301,7 @@ void DiffMenu::updateTimeline()
 
 TuningMenu::TuningMenu()
 {
+	header = "tuning?";
 	items.push_back("E Standard");
 	items.push_back("Eb Standard");
 	items.push_back("Drop D");
