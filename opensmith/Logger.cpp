@@ -12,5 +12,5 @@ Logger::~Logger()
 
 void Logger::info(std::string text)
 {
-	f << text;
+	f << text << std::endl;
 }

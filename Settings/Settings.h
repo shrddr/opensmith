@@ -18,6 +18,8 @@ struct Settings
 	float detectionMinPower;
 
 	// visual
+	float stringColors[6*3];
+
 	float noteStep;
 	float stringStep;
 	float zSpeed;

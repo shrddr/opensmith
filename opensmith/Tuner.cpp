@@ -8,25 +8,49 @@
 
 Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 	notes(tuning),
+	currentNote(0),
 	d(sampleRate, 3200, 10),
 	text("../resources/textures/text_Inconsolata29.dds"),
 	hit(false),
 	returnToMenu(returnToMenu)
 {
-	note = notes.begin();
-	d.prepare(*note);
+	d.prepare(notes[currentNote]);
+
+	float x = 700;
+	float y = 540 + 0.5 * neckHeight;
+	float w = 1000;
+	float h = 2;
+	size_t stringCount = tuning.size();
+	float stringSpacing = neckHeight / (stringCount - 1);
+
+	for (size_t stringId = 0; stringId < stringCount; stringId++)
+	{
+		gaugePositions.push_back(y);
+		sprites.push_back(new Sprite(
+			x - h / 2,
+			y,
+			w,
+			h,
+			glm::vec3(
+				o.stringColors[3 * stringId],
+				o.stringColors[3 * stringId + 1],
+				o.stringColors[3 * stringId + 2])
+		));
+		y -= stringSpacing;
+	}
 
 	glGenVertexArrays(1, &vertexArrayId);
 	glBindVertexArray(vertexArrayId);
 	glGenBuffers(1, &vertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	vertices.push_back(960);
-	vertices.push_back(540);
-	vertices.push_back(960 + 400);
-	vertices.push_back(540);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	gaugeVertices.push_back(960);
+	gaugeVertices.push_back(gaugePositions[currentNote]);
+	gaugeVertices.push_back(960 + needleLength);
+	gaugeVertices.push_back(gaugePositions[currentNote]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gaugeVertices.size(), gaugeVertices.data(), GL_STATIC_DRAW);
 	programId = loadShaders("../resources/shaders/gauge.vs",
 		"../resources/shaders/gauge.fs");
+	uniformTintId = glGetUniformLocation(programId, "tint");
 
 	o.load();
 	a = new Audio(io, sampleRate);
@@ -35,6 +59,8 @@ Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 
 Tuner::~Tuner()
 {
+	for (auto sprite : sprites) delete sprite;
+	Sprite::clear();
 	a->stop();
 	delete a;
 	glDeleteProgram(programId);
@@ -44,8 +70,7 @@ Tuner::~Tuner()
 
 void Tuner::nextNote()
 {
-	++note;
-	if (note == notes.end())
+	if (++currentNote == notes.size())
 	{
 		o.lastTuning = notes;
 
@@ -60,7 +85,8 @@ void Tuner::nextNote()
 			gameState = new Session;
 		return;
 	}
-	d.prepare(*note);
+	gaugeVertices[1] = gaugePositions[currentNote];
+	d.prepare(notes[currentNote]);
 }
 
 void Tuner::keyPressed(int key)
@@ -72,11 +98,22 @@ void Tuner::keyPressed(int key)
 	}
 }
 
+void Tuner::drawBackground()
+{
+	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getVertices(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	for (auto sprite : sprites)
+	{
+		glUniform3f(uniformTintId, sprite->tint.r, sprite->tint.g, sprite->tint.b);
+		glDrawArrays(GL_TRIANGLES, sprite->getOffset(), sprite->getCount());
+	}
+}
+
 void Tuner::draw(double time)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	text.print(noteNames[*note % 12].c_str(), 960 - 140, 540 - 16, 32);
+	
+	text.print(noteNames[notes[currentNote] % 12].c_str(), 960 - 140, 540 - 16, 32);
 
 	float cents = d.analyze();
 	char textBuf[64];
@@ -86,13 +123,17 @@ void Tuner::draw(double time)
 	glUseProgram(programId);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+
+	drawBackground();
+
+	glUniform3f(uniformTintId, 1, 1, 1);
 	// clamp to -50 .. +50
 	float clamped = std::min(std::max(cents, -50.0f), 50.0f);
 	// scale to -45° .. +45°
 	float angle = clamped / 50.0f * PI / 4;
-	vertices[2] = 960 + 400 * cos(angle);
-	vertices[3] = 540 + 400 * sin(angle);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	gaugeVertices[2] = 960 + needleLength * cos(angle);
+	gaugeVertices[3] = gaugePositions[currentNote] + needleLength * sin(angle);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gaugeVertices.size(), gaugeVertices.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glDrawArrays(GL_LINES, 0, 2);
 	glDisableVertexAttribArray(0);
@@ -119,7 +160,8 @@ TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t buffer
 	sampleRate(sampleRate),
 	inputSize(bufferSize),
 	AudioInputBuffer(bufferSize),
-	results(bufferCount)
+	results(bufferCount),
+	L("tuner.log")
 {
 	sinTables.resize(centsCount * bufferSize);
 	cosTables.resize(centsCount * bufferSize);
@@ -179,9 +221,13 @@ float TunerDetector::analyze()
 
 	float average = 0;
 	for (size_t i = 0; i < results.size(); i++)
+	{
+		L.info(std::to_string(results[i]));
 		average += results[i];
-
+	}
+	
 	average /= results.size();
+	L.info("!" + std::to_string(average));
 
 	return average;
 }

@@ -20,6 +20,8 @@ private:
 	std::vector<float> cosTables;
 	void updateTable(size_t table, float freq);
 	CircularBuffer<float> results;
+
+	Logger L;
 };
 
 class Tuner : public GameState
@@ -30,18 +32,25 @@ public:
 	void draw(double time);
 	~Tuner();
 private:
+	std::vector<Sprite*> sprites;
+	void drawBackground();
+	const float neckHeight = 200.0f;
+
 	static const size_t sampleRate = 48000;
 	std::vector<int> notes;
-	std::vector<int>::iterator note;
+	size_t currentNote;
 
 	bool hit;
 	double hitStart;
 	void nextNote();
 
-	std::vector<float> vertices;
+	const float needleLength = 400.0f;
+	std::vector<float> gaugePositions;
+	std::vector<float> gaugeVertices;
 	GLuint vertexArrayId;
 	GLuint vertexBufferId;
 	GLuint programId;
+	GLuint uniformTintId;
 
 	Text2D text;
 

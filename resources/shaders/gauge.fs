@@ -1,10 +1,10 @@
 #version 330 core
 
-// Ouput data
 out vec3 color;
+uniform vec3 tint;
 
 void main(){
 
-	color = vec3(1, 1, 1);
+	color = tint;
 
 }

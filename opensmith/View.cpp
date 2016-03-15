@@ -213,30 +213,13 @@ void View::drawFrets(float z)
 
 void View::setTint(int string, float b)
 {
-	switch (string)
-	{
-	case 0:
-		glUniform3f(uniformLocationTint, 1*b, 0.1f*b, 0.1f*b);
-		break;
-	case 1:
-		glUniform3f(uniformLocationTint, 1 * b, 1 * b, 0.1f*b);
-		break;
-	case 2:
-		glUniform3f(uniformLocationTint, 0.2f*b, 0.2f*b, 1 * b);
-		break;
-	case 3:
-		glUniform3f(uniformLocationTint, 1 * b, 0.7f*b, 0.1f*b);
-		break;
-	case 4:
-		glUniform3f(uniformLocationTint, 0.1f*b, 1 * b, 0.1f*b);
-		break;
-	case 5:
-		glUniform3f(uniformLocationTint, 0.7f*b, 0.1f*b, 0.7f*b);
-		break;
-	default:
+	if (string < 0 || string > 5)
 		glUniform3f(uniformLocationTint, 0.5f*b, 0.5f*b, 0.5f*b);
-		break;
-	}
+	else
+		glUniform3f(uniformLocationTint,
+			o.stringColors[3 * string] * b,
+			o.stringColors[3 * string + 1] * b,
+			o.stringColors[3 * string + 2] * b);
 }
 
 void View::show(Visuals& visuals, Hud& hud, float currentTime)
