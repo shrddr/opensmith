@@ -2,12 +2,14 @@
 #include "Setup.h"
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include "util.h"
 
 Setup::Setup() :
 	stage(api),
 	w(1024),
-	a(nullptr)
+	a(nullptr),
+	testStartTime(0)
 {
 	PaError err = Pa_Initialize();
 	if (err != paNoError)
@@ -104,12 +106,10 @@ void Setup::showOutputDevices()
 	}
 }
 
-void Setup::showConfirm()
+void Setup::showTestMax()
 {
-	header = "try it out";
+	header = "make some noise!";
 	items.clear();
-	items.push_back("Save");
-	items.push_back("Choose again");
 
 	a = new Audio(io, 48000);
 	a->start();
@@ -120,6 +120,19 @@ void Setup::showConfirm()
 
 	inLatency = "Input latency: " + std::to_string(info->inputLatency * 1000) + "ms";
 	outLatency = "Output latency: " + std::to_string(info->outputLatency * 1000) + "ms";
+}
+
+void Setup::showTestMin()
+{
+	header = "mute the strings";
+}
+
+void Setup::showConfirm()
+{
+	header = "setup complete";
+	items.clear();
+	items.push_back("Save");
+	items.push_back("Choose again");
 }
 
 void Setup::keyEnter()
@@ -142,18 +155,24 @@ void Setup::keyEnter()
 	{
 		o.outputDevice = itemData[selectedItem];
 		Pa_Terminate();
-		stage = test;
-		showConfirm();
+		stage = testMax;
+		o.signalRMS = -200;
+		o.noiseRMS = 0;
+		showTestMax();
 		return;
 	}
-	if (stage == test)
+	if (stage == testMax)
 	{
-		if (selectedItem == 0)
+		// wait to complete
+	}
+	if (stage == confirm)
+	{
+		if (selectedItem == 0) // ok
 		{
 			o.save();
 			keyEsc();
 		}
-		if (selectedItem == 1)
+		if (selectedItem == 1) // restart
 		{
 			delete gameState;
 			gameState = new Setup;
@@ -171,10 +190,42 @@ void Setup::draw(double time)
 {
 	Menu::draw(time);
 
-	if (stage == test)
+	if (stage == testMax)
 	{
-		text.print(inLatency.c_str(), 100, 132, 32);
-		text.print(outLatency.c_str(), 100, 100, 32);
+		if (testStartTime == 0)
+			testStartTime = time;
+
+		float RMS = w.rms();
+		o.signalRMS = std::max(RMS, o.signalRMS);
+		signalLevel = "Signal level: " + std::to_string(o.signalRMS) + "db";
+
+		if (time - testStartTime > 5)
+		{
+			stage = testMin;
+			testStartTime = time;
+			showTestMin();
+		}
+	}
+		
+	if (stage == testMin)
+	{
+		float RMS = w.rms();
+		o.noiseRMS = std::min(RMS, o.signalRMS);
+		noiseLevel = "Noise level: " + std::to_string(o.noiseRMS) + "db";
+
+		if (time - testStartTime > 5)
+		{
+			stage = confirm;
+			showConfirm();
+		}
+	}
+
+	if (stage == testMax || stage == testMin || stage == confirm)
+	{
+		text.print(inLatency.c_str(), 100, 196, 32);
+		text.print(outLatency.c_str(), 100, 164, 32);
+		text.print(signalLevel.c_str(), 100, 132, 32);
+		text.print(noiseLevel.c_str(), 100, 100, 32);
 
 		glUseProgram(programId);
 		glEnableVertexAttribArray(0);

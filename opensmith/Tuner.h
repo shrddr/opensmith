@@ -14,12 +14,12 @@ private:
 	size_t sampleRate;
 	size_t inputSize;
 	float frequency;
-	static const int cents[];
-	static const int centsCount;
+	static const int offsets[];
+	static const int offsetCount;
 	std::vector<float> sinTables;
 	std::vector<float> cosTables;
 	void updateTable(size_t table, float freq);
-	CircularBuffer<float> results;
+	CircularBuffer<float> history;
 
 	Logger L;
 };

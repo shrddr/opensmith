@@ -12,21 +12,10 @@ Dependencies:
 * [vorbis](https://xiph.org/vorbis/) - song codec
 * [dirent](https://github.com/tronkko/dirent) - filesystem api
 
-Contents:
-* PSARC and SNG parser
-* WEM to OGG converter
-* OpenGL visuals
-* Audio input and output
-* Note detector
-* Main executable
-* Tuner executable
-* Setup executable
-
 Building:
 VS 2015 solution and prebuilt dependencies included.
 Also comes with GCC makefile, tested on Ubuntu and Mac OS X ([Building guide](Install.md)).
 
 Usage:
-Put .psarc song files into `resources/dlc` directory. You can use Ubisoft DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC/Mac format.
+Put .psarc song files into `resources/dlc` directory. You can use official Rocksmith DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC or Mac format.
 After that change directory to `bin` and run `opensmith`. Use `-f` switch to run fullscreen. Select setup first and choose the audio device. Then load up a song and have fun.
-

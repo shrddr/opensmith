@@ -20,6 +20,8 @@ Text2D::Text2D(const char* texturePath)
 void Text2D::print(const char* text, float x, float y, float size)
 {
 	unsigned int length = strlen(text);
+	if (length == 0)
+		return;
 
 	// Fill buffers
 	std::vector<glm::vec2> vertices;

@@ -115,10 +115,17 @@ void Tuner::draw(double time)
 	
 	text.print(noteNames[notes[currentNote] % 12].c_str(), 960 - 140, 540 - 16, 32);
 
+	float level = d.rms();
+	// scale to 0 .. 1
+	level = (level - o.noiseRMS) / (o.signalRMS - o.noiseRMS); 
+
 	float cents = d.analyze();
+	
 	char textBuf[64];
 	sprintf(textBuf, "%.0f", cents);
 	text.print(textBuf, 960 - 100, 540 - 16, 32);
+	sprintf(textBuf, "%.2f", level);
+	text.print(textBuf, 960 - 400, 540 - 16, 32);
 	
 	glUseProgram(programId);
 	glEnableVertexAttribArray(0);
@@ -126,7 +133,7 @@ void Tuner::draw(double time)
 
 	drawBackground();
 
-	glUniform3f(uniformTintId, 1, 1, 1);
+	glUniform3f(uniformTintId, level, level, level);
 	// clamp to -50 .. +50
 	float clamped = std::min(std::max(cents, -50.0f), 50.0f);
 	// scale to -45° .. +45°
@@ -153,32 +160,29 @@ void Tuner::draw(double time)
 	}
 }
 
-const int TunerDetector::cents[] = { -500, -200, -100, -50, -20, -10, -5, -2, 0, 2, 5, 10, 20, 50, 100, 200, 500 };
-const int TunerDetector::centsCount = sizeof(cents) / sizeof(cents[0]);
+const int TunerDetector::offsets[] = { -500, -200, -100, -50, -20, -10, -5, -2, 0, 2, 5, 10, 20, 50, 100, 200, 500 };
+const int TunerDetector::offsetCount = sizeof(offsets) / sizeof(offsets[0]);
 
-TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount) :
+TunerDetector::TunerDetector(size_t sampleRate, size_t bufferSize, size_t historyCount) :
 	sampleRate(sampleRate),
 	inputSize(bufferSize),
+	history(historyCount),
 	AudioInputBuffer(bufferSize),
-	results(bufferCount),
 	L("tuner.log")
 {
-	sinTables.resize(centsCount * bufferSize);
-	cosTables.resize(centsCount * bufferSize);
+	sinTables.resize(offsetCount * bufferSize);
+	cosTables.resize(offsetCount * bufferSize);
 }
 
 void TunerDetector::prepare(int note)
 {
 	frequency = 440 * pow(2.0, (note - 69) / 12.0);
 
-	for (size_t table = 0; table < centsCount; table++)
+	for (size_t table = 0; table < offsetCount; table++)
 	{
-		float stepFrequency = frequency * pow(2, (cents[table] / 1200.0f));
+		float stepFrequency = frequency * pow(2, (offsets[table] / 1200.0f));
 		updateTable(table, stepFrequency);
 	}
-
-	for (size_t i = 0; i < results.size(); i++)
-		results.push_back(-512.0f);
 }
 
 void TunerDetector::updateTable(size_t table, float freq)
@@ -195,39 +199,36 @@ float TunerDetector::analyze()
 	// TODO: don't analyze if the RMS is too low
 	size_t maxTable = 0;
 	float maxPower = 0;
-	std::vector<float> powers;
 
-	for (size_t table = 0; table < centsCount; table++)
+	for (size_t offset = 0; offset < offsetCount; offset++)
 	{
 		float amplitudeSin = 0;
 		float amplitudeCos = 0;
 		for (size_t sample = 0; sample < inputSize; sample++)
 		{
-			amplitudeSin += buf[sample] * sinTables[table * inputSize + sample];
-			amplitudeCos += buf[sample] * cosTables[table * inputSize + sample];
+			amplitudeSin += buf[sample] * sinTables[offset * inputSize + sample];
+			amplitudeCos += buf[sample] * cosTables[offset * inputSize + sample];
 		}
 		float power = sqrt(amplitudeSin * amplitudeSin + amplitudeCos * amplitudeCos);
-		powers.push_back(power);
-
 		if (power > maxPower)
 		{
 			maxPower = power;
-			maxTable = table;
+			maxTable = offset;
 		}
 	}
 
-	float result = cents[maxTable];
-	results.push_back(result);
+	float result = offsets[maxTable];
+	history.push_back(result);
 
 	float average = 0;
-	for (size_t i = 0; i < results.size(); i++)
+	for (size_t i = 0; i < history.size(); i++)
 	{
-		L.info(std::to_string(results[i]));
-		average += results[i];
+		//L.info(std::to_string(results[i]));
+		average += history[i];
 	}
-	
-	average /= results.size();
-	L.info("!" + std::to_string(average));
+
+	average /= history.size();
+	//L.info("!" + std::to_string(average));
 
 	return average;
 }

@@ -13,17 +13,22 @@ public:
 	void draw(double time);
 private:
 	std::vector<int> itemData;
-	enum { api, in, out, test } stage;
+	enum { api, in, out, testMax, testMin, confirm } stage;
 
 	void showApis();
 	void showInputDevices();
 	void showOutputDevices();
+	void showTestMax();
+	void showTestMin();
 	void showConfirm();
 	
 	int hostApi;
+	double testStartTime;
 
 	std::string inLatency;
 	std::string outLatency;
+	std::string signalLevel;
+	std::string noiseLevel;
 
 	Silence s;
 	Wave w;
