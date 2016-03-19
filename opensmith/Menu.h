@@ -53,12 +53,13 @@ public:
 class RoleMenu : public Menu
 {
 public:
-	RoleMenu(std::shared_ptr<PSARC> psarc);
+	RoleMenu();
 	void keyEnter();
 	void keyEsc();
 private:
-	std::shared_ptr<PSARC> psarc;
-	std::map<int, int> itemEntry;
+	PSARC psarc;
+	std::vector<int> itemEntry;
+	std::vector<SngRole> itemRole;
 };
 
 class DiffMenu : public Menu

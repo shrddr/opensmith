@@ -14,7 +14,7 @@ Dependencies:
 
 Building:
 VS 2015 solution and prebuilt dependencies included.
-Also comes with GCC makefile, tested on Ubuntu and Mac OS X ([Building guide](Install.md)).
+Also comes with GCC makefile (might not be up-to-date). [Building guide](Install.md)
 
 Usage:
 Put .psarc song files into `resources/dlc` directory. You can use official Rocksmith DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC or Mac format.

@@ -12,6 +12,8 @@ Settings::Settings()
 	detectionMinPower = 0.1f; // needs calibrataion
 
 	// visual
+	fullScreen = false;
+
 	stringColors[0] = 1.0f; stringColors[1] = 0.1f; stringColors[2] = 0.1;
 	stringColors[3] = 1.0f; stringColors[4] = 1.0f; stringColors[5] = 0.1f;
 	stringColors[6] = 0.2f; stringColors[7] = 0.2f; stringColors[8] = 1.0f;
@@ -19,7 +21,7 @@ Settings::Settings()
 	stringColors[12] = 0.1f; stringColors[13] = 1.0f; stringColors[14] = 0.1f;
 	stringColors[15] = 0.7f; stringColors[16] = 0.1f; stringColors[17] = 0.7f;
 
-	noteStep = 3.0f;
+	fretStep = 3.0f;
 	stringStep = 1.5f;
 	zSpeed = 40.0f;
 
@@ -40,13 +42,14 @@ Settings::Settings()
 	// debug
 	dumpSng = false;
 	dumpWem = false;
+	skipTuner = false;
 
 	// files
 	psarcDirectory = "../resources/dlc/";
 	psarcFile = "";
 	sngEntry = -1;
 	difficulty = 30;
-	role = lead;
+	role = any;
 
 	// tuner
 	lastTuning.clear();

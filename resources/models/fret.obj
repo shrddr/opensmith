@@ -1,10 +1,10 @@
 # These are always viewed from one side so we render them as quads.
 # Slighttly negative z to draw on top of the strings
 mtllib cube.mtl
-v 1.35 -0.5 -0.1
-v 1.35 8.0 -0.1
-v 1.65 8.0 -0.1
-v 1.65 -0.5 -0.1
+v 1.35 0 -0.1
+v 1.35 1 -0.1
+v 1.65 1 -0.1
+v 1.65 0 -0.1
 vt 0.0 0.0
 vt 0.0 1.0
 vt 1.0 1.0

@@ -26,8 +26,6 @@ Model::Model(View& v, Controller& c):
 			}
 	}
 
-	bool isBass = (psarc->Entries[o.sngEntry]->name.find("bass.sng") != std::string::npos);
-
 	// get sng
 
 	std::vector<char> sngEntryStorage;
@@ -79,7 +77,7 @@ Model::Model(View& v, Controller& c):
 
 	// init detector
 
-	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, isBass);
+	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, o.role == bass);
 	std::cout << glfwGetTime() << " > NoteDetector init" << std::endl;
 
 	// start portaudio

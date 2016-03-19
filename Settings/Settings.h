@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-enum SngRole { lead, rhythm, bass, any };
+enum SngRole { any, lead, rhythm, bass };
 
 struct Settings
 {
@@ -18,9 +18,10 @@ struct Settings
 	float detectionMinPower;
 
 	// visual
+	bool fullScreen;
 	float stringColors[6*3];
 
-	float noteStep;
+	float fretStep;
 	float stringStep;
 	float zSpeed;
 
@@ -41,6 +42,7 @@ struct Settings
 	// debug
 	bool dumpSng;
 	bool dumpWem;
+	bool skipTuner;
 
 	// files
 	std::string psarcDirectory;

@@ -25,18 +25,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-	bool paramFullsreen = false;
-
 	for (size_t i = 1; i < argc; i++)
 	{
-		if (i == 1)
-			o.psarcFile = argv[i];
+		if (strcmp("-song", argv[i]) == 0)
+			o.psarcFile = o.psarcDirectory + argv[i + 1];
 		if (strcmp("-rhythm", argv[i]) == 0)
 			o.role = rhythm;
 		if (strcmp("-bass", argv[i]) == 0)
 			o.role = bass;
 		if (strcmp("-f", argv[i]) == 0)
-			paramFullsreen = true;
+			o.fullScreen = true;
+		if (strcmp("-t", argv[i]) == 0)
+			o.skipTuner = true;
 		sscanf(argv[i], "-d%i", &o.difficulty);
 	}
 
@@ -51,10 +51,11 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* window;
-	if (paramFullsreen)
+	if (o.fullScreen)
 	{
 		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		window = glfwCreateWindow(mode->width, mode->height, "opensmith", glfwGetPrimaryMonitor(), NULL);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	}
 	else
 		window = glfwCreateWindow(960, 540, "opensmith", NULL, NULL);
@@ -82,7 +83,11 @@ int main(int argc, char** argv)
 	std::cout << glfwGetTime() << " > GLEW loaded" << std::endl;
 	
 	GameState::window = window;
-	GameState::gameState = new MainMenu;
+	if (o.psarcFile.empty())
+		GameState::gameState = new MainMenu;
+	else
+		GameState::gameState = new RoleMenu;
+
 	glfwSetKeyCallback(window, key_callback);
 
 	// main loop

@@ -3,22 +3,145 @@
 #include "GLFW/glfw3.h"
 #include "Mesh.h"
 
-// static members have external linkage
-std::vector<glm::vec3> Mesh::vertices;
-std::vector<glm::vec2> Mesh::uvs;
-std::vector<glm::vec3> Mesh::normals;
-
-Mesh::Mesh(const char* fileName)
+MeshSet::MeshSet()
 {
+}
+
+MeshSet::~MeshSet()
+{
+	for (auto m : meshes) delete m;
+}
+
+int MeshSet::loadMesh(const char* fileName)
+{
+	size_t id = meshes.size();
 	loadOBJ(fileName);
+	return id;
 }
 
-Mesh::~Mesh()
+int MeshSet::generateTiledQuads(size_t tileCount)
 {
-	// no cleanup here. static arrays can potentially blow up
+	size_t id = meshes.size();
+	size_t currentOffset = vertices.size();
+
+	glm::vec3 quadVertices[6] = {
+		glm::vec3(0.5f, -0.5f, 0),
+		glm::vec3(-0.5f, -0.5f, 0),
+		glm::vec3(0.5f, 0.5f, 0),
+		glm::vec3(-0.5f, 0.5f, 0),
+		glm::vec3(0.5f, 0.5f, 0),
+		glm::vec3(-0.5f, -0.5f, 0)
+	};
+
+	glm::vec3 quadNormals[6] = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, 1)
+	};
+
+	float width = 1.0f / tileCount;
+	float uLeft = 0;
+	float uRight = width;
+
+	for (size_t tile = 0; tile < tileCount; tile++)
+	{
+		meshes.push_back(new Mesh);
+		meshes.back()->vertexOffset = currentOffset;
+		meshes.back()->vertexCount = 6;
+		currentOffset += 6;
+
+		vertices.insert(vertices.end(), &quadVertices[0], &quadVertices[6]);
+		
+		uvs.push_back(glm::vec2(uRight, 0));
+		uvs.push_back(glm::vec2(uLeft, 0));
+		uvs.push_back(glm::vec2(uRight, 1));
+		uvs.push_back(glm::vec2(uLeft, 1));
+		uvs.push_back(glm::vec2(uRight, 1));
+		uvs.push_back(glm::vec2(uLeft, 0));
+
+		normals.insert(normals.end(), &quadNormals[0], &quadNormals[6]);
+
+		uLeft = uRight;
+		uRight += width;
+	}
+
+	return id;
 }
 
-int Mesh::loadOBJ(const char* fileName)
+int MeshSet::generateSlideMeshes(std::vector<int> deltas)
+{
+	size_t id = meshes.size();
+	size_t currentOffset = vertices.size();
+	
+	glm::vec3 quadNormals[6] = {
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, -1, 0)
+	};
+
+	const int stepCount = 32;
+
+	for (auto delta : deltas)
+	{
+		meshes.push_back(new Mesh);
+		meshes.back()->vertexOffset = currentOffset;
+		meshes.back()->vertexCount = 6 * stepCount;
+		currentOffset += 6 * stepCount;
+
+		float dz = 1.0f / stepCount;
+		float z1 = 0;
+		float z2 = dz;
+		// scale to -2 .. +2
+		float t1 = -2.0f + 4.0f * z1;
+		float t2 = -2.0f + 4.0f * z2;
+		float sigmoid1 = tanh(t1);
+		float sigmoid2 = tanh(t2);
+		// scale to 0 .. delta
+		float x1 = (sigmoid1 + 1) / 2.0f * delta;
+		float x2 = (sigmoid2 + 1) / 2.0f * delta;
+
+		for (size_t step = 0; step < stepCount; step++)
+		{
+			vertices.push_back(glm::vec3(x1 + 0.5f, 0, z1));
+			vertices.push_back(glm::vec3(x1 - 0.5f, 0, z1));
+			vertices.push_back(glm::vec3(x2 + 0.5f, 0, z2));
+			vertices.push_back(glm::vec3(x2 - 0.5f, 0, z2));
+			vertices.push_back(glm::vec3(x2 + 0.5f, 0, z2));
+			vertices.push_back(glm::vec3(x1 - 0.5f, 0, z1));
+
+			uvs.push_back(glm::vec2(1, z1));
+			uvs.push_back(glm::vec2(0, z1));
+			uvs.push_back(glm::vec2(1, z2));
+			uvs.push_back(glm::vec2(0, z2));
+			uvs.push_back(glm::vec2(1, z2));
+			uvs.push_back(glm::vec2(0, z1));
+
+			normals.insert(normals.end(), &quadNormals[0], &quadNormals[6]);
+
+			z1 = z2;
+			z2 += dz;
+			x1 = x2;
+			t2 = -2.0f + 4.0f * z2;
+			sigmoid2 = tanh(t2);
+			x2 = (sigmoid2 + 1) / 2.0f * delta;
+		}
+	}
+
+	return id;
+}
+
+void MeshSet::draw(size_t id)
+{
+	glDrawArrays(GL_TRIANGLES, meshes[id]->vertexOffset, meshes[id]->vertexCount);
+}
+
+int MeshSet::loadOBJ(const char* fileName)
 {
 	std::ifstream file(fileName, std::ifstream::in | std::ifstream::binary);
 	if (!file.is_open())
@@ -68,10 +191,12 @@ int Mesh::loadOBJ(const char* fileName)
 		}
 	}
 
+	Mesh* M = new Mesh;
+	
 	// where this mesh data starts in the global pool
-	offset = Mesh::vertices.size();
+	M->vertexOffset = vertices.size();
 
-	for (unsigned int i = 0; i<vertexIndices.size(); i++)
+	for (unsigned int i = 0; i < vertexIndices.size(); i++)
 	{
 		size_t vertexIndex = vertexIndices[i];
 		size_t uvIndex = uvIndices[i];
@@ -81,13 +206,15 @@ int Mesh::loadOBJ(const char* fileName)
 		glm::vec2 uv = temp_uvs[uvIndex - 1];
 		glm::vec3 normal = temp_normals[normalIndex - 1];
 
-		Mesh::vertices.push_back(vertex);
-		Mesh::uvs.push_back(uv);
-		Mesh::normals.push_back(normal);
+		vertices.push_back(vertex);
+		uvs.push_back(uv);
+		normals.push_back(normal);
 	}
 
 	// this mesh data vertex count
-	count = Mesh::vertices.size() - offset;
+	M->vertexCount = vertices.size() - M->vertexOffset;
+	meshes.push_back(M);
 	return 0;
-	
 }
+
+

@@ -65,6 +65,7 @@ public:
 private:
 	GLFWwindow& window;
 	Camera camera;
+	size_t stringCount;
 	void createVertexBuffer();
 
 	void drawAnchor(float x, int df, float z, float dz);
@@ -83,24 +84,28 @@ private:
 	GLuint uvBufferId;
 	GLuint programId;
 
-	GLuint anchorTexture;
-	GLuint noteTexture;
-	GLuint missTexture;
-	GLuint openSustainTexture;
-
 	GLuint uniformLocationMVP;
 	GLuint uniformLocationTex;
 	GLuint uniformLocationTint;
 
-	Mesh* beatMesh;
-	Mesh* noteMesh;
-	Mesh* noteSustainMesh;
-	Mesh* noteSlideMesh;
-	Mesh* noteOpenMesh;
-	Mesh* noteOpenSustainMesh;
-	Mesh* stringMesh;
-	Mesh* fretMesh;
-	Mesh* anchorMesh;
+	MeshSet m;
+	GLuint beatMesh;
+	GLuint noteMesh;
+	GLuint noteSustainMesh;
+	GLuint noteSlideMeshes;
+	GLuint noteOpenMesh;
+	GLuint noteOpenSustainMesh;
+	GLuint stringMesh;
+	GLuint fretMesh;
+	GLuint fretNumMeshes;
+	GLuint anchorMesh;
+
+	GLuint anchorTexture;
+	GLuint noteTexture;
+	GLuint missTexture;
+	GLuint fretNumTexture;
+	GLuint sustainTexture;
+	GLuint openSustainTexture;
 
 	double lastFrameTime;
 };

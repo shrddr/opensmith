@@ -152,10 +152,8 @@ FileMenu::FileMenu()
 void FileMenu::keyEnter()
 {
 	o.psarcFile = o.psarcDirectory + items[selectedItem];
-	std::shared_ptr<PSARC> psarc(new PSARC(o.psarcFile.c_str()));
-
 	delete gameState;
-	gameState = new RoleMenu(psarc);
+	gameState = new RoleMenu();
 }
 
 void FileMenu::keyEsc()
@@ -166,27 +164,30 @@ void FileMenu::keyEsc()
 
 // Role menu: show available SNG's, select one (lead/rhythm/bass)
 
-RoleMenu::RoleMenu(std::shared_ptr<PSARC> psarc) :
-	psarc(psarc)
+RoleMenu::RoleMenu() :
+	psarc(o.psarcFile.c_str())
 {
 	header = "select your path";
 
-	for (size_t i = 0; i < psarc->Entries.size(); i++)
+	for (size_t i = 0; i < psarc.Entries.size(); i++)
 	{
-		auto e = psarc->Entries[i];
+		auto e = psarc.Entries[i];
 		if (e->name.find("lead.sng") != std::string::npos)
 		{
-			itemEntry[items.size()] = i;
+			itemEntry.push_back(i);
+			itemRole.push_back(lead);
 			items.push_back("lead");
 		}
 		if (e->name.find("rhythm.sng") != std::string::npos)
 		{
-			itemEntry[items.size()] = i;
+			itemEntry.push_back(i);
+			itemRole.push_back(rhythm);
 			items.push_back("rhythm");
 		}
 		if (e->name.find("bass.sng") != std::string::npos)
 		{
-			itemEntry[items.size()] = i;
+			itemEntry.push_back(i);
+			itemRole.push_back(bass);
 			items.push_back("bass");
 		}
 	}
@@ -195,9 +196,10 @@ RoleMenu::RoleMenu(std::shared_ptr<PSARC> psarc) :
 void RoleMenu::keyEnter()
 {
 	o.sngEntry = itemEntry[selectedItem];
+	o.role = itemRole[selectedItem];
 
 	std::vector<char> sngEntryStorage;
-	psarc->Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
+	psarc.Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
 	std::vector<char> sngStorage;
 	SngReader::readTo(sngEntryStorage, sngStorage);
 	std::shared_ptr<Sng> s(new Sng);
@@ -256,7 +258,7 @@ void DiffMenu::keyEnter()
 	
 	GameState* newState;
 
-	if (needTuner)
+	if (!o.skipTuner && needTuner)
 		newState = new Tuner(sng->metadata.tuning);
 	else
 		newState = new Session;
