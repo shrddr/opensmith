@@ -1,9 +1,10 @@
 # Quad
+# Scale x to fretStep * 25
 mtllib cube.mtl
 v 0.0 -0.1 0.0
 v 0.0 0.1 0.0
-v 72.0 0.1 0.0
-v 72.0 -0.1 0.0
+v 1.0 0.1 0.0
+v 1.0 -0.1 0.0
 vt 0.0 0.0
 vt 0.0 1.0
 vt 1.0 1.0

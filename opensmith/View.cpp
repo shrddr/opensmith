@@ -19,8 +19,7 @@ View::View(GLFWwindow& window):
 	glClearColor(0.0f, 0.02f, 0.02f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	// HACK: when sliding down, triangles switch facing
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	createVertexBuffer();
 
@@ -145,7 +144,10 @@ void View::drawGhost(float x, float y, float z, int tint, bool hit, float t)
 void View::drawSustain(float x, int df, float y, float z, float dz, int tint)
 {
 	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
-	Model = glm::scale(Model, glm::vec3(1, 1, dz)); 
+	if (df == 0)
+		Model = glm::scale(Model, glm::vec3(1, 1, dz));
+	else
+		Model = glm::scale(Model, glm::vec3(o.fretStep, 1, dz));
 
 	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
@@ -158,7 +160,7 @@ void View::drawSustain(float x, int df, float y, float z, float dz, int tint)
 	else if (df > 0)
 		m.draw(noteSlideMeshes + df - 1); // slide sustain up
 	else
-		m.draw(noteSlideMeshes + 22 - df);	// slide sustain down
+		m.draw(noteSlideMeshes + 23 - df);	// slide sustain down
 
 	glBindTexture(GL_TEXTURE_2D, noteTexture);
 }
@@ -177,7 +179,7 @@ void View::drawOpenSustain(float x, float y, float z, float dz, int tint)
 {
 	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
 	if (z + dz)
-	Model = glm::scale(Model, glm::vec3(1, 1, dz));
+		Model = glm::scale(Model, glm::vec3(1, 1, dz));
 	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 	setTint(tint);
@@ -194,7 +196,9 @@ void View::drawStrings(float z)
 {
 	for (size_t stringNum = 0; stringNum < stringCount; stringNum++)
 	{
-		glm::mat4 Model = glm::translate(unity, glm::vec3(0, stringNum * o.stringStep, z));
+		glm::mat4 Model = unity;
+		Model = glm::translate(Model, glm::vec3(0, stringNum * o.stringStep, z));
+		Model = glm::scale(Model, glm::vec3(o.fretStep * 25, 1, 1));
 		glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		setTint(stringNum);
@@ -205,22 +209,23 @@ void View::drawStrings(float z)
 
 void View::drawFrets(float z)
 {
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	for (size_t fretNum = 0; fretNum < 24; fretNum++)
+	for (size_t fretNum = 0; fretNum < 25; fretNum++)
 	{
-		glm::mat4 Model = unity;
-		
+		glm::mat4 Model = unity;	
 		Model = glm::translate(Model, glm::vec3(fretNum * o.fretStep, -o.stringStep / 2, z));
 		Model = glm::scale(Model, glm::vec3(1, stringCount * o.stringStep, 1));
-		
 		glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		glUniform3f(uniformLocationTint, 0.7f, 0.6f, 0.3f);
 		m.draw(fretMesh);
+	}
 
-		Model = glm::translate(unity, glm::vec3(fretNum * o.fretStep, stringCount * o.stringStep, z));
-		MVP = camera.getProjection() * camera.getView() * Model;
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	for (size_t fretNum = 1; fretNum < 25; fretNum++)
+	{
+		glm::mat4 Model = glm::translate(unity, glm::vec3(fretNum * o.fretStep, stringCount * o.stringStep, z));
+		glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		glBindTexture(GL_TEXTURE_2D, fretNumTexture);
 		m.draw(fretNumMeshes + fretNum);
@@ -267,7 +272,7 @@ void View::show(Visuals& visuals, Hud& hud, float currentTime)
 			it.startTime * o.zSpeed,
 			(it.endTime - it.startTime) * o.zSpeed);
 
-	// these are ugly
+	// TODO: these are ugly; better modify anchor texture instead
 	//for (auto it : visuals.beats)
 	//	drawBeat(it.time * o.zSpeed);
 

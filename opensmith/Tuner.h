@@ -32,7 +32,8 @@ public:
 	void draw(double time);
 	~Tuner();
 private:
-	std::vector<Sprite*> sprites;
+	SpriteSet sprites;
+	std::pair<size_t, size_t> stringSprites;
 	void drawBackground();
 	const float neckHeight = 200.0f;
 

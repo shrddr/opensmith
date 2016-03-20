@@ -43,8 +43,9 @@ private:
 	unsigned int UniformTextureID;
 	unsigned int UniformTintID;
 	
-	std::vector<Sprite*> bars;
-	std::vector<Sprite*> notes;
+	SpriteSet sprites;
+	std::pair<size_t, size_t> bars;
+	std::pair<size_t, size_t> notes;
 
 	Text2D text;
 };

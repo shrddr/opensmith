@@ -17,15 +17,12 @@ Hud::Hud():
 
 void Hud::initTimeline(float songLength, float left, float bottom, float height)
 {
-	for (auto bar : bars)
-		delete bar;
-	bars.clear();
-	Sprite::clear();
-
 	this->songLength = songLength;
 
 	float spaceWidth = 3;
 	float freeWidth = screenWidth - left * 2 - (spaceWidth * iterations.size());
+
+	bars.first = sprites.getCount();
 
 	for (auto it: iterations)
 	{
@@ -33,45 +30,51 @@ void Hud::initTimeline(float songLength, float left, float bottom, float height)
 		float barHeight = height * it.difficulty;
 		glm::vec3 tint = it.maxDifficulty ? glm::vec3(1, 0, 1) : glm::vec3(1, 0.5, 0);
 
-		bars.push_back(new Sprite(
+		sprites.add(
 			left,
 			bottom,
 			barWidth,
 			barHeight,
 			tint
-		));
+		);
 
 		left += barWidth + spaceWidth;
 	}
 
+	bars.second = sprites.getCount();
+
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getVertices(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sprites.getSize(), sprites.getVertices(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, UVBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getUVs(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sprites.getSize(), sprites.getUVs(), GL_STATIC_DRAW);
 }
 
 void Hud::initNotes()
 {
+	notes.first = sprites.getCount();
+
 	for (size_t string = 0; string < 6; string++)
 	{
 		float bottom = 800 + string * 25;
 		for (size_t fret = 0; fret < 24; fret++)
 		{
 			float left = 100 + fret * 25;
-			notes.push_back(new Sprite(
+			sprites.add(
 				left,
 				bottom,
 				24,
 				24,
 				glm::vec3(1, 1, 1)
-				));
+			);
 		}
 	}
 
+	notes.second = sprites.getCount();
+
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getVertices(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sprites.getSize(), sprites.getVertices(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, UVBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getUVs(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sprites.getSize(), sprites.getUVs(), GL_STATIC_DRAW);
 }
 
 void Hud::drawTime(float currentTime)
@@ -87,7 +90,7 @@ void Hud::drawTimeline(float currentTime)
 		currentTime > iterations[currentIteration].endTime)
 	{
 		++currentIteration;
-		bars[currentIteration]->tint *= 0.5;
+		sprites.tint(bars.first + currentIteration) *= 0.5;
 	}
 
 	glUseProgram(ShaderID);
@@ -98,16 +101,16 @@ void Hud::drawTimeline(float currentTime)
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferID);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, UVBufferID);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-	for (auto bar : bars)
+	for (size_t barId = bars.first; barId < bars.second; ++barId)
 	{
-		glUniform3f(UniformTintID, bar->tint.r, bar->tint.g, bar->tint.b);
-		glDrawArrays(GL_TRIANGLES, bar->getOffset(), bar->getCount());
+		glUniform3f(UniformTintID, sprites.tint(barId).r, sprites.tint(barId).g, sprites.tint(barId).b);
+		sprites.draw(barId);
 	}
 
 	glDisableVertexAttribArray(0);
@@ -124,18 +127,18 @@ void Hud::drawNotes()
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferID);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, UVBufferID);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	int i = 0;
-	for (auto note : notes)
+	for (size_t noteId = notes.first; noteId < notes.second; ++noteId)
 	{
-		note->tint = glm::vec3(detected[i++]);
-		glUniform3f(UniformTintID, note->tint.r, note->tint.g, note->tint.b);
-		glDrawArrays(GL_TRIANGLES, note->getOffset(), note->getCount());
+		sprites.tint(noteId) = glm::vec3(detected[i++]);
+		glUniform3f(UniformTintID, sprites.tint(noteId).r, sprites.tint(noteId).g, sprites.tint(noteId).b);
+		sprites.draw(noteId);
 	}
 
 	glDisableVertexAttribArray(0);
@@ -144,8 +147,6 @@ void Hud::drawNotes()
 
 Hud::~Hud()
 {
-	for (auto bar : bars) delete bar;
-	for (auto note : notes) delete note;
 	glDeleteBuffers(1, &VertexBufferID);
 	glDeleteBuffers(1, &UVBufferID);
 	glDeleteTextures(1, &TextureID);

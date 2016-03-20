@@ -2,24 +2,29 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-class Sprite
+struct Sprite
+{
+	size_t vertexOffset;
+	size_t vertexCount;
+	glm::vec3 tint;
+};
+
+class SpriteSet
 {
 public:
-	Sprite(float x, float y, float width, float height, glm::vec3 tint);
-	~Sprite();
-	glm::vec3 tint;
-	size_t getOffset() { return offset; }
-	size_t getCount() { return count; }
+	SpriteSet();
+	~SpriteSet();
+	int add(float x, float y, float width, float height, glm::vec3 tint);
+	void draw(size_t id);
+	glm::vec3& tint(size_t id);
+	void clear() { vertices.clear(); uvs.clear(); }
+	void* getVertices() { return vertices.data(); }
+	void* getUVs() { return uvs.data(); }
+	size_t getSize() { return vertices.size() * sizeof(glm::vec2); }
+	size_t getCount() { return sprites.size(); }
 private:
-	size_t offset;
-	size_t count;
-public:
-	static void clear() { vertices.clear(); uvs.clear(); }
-	static void* getVertices() { return vertices.data(); }
-	static void* getUVs() { return uvs.data(); }
-	static size_t getSize() { return vertices.size(); }
-private:
-	static std::vector<glm::vec2> vertices;
-	static std::vector<glm::vec2> uvs;
+	std::vector<Sprite*> sprites;
+	std::vector<glm::vec2> vertices;
+	std::vector<glm::vec2> uvs;
 };
 

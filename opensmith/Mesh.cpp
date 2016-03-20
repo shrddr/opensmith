@@ -97,29 +97,31 @@ int MeshSet::generateSlideMeshes(std::vector<int> deltas)
 		float dz = 1.0f / stepCount;
 		float z1 = 0;
 		float z2 = dz;
-		// scale to -2 .. +2
+		// scale 0 .. 1 to -2 .. +2
 		float t1 = -2.0f + 4.0f * z1;
 		float t2 = -2.0f + 4.0f * z2;
 		float sigmoid1 = tanh(t1);
 		float sigmoid2 = tanh(t2);
-		// scale to 0 .. delta
-		float x1 = (sigmoid1 + 1) / 2.0f * delta;
-		float x2 = (sigmoid2 + 1) / 2.0f * delta;
+		float halfRange = tanh(2);
+		float range = halfRange * 2;
+		// scale -0.96 .. 0.96 to 0 .. delta
+		float x1 = (sigmoid1 + halfRange) / range * delta;
+		float x2 = (sigmoid2 + halfRange) / range * delta;
 
 		for (size_t step = 0; step < stepCount; step++)
 		{
-			vertices.push_back(glm::vec3(x1 + 0.5f, 0, z1));
-			vertices.push_back(glm::vec3(x1 - 0.5f, 0, z1));
-			vertices.push_back(glm::vec3(x2 + 0.5f, 0, z2));
-			vertices.push_back(glm::vec3(x2 - 0.5f, 0, z2));
-			vertices.push_back(glm::vec3(x2 + 0.5f, 0, z2));
-			vertices.push_back(glm::vec3(x1 - 0.5f, 0, z1));
+			vertices.push_back(glm::vec3(x1 - 0.2f, 0, z1));
+			vertices.push_back(glm::vec3(x1 + 0.2f, 0, z1));
+			vertices.push_back(glm::vec3(x2 + 0.2f, 0, z2));
+			vertices.push_back(glm::vec3(x2 + 0.2f, 0, z2));
+			vertices.push_back(glm::vec3(x2 - 0.2f, 0, z2));
+			vertices.push_back(glm::vec3(x1 - 0.2f, 0, z1));
 
-			uvs.push_back(glm::vec2(1, z1));
 			uvs.push_back(glm::vec2(0, z1));
+			uvs.push_back(glm::vec2(1, z1));
+			uvs.push_back(glm::vec2(1, z2));
 			uvs.push_back(glm::vec2(1, z2));
 			uvs.push_back(glm::vec2(0, z2));
-			uvs.push_back(glm::vec2(1, z2));
 			uvs.push_back(glm::vec2(0, z1));
 
 			normals.insert(normals.end(), &quadNormals[0], &quadNormals[6]);
@@ -129,7 +131,7 @@ int MeshSet::generateSlideMeshes(std::vector<int> deltas)
 			x1 = x2;
 			t2 = -2.0f + 4.0f * z2;
 			sigmoid2 = tanh(t2);
-			x2 = (sigmoid2 + 1) / 2.0f * delta;
+			x2 = (sigmoid2 + halfRange) / range * delta;
 		}
 	}
 

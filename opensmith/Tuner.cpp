@@ -23,21 +23,25 @@ Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 	size_t stringCount = tuning.size();
 	float stringSpacing = neckHeight / (stringCount - 1);
 
-	for (size_t stringId = 0; stringId < stringCount; stringId++)
+	stringSprites.first = sprites.getCount();
+
+	for (size_t id = 0; id < stringCount; id++)
 	{
 		gaugePositions.push_back(y);
-		sprites.push_back(new Sprite(
+		sprites.add(
 			x - h / 2,
 			y,
 			w,
 			h,
 			glm::vec3(
-				o.stringColors[3 * stringId],
-				o.stringColors[3 * stringId + 1],
-				o.stringColors[3 * stringId + 2])
-		));
+				o.stringColors[3 * id],
+				o.stringColors[3 * id + 1],
+				o.stringColors[3 * id + 2])
+		);
 		y -= stringSpacing;
 	}
+
+	stringSprites.second = sprites.getCount();
 
 	glGenVertexArrays(1, &vertexArrayId);
 	glBindVertexArray(vertexArrayId);
@@ -59,8 +63,6 @@ Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 
 Tuner::~Tuner()
 {
-	for (auto sprite : sprites) delete sprite;
-	Sprite::clear();
 	a->stop();
 	delete a;
 	glDeleteProgram(programId);
@@ -100,12 +102,13 @@ void Tuner::keyPressed(int key)
 
 void Tuner::drawBackground()
 {
-	glBufferData(GL_ARRAY_BUFFER, Sprite::getSize() * sizeof(glm::vec2), Sprite::getVertices(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sprites.getSize(), sprites.getVertices(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	for (auto sprite : sprites)
+
+	for (size_t id = stringSprites.first; id < stringSprites.second; id++)
 	{
-		glUniform3f(uniformTintId, sprite->tint.r, sprite->tint.g, sprite->tint.b);
-		glDrawArrays(GL_TRIANGLES, sprite->getOffset(), sprite->getCount());
+		glUniform3f(uniformTintId, sprites.tint(id).r, sprites.tint(id).g, sprites.tint(id).b);
+		sprites.draw(id);
 	}
 }
 
