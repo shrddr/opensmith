@@ -9,6 +9,7 @@ struct Sprite
 	glm::vec3 tint;
 };
 
+// TODO: this is a twin brother of MeshSet
 class SpriteSet
 {
 public:

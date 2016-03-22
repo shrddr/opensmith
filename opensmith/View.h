@@ -20,6 +20,7 @@ struct Visuals
 		int string;
 		float time;
 		int anchorFret;
+		uint32_t mask;
 		bool hit;
 	};
 
@@ -70,11 +71,11 @@ private:
 
 	void drawAnchor(float x, int df, float z, float dz);
 	void drawBeat(float z);
-	void drawNote(float x, float y, float z, int tint);
-	void drawGhost(float x, float y, float z, int tint, bool hit, float t);
+	void drawNote(float x, float y, float z, int tint, uint32_t mask);
+	void drawOpenNote(float x, float y, float z, int tint, uint32_t mask);
 	void drawSustain(float x, int df, float y, float z, float dz, int tint);
-	void drawOpenNote(float x, float y, float z, int tint);
 	void drawOpenSustain(float x, float y, float z, float dz, int tint);
+	void drawGhost(float x, float y, float z, int tint, bool hit, float t);
 	void drawStrings(float z);
 	void drawFrets(float z);
 	void setTint(int string, float brightness = 1);
@@ -102,6 +103,8 @@ private:
 
 	GLuint anchorTexture;
 	GLuint noteTexture;
+	GLuint noteMuteTexture;
+	GLuint notePalmMuteTexture;
 	GLuint missTexture;
 	GLuint fretNumTexture;
 	GLuint sustainTexture;

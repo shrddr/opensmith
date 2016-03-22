@@ -178,30 +178,41 @@ void Model::update(float glfwTime)
 			// simple note
 			if (n.stringIndex != -1)
 			{
-				Visuals::Note newNote = { n.fretId, n.stringIndex, n.time, n.anchorFretId };
+				Visuals::Note newNote = { n.fretId, n.stringIndex, n.time, n.anchorFretId, n.noteMask };
 				visuals.notes.push_back(newNote);
 
 				if (n.sustain > 0)
 				{
 					Visuals::Sustain newSustain = { n.fretId, 0, n.stringIndex, n.time, n.sustain, n.anchorFretId };
 					if (n.slideTo != -1 || n.slideUnpitchTo != -1)
-						newSustain.deltaFret = n.slideTo - n.fretId;
+						newSustain.deltaFret = n.slideTo - n.fretId; // TODO: Take care of Unpitch
 					visuals.sustains.push_back(newSustain);
 				}
 			}
 
 			// chord reference
+			// TODO: push a chord object to draw the blue glow
 			if (n.stringIndex < 0 && n.chordId >= 0)
 			{
 				for (int i = 0; i < 6; i++)
 				{
-					if (s.Chords[n.chordId].frets[i] >= 0)
+					if (s.Chords[n.chordId].frets[i] >= 0) //frets,fingers,notes,name
 					{
-						Visuals::Note newNote = { s.Chords[n.chordId].frets[i], i, n.time, n.anchorFretId };
+						Visuals::Note newNote = { s.Chords[n.chordId].frets[i], i, n.time, n.anchorFretId, n.noteMask };
+
+						// noteMasks,bendDatas,slides,vibratos are stored separately because they can differ between chord notes
+						//if (n.chordNotesId >= 0 && s.ChordNotes[n.chordNotesId].noteMask[i] >= 0)
+						//	newNote.mask = s.ChordNotes[n.chordNotesId].noteMask[i];
+
 						visuals.notes.push_back(newNote);
 						if (n.sustain > 0)
 						{
 							Visuals::Sustain newSustain = { s.Chords[n.chordId].frets[i], 0, i, n.time, n.sustain, n.anchorFretId };
+
+							if (n.chordNotesId >= 0)
+								if (s.ChordNotes[n.chordNotesId].slideTo[i] != -1 || s.ChordNotes[n.chordNotesId].slideUnpitchTo[i] != -1)
+									newSustain.deltaFret = s.ChordNotes[n.chordNotesId].slideTo[i] - s.Chords[n.chordId].frets[i];
+
 							visuals.sustains.push_back(newSustain);
 						}
 					}

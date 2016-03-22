@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "View.h"
 #include "util.h"
+#include "PsarcReader/Sng.h"
 
 static glm::mat4 unity = glm::mat4(1.0f);
 
@@ -31,6 +32,8 @@ View::View(GLFWwindow& window):
 	
 	anchorTexture = loadTexture("../resources/textures/anchor.dds");
 	noteTexture = loadTexture("../resources/textures/note.dds");
+	noteMuteTexture = loadTexture("../resources/textures/note_fretmute.dds");
+	notePalmMuteTexture = loadTexture("../resources/textures/note_palmmute.dds");
 	missTexture = loadTexture("../resources/textures/note_miss.dds");
 	fretNumTexture = loadTexture("../resources/textures/fretnumbers_Inconsolata128.dds");
 	sustainTexture = loadTexture("../resources/textures/sustain.dds");
@@ -48,6 +51,8 @@ View::~View()
 	glDeleteProgram(programId);
 	glDeleteTextures(1, &anchorTexture);
 	glDeleteTextures(1, &noteTexture);
+	glDeleteTextures(1, &noteMuteTexture);
+	glDeleteTextures(1, &notePalmMuteTexture);
 	glDeleteTextures(1, &missTexture);
 	glDeleteTextures(1, &fretNumTexture);
 	glDeleteTextures(1, &sustainTexture);
@@ -97,7 +102,6 @@ void View::drawAnchor(float x, int df, float z, float dz)
 
 	glBindTexture(GL_TEXTURE_2D, anchorTexture);
 	m.draw(anchorMesh);
-	glBindTexture(GL_TEXTURE_2D, noteTexture);
 }
 
 void View::drawBeat(float z)
@@ -107,38 +111,35 @@ void View::drawBeat(float z)
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform3f(uniformLocationTint, 1, 1, 1);
 
+	glBindTexture(GL_TEXTURE_2D, noteTexture);
 	m.draw(beatMesh);
 }
 
-void View::drawNote(float x, float y, float z, int tint)
+void View::drawNote(float x, float y, float z, int tint, uint32_t mask)
 {
 	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
 	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 	setTint(tint);
 	
+	if (mask & NOTE_MASK_PALMMUTE)
+		glBindTexture(GL_TEXTURE_2D, notePalmMuteTexture);
+	else if (mask & NOTE_MASK_FRETHANDMUTE)
+		glBindTexture(GL_TEXTURE_2D, noteMuteTexture);
+	else
+		glBindTexture(GL_TEXTURE_2D, noteTexture);
 	m.draw(noteMesh);
 }
 
-void View::drawGhost(float x, float y, float z, int tint, bool hit, float t)
+void View::drawOpenNote(float x, float y, float z, int tint, uint32_t mask)
 {
-	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z)); 
+	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
 	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
-	
-	if (hit)
-	{
-		glBindTexture(GL_TEXTURE_2D, noteTexture);
-		setTint(tint, 1.0 / (0.33 + t * 10));		// 3 -> 1
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, missTexture);
-		setTint(tint, 1.0 / (1.0 + t * 10));		// 1 -> 1/3
-	}
-		
-	m.draw(noteMesh);
+	setTint(tint);
+
 	glBindTexture(GL_TEXTURE_2D, noteTexture);
+	m.draw(noteOpenMesh);
 }
 
 void View::drawSustain(float x, int df, float y, float z, float dz, int tint)
@@ -161,18 +162,6 @@ void View::drawSustain(float x, int df, float y, float z, float dz, int tint)
 		m.draw(noteSlideMeshes + df - 1); // slide sustain up
 	else
 		m.draw(noteSlideMeshes + 23 - df);	// slide sustain down
-
-	glBindTexture(GL_TEXTURE_2D, noteTexture);
-}
-
-void View::drawOpenNote(float x, float y, float z, int tint)
-{
-	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
-	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
-	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
-	setTint(tint);
-
-	m.draw(noteOpenMesh);
 }
 
 void View::drawOpenSustain(float x, float y, float z, float dz, int tint)
@@ -188,8 +177,27 @@ void View::drawOpenSustain(float x, float y, float z, float dz, int tint)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, openSustainTexture);
 	m.draw(noteOpenSustainMesh);
-	glBindTexture(GL_TEXTURE_2D, noteTexture);
 	glDisable(GL_BLEND);
+}
+
+void View::drawGhost(float x, float y, float z, int tint, bool hit, float t)
+{
+	glm::mat4 Model = glm::translate(unity, glm::vec3(x, y, z));
+	glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
+	glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	if (hit)
+	{
+		glBindTexture(GL_TEXTURE_2D, noteTexture);
+		setTint(tint, 1.0 / (0.33 + t * 10));		// 3 -> 1
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, missTexture);
+		setTint(tint, 1.0 / (1.0 + t * 10));		// 1 -> 1/3
+	}
+
+	m.draw(noteMesh);
 }
 
 void View::drawStrings(float z)
@@ -203,6 +211,7 @@ void View::drawStrings(float z)
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		setTint(stringNum);
 
+		glBindTexture(GL_TEXTURE_2D, noteTexture);
 		m.draw(stringMesh);
 	}
 }
@@ -217,6 +226,7 @@ void View::drawFrets(float z)
 		glm::mat4 MVP = camera.getProjection() * camera.getView() * Model;
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		glUniform3f(uniformLocationTint, 0.7f, 0.6f, 0.3f);
+		glBindTexture(GL_TEXTURE_2D, noteTexture);
 		m.draw(fretMesh);
 	}
 
@@ -229,7 +239,6 @@ void View::drawFrets(float z)
 		glUniformMatrix4fv(uniformLocationMVP, 1, GL_FALSE, &MVP[0][0]);
 		glBindTexture(GL_TEXTURE_2D, fretNumTexture);
 		m.draw(fretNumMeshes + fretNum);
-		glBindTexture(GL_TEXTURE_2D, noteTexture);
 	}
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
@@ -276,18 +285,20 @@ void View::show(Visuals& visuals, Hud& hud, float currentTime)
 	//for (auto it : visuals.beats)
 	//	drawBeat(it.time * o.zSpeed);
 
-	for (auto it : visuals.notes)
-		if (it.time > currentTime)		// notes do go past the string - symmetrical detection window; just hide them
-			if (it.fret == 0)
-				drawOpenNote(it.anchorFret * o.fretStep,
-					it.string * o.stringStep,
-					it.time * o.zSpeed,
-					it.string);
+	for (auto note : visuals.notes)
+		if (note.time > currentTime)		// notes do go past the string - symmetrical detection window; just hide them
+			if (note.fret == 0)
+				drawOpenNote(note.anchorFret * o.fretStep,
+					note.string * o.stringStep,
+					note.time * o.zSpeed,
+					note.string,
+					note.mask);
 			else
-				drawNote(it.fret * o.fretStep,
-					it.string * o.stringStep,
-					it.time * o.zSpeed,
-					it.string);
+				drawNote(note.fret * o.fretStep,
+					note.string * o.stringStep,
+					note.time * o.zSpeed,
+					note.string,
+					note.mask);
 
 	for (auto it : visuals.sustains)
 		if (it.startFret == 0)
