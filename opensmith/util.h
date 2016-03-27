@@ -4,8 +4,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-//bool readFile(const char* pFileName, std::string& contents);
-
+// TODO: use TextureSet class instead
 GLuint loadTexture(const char* fileName);
 
 void addShader(GLuint ShaderProgram, const char* pFileName, GLenum ShaderType);

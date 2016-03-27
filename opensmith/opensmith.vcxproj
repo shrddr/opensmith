@@ -121,6 +121,7 @@
     <ClCompile Include="Setup.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Text2D.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tuner.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="View.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Setup.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Text2D.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Tuner.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="View.h" />

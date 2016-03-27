@@ -1,5 +1,4 @@
 #include "GameState.h"
-#include "GLFW/glfw3.h"
 #include "Menu.h"
 #include "Settings/Settings.h"
 #include "View.h"

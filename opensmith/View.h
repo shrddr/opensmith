@@ -1,60 +1,122 @@
 #pragma once
 #include <vector>
 #include <deque>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Settings/Settings.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "Hud.h"
 
-struct Visuals
+class View;
+
+class Drawable
 {
-	struct Beat
-	{
-		float time;
-	};
+public:
+	virtual void draw(float currentTime) {};
+	static View* v;
+};
 
-	struct Note
-	{
-		int fret;
-		int string;
-		float time;
-		int anchorFret;
-		uint32_t mask;
-		bool hit;
-	};
+struct Anchor : public Drawable
+{
+	Anchor(int fret, int width, float startTime, float endTime) :
+		fret(fret),
+		width(width),
+		startTime(startTime),
+		endTime(endTime) {};
+	void draw(float currentTime);
 
-	struct Sustain
-	{
-		int startFret;
-		int deltaFret;
-		int string;
-		float time;
-		float length;
-		int anchorFret;
-	};
+	float startTime;
+	float endTime;
+	int fret;
+	int width;
+};
 
-	struct Anchor
-	{
-		int fret;
-		int width;
-		float startTime;
-		float endTime;
-	};
+struct Beat
+{
+	float time;
+};
 
-	struct Ghost
-	{
-		int fret;
-		int string;
-		float time;
-		bool hit;
-	};
+struct Note : public Drawable
+{
+	Note(char fret, char string, float time, char anchorFret, uint32_t mask) :
+		fret(fret),
+		string(string),
+		time(time),
+		anchorFret(anchorFret),
+		mask(mask),
+		hit(false) {};
+	void draw(float currentTime);
 
-	std::deque<Anchor> anchors;
-	std::deque<Beat> beats;
-	std::deque<Note> notes;
-	std::deque<Sustain> sustains;
-	std::deque<Ghost> ghosts;
+	float time;
+	uint32_t mask;
+	char fret;
+	char string;
+	char anchorFret;
+	bool hit;
+};
+
+struct Sustain : public Drawable
+{
+	Sustain(char startFret, char deltaFret, char string, float time, float length, char anchorFret) :
+		startFret(startFret),
+		deltaFret(deltaFret),
+		string(string),
+		time(time),
+		length(length),
+		anchorFret(anchorFret) {};
+	void draw(float currentTime);
+
+	float time;
+	float length;
+	char startFret;
+	char deltaFret;
+	char string;
+	char anchorFret;
+};
+
+struct Ghost : public Drawable
+{
+	Ghost(char fret, char string, float time, bool hit) :
+		fret(fret),
+		string(string),
+		time(time),
+		hit(hit) {};
+	void draw(float currentTime);
+
+	float time;
+	char fret;
+	char string;
+	bool hit;
+};
+
+struct String : public Drawable
+{
+	String(char id) :
+		id(id) {};
+	void draw(float currentTime);
+
+	char id;
+};
+
+struct Fret : public Drawable
+{
+	Fret(char id) :
+		id(id) {};
+	void draw(float currentTime);
+
+	char id;
+};
+
+struct FretLabel : public Drawable
+{
+	FretLabel(char id) :
+		id(id) {};
+	void draw(float currentTime);
+
+	char id;
+	bool active;
 };
 
 class View
@@ -62,23 +124,28 @@ class View
 public:
 	View(GLFWwindow& window);
 	~View();
-	void show(Visuals& visuals, Hud& hud, float currentTime);
+	void show(Hud& hud, float currentTime);
+	void setModel(glm::mat4& Model);
+	void setTexture(GLuint textureId);
+	void setTint(int string, float brightness = 1);
+	void setTint(float r, float g, float b);
+	void setActiveAnchor(char fret, char width);
+	Camera camera;
+	MeshSet meshes;
+	TextureSet textures;
+	size_t stringCount;
+
+	std::deque<Anchor> anchors;
+	std::deque<Beat> beats;
+	std::deque<Note> notes;
+	std::deque<Sustain> sustains;
+	std::deque<Ghost> ghosts;
+	std::vector<String> strings;
+	std::vector<Fret> frets;
+	std::vector<FretLabel> fretLabels;
 private:
 	GLFWwindow& window;
-	Camera camera;
-	size_t stringCount;
 	void createVertexBuffer();
-
-	void drawAnchor(float x, int df, float z, float dz);
-	void drawBeat(float z);
-	void drawNote(float x, float y, float z, int tint, uint32_t mask);
-	void drawOpenNote(float x, float y, float z, int tint, uint32_t mask);
-	void drawSustain(float x, int df, float y, float z, float dz, int tint);
-	void drawOpenSustain(float x, float y, float z, float dz, int tint);
-	void drawGhost(float x, float y, float z, int tint, bool hit, float t);
-	void drawStrings(float z);
-	void drawFrets(float z);
-	void setTint(int string, float brightness = 1);
 
 	GLuint vertexArrayId;
 	GLuint vertexBufferId;
@@ -88,27 +155,6 @@ private:
 	GLuint uniformLocationMVP;
 	GLuint uniformLocationTex;
 	GLuint uniformLocationTint;
-
-	MeshSet m;
-	GLuint beatMesh;
-	GLuint noteMesh;
-	GLuint noteSustainMesh;
-	GLuint noteSlideMeshes;
-	GLuint noteOpenMesh;
-	GLuint noteOpenSustainMesh;
-	GLuint stringMesh;
-	GLuint fretMesh;
-	GLuint fretNumMeshes;
-	GLuint anchorMesh;
-
-	GLuint anchorTexture;
-	GLuint noteTexture;
-	GLuint noteMuteTexture;
-	GLuint notePalmMuteTexture;
-	GLuint missTexture;
-	GLuint fretNumTexture;
-	GLuint sustainTexture;
-	GLuint openSustainTexture;
 
 	double lastFrameTime;
 };

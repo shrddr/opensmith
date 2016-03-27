@@ -132,8 +132,8 @@ void Model::update(float glfwTime)
 	// add what's coming
 	while (itBeat != s.BPMs.end() && itBeat->time < maxTime)
 	{
-		Visuals::Beat newBeat = { itBeat->time };
-		visuals.beats.push_back(newBeat);
+		Beat newBeat = { itBeat->time };
+		v.beats.push_back(newBeat);
 		++itBeat;
 	}
 
@@ -147,26 +147,15 @@ void Model::update(float glfwTime)
 			if (anchor.endBeatTime < itIteration->startTime) continue;
 			if (anchor.startBeatTime > itIteration->nextPhraseTime) break;
 			// find out fret later
-			Visuals::Anchor o = { -1, anchor.width, anchor.startBeatTime, anchor.endBeatTime };
+			Anchor o = { -1, anchor.width, anchor.startBeatTime, anchor.endBeatTime };
 
 			// cut anchors to iteration length
 			if (anchor.startBeatTime < itIteration->startTime)
 				o.startTime = itIteration->startTime;
 			if (anchor.endBeatTime > itIteration->nextPhraseTime)
 				o.endTime = itIteration->nextPhraseTime;
-
-			for (auto existingAnchor : visuals.anchors)
-			{
-				if (o.startTime < existingAnchor.endTime)
-				{
-					std::cout << "anchor overlay: existing "
-						<< existingAnchor.startTime << " " << existingAnchor.endTime
-						<< " new "
-						<< o.startTime << " " << o.endTime << std::endl;
-				}
-			}
 			
-			visuals.anchors.push_back(o);
+			v.anchors.push_back(o);
 		}
 
 		for (auto n : a.Notes)
@@ -178,15 +167,15 @@ void Model::update(float glfwTime)
 			// simple note
 			if (n.stringIndex != -1)
 			{
-				Visuals::Note newNote = { n.fretId, n.stringIndex, n.time, n.anchorFretId, n.noteMask };
-				visuals.notes.push_back(newNote);
+				Note newNote = { n.fretId, n.stringIndex, n.time, n.anchorFretId, n.noteMask };
+				v.notes.push_back(newNote);
 
 				if (n.sustain > 0)
 				{
-					Visuals::Sustain newSustain = { n.fretId, 0, n.stringIndex, n.time, n.sustain, n.anchorFretId };
+					Sustain newSustain = { n.fretId, 0, n.stringIndex, n.time, n.sustain, n.anchorFretId };
 					if (n.slideTo != -1 || n.slideUnpitchTo != -1)
 						newSustain.deltaFret = n.slideTo - n.fretId; // TODO: Take care of Unpitch
-					visuals.sustains.push_back(newSustain);
+					v.sustains.push_back(newSustain);
 				}
 			}
 
@@ -194,26 +183,26 @@ void Model::update(float glfwTime)
 			// TODO: push a chord object to draw the blue glow
 			if (n.stringIndex < 0 && n.chordId >= 0)
 			{
-				for (int i = 0; i < 6; i++)
+				for (char i = 0; i < 6; i++)
 				{
 					if (s.Chords[n.chordId].frets[i] >= 0) //frets,fingers,notes,name
 					{
-						Visuals::Note newNote = { s.Chords[n.chordId].frets[i], i, n.time, n.anchorFretId, n.noteMask };
+						Note newNote = { s.Chords[n.chordId].frets[i], i, n.time, n.anchorFretId, n.noteMask };
 
 						// noteMasks,bendDatas,slides,vibratos are stored separately because they can differ between chord notes
 						//if (n.chordNotesId >= 0 && s.ChordNotes[n.chordNotesId].noteMask[i] >= 0)
 						//	newNote.mask = s.ChordNotes[n.chordNotesId].noteMask[i];
 
-						visuals.notes.push_back(newNote);
+						v.notes.push_back(newNote);
 						if (n.sustain > 0)
 						{
-							Visuals::Sustain newSustain = { s.Chords[n.chordId].frets[i], 0, i, n.time, n.sustain, n.anchorFretId };
+							Sustain newSustain = { s.Chords[n.chordId].frets[i], 0, i, n.time, n.sustain, n.anchorFretId };
 
 							if (n.chordNotesId >= 0)
 								if (s.ChordNotes[n.chordNotesId].slideTo[i] != -1 || s.ChordNotes[n.chordNotesId].slideUnpitchTo[i] != -1)
 									newSustain.deltaFret = s.ChordNotes[n.chordNotesId].slideTo[i] - s.Chords[n.chordId].frets[i];
 
-							visuals.sustains.push_back(newSustain);
+							v.sustains.push_back(newSustain);
 						}
 					}
 				}
@@ -221,7 +210,7 @@ void Model::update(float glfwTime)
 
 			// set anchor fret
 			// TODO: excessive looping here; maybe save previous position to speed up?
-			for (auto& anchor : visuals.anchors)
+			for (auto& anchor : v.anchors)
 			{
 				if (anchor.fret != -1) continue;
 				if (anchor.endTime < n.time) continue;
@@ -235,42 +224,42 @@ void Model::update(float glfwTime)
 
 	noteDetector->analyze(hud.detected);
 
-	for (auto note = visuals.notes.begin(); note != visuals.notes.end() && note->time - o.detectionTimeWindow / 2 < currentTime; /* nop */)
+	for (auto note = v.notes.begin(); note != v.notes.end() && note->time - o.detectionTimeWindow / 2 < currentTime; /* nop */)
 		if (note->hit)
-			note = visuals.notes.erase(note);
+			note = v.notes.erase(note);
 		else
 		{
 			note->hit = noteDetector->confirm(note->string, note->fret, note->time);
 			if (note->hit)
 			{
-				Visuals::Ghost newGhost = { note->fret, note->string, note->time, true };
-				visuals.ghosts.push_back(newGhost);
+				Ghost newGhost = { note->fret, note->string, note->time, true };
+				v.ghosts.push_back(newGhost); // hit-ghost
 			}
 			++note;
 		}
 
-	v.show(visuals, hud, currentTime);
+	v.show(hud, currentTime);
 
 	// clean what we already passed
 
-	while (!visuals.beats.empty() && visuals.beats.front().time < currentTime)
-		visuals.beats.pop_front();
+	while (!v.beats.empty() && v.beats.front().time < currentTime)
+		v.beats.pop_front();
 
-	while (!visuals.notes.empty() && visuals.notes.front().time + o.detectionTimeWindow / 2 < currentTime)
+	while (!v.notes.empty() && v.notes.front().time + o.detectionTimeWindow / 2 < currentTime)
 	{
-		Visuals::Ghost newGhost = { visuals.notes.front().fret, visuals.notes.front().string, visuals.notes.front().time + o.detectionTimeWindow / 2, false };
-		visuals.ghosts.push_back(newGhost);
-		visuals.notes.pop_front();
+		Ghost newGhost = { v.notes.front().fret, v.notes.front().string, v.notes.front().time + o.detectionTimeWindow / 2, false };
+		v.ghosts.push_back(newGhost); // miss-ghost
+		v.notes.pop_front();
 	}
 		
-	while (!visuals.sustains.empty() && visuals.sustains.front().time + visuals.sustains.front().length < currentTime)
-		visuals.sustains.pop_front();
+	while (!v.sustains.empty() && v.sustains.front().time + v.sustains.front().length < currentTime)
+		v.sustains.pop_front();
 		
-	while (!visuals.anchors.empty() && visuals.anchors.front().endTime < currentTime)
-		visuals.anchors.pop_front();
+	while (!v.anchors.empty() && v.anchors.front().endTime < currentTime)
+		v.anchors.pop_front();
 
-	while (!visuals.ghosts.empty() && visuals.ghosts.front().time + o.ghostStayTime < currentTime)
-		visuals.ghosts.pop_front();
+	while (!v.ghosts.empty() && v.ghosts.front().time + o.ghostStayTime < currentTime)
+		v.ghosts.pop_front();
 }
 
 

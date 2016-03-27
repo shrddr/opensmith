@@ -8,6 +8,7 @@
 #include "Settings/Settings.h"
 #include "PsarcReader/PSARC.h"
 #include "PsarcReader/Sng.h"
+
 class Model
 {
 public:
@@ -38,10 +39,6 @@ private:
 	// Model-View interface
 
 	Hud hud;
-	Visuals visuals;
 
-	// Gameplay
-
-	
 };
 

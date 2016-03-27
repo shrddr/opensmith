@@ -307,45 +307,34 @@ TuningMenu::TuningMenu()
 	items.push_back("E Standard");
 	items.push_back("Eb Standard");
 	items.push_back("Drop D");
+	items.push_back("Drop C#");
+	items.push_back("Drop C");
 }
 
 void TuningMenu::keyEnter()
 {
-	if (selectedItem == 0)
+	switch (selectedItem)
 	{
+	case 0:
 		delete gameState;
-		std::vector<int> tuning;
-		tuning.push_back(40);
-		tuning.push_back(45);
-		tuning.push_back(50);
-		tuning.push_back(55);
-		tuning.push_back(59);
-		tuning.push_back(64);
-		gameState = new Tuner(tuning, true);
-	}
-	if (selectedItem == 1)
-	{
+		gameState = new Tuner({ 40, 45, 50, 55, 59, 64 }, true);
+		break;
+	case 1:
 		delete gameState;
-		std::vector<int> tuning;
-		tuning.push_back(39);
-		tuning.push_back(44);
-		tuning.push_back(49);
-		tuning.push_back(54);
-		tuning.push_back(58);
-		tuning.push_back(63);
-		gameState = new Tuner(tuning, true);
-	}
-	if (selectedItem == 2)
-	{
+		gameState = new Tuner({ 39, 44, 49, 54, 58, 63 }, true);
+		break;
+	case 2:
 		delete gameState;
-		std::vector<int> tuning;
-		tuning.push_back(38);
-		tuning.push_back(45);
-		tuning.push_back(50);
-		tuning.push_back(55);
-		tuning.push_back(59);
-		tuning.push_back(64);
-		gameState = new Tuner(tuning, true);
+		gameState = new Tuner({ 38, 45, 50, 55, 59, 64 }, true);
+		break;
+	case 3:
+		delete gameState;
+		gameState = new Tuner({ 37, 44, 49, 54, 58, 63 }, true);
+		break;
+	case 4:
+		delete gameState;
+		gameState = new Tuner({ 36, 43, 48, 53, 57, 62 }, true);
+		break;
 	}
 }
 
