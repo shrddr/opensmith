@@ -133,7 +133,7 @@ public:
 	Camera camera;
 	MeshSet meshes;
 	TextureSet textures;
-	size_t stringCount;
+	char stringCount;
 
 	std::deque<Anchor> anchors;
 	std::deque<Beat> beats;

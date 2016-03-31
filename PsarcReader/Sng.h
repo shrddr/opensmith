@@ -39,7 +39,7 @@ namespace SngReader
 	const int headerSize = 8;
 	const int blockSize = 16;
 
-	int readTo(std::vector<char>& input, std::vector<char>& storage);
+	void readTo(std::vector<char>& input, std::vector<char>& storage);
 	int inflateBytes(char* source, int srcLen, std::vector<char>& dest);
 
 	//move out to crypto.h

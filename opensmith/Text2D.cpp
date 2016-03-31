@@ -17,9 +17,9 @@ Text2D::Text2D(const char* texturePath)
 	UniformID = glGetUniformLocation(ShaderID, "myTextureSampler");
 }
 
-void Text2D::print(const char* text, float x, float y, float size)
+void Text2D::print(std::string const& text, float x, float y, float size)
 {
-	unsigned int length = strlen(text);
+	unsigned int length = text.length();
 	if (length == 0)
 		return;
 

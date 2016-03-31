@@ -47,7 +47,7 @@ Model::Model(View& v, Controller& c):
 
 	std::cout << glfwGetTime() << " > SNG parsed" << std::endl;
 
-	std::cout << "Tuning: " << tuningString(s.metadata.tuning) << std::endl;
+	std::cout << "Tuning: " << notesNames(s.metadata.tuning) << std::endl;
 
 	preloadSNG();
 

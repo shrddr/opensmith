@@ -16,11 +16,11 @@ View::View(GLFWwindow& window):
 	camera(window)
 {
 	stringCount = (o.role == bass) ? 4 : 6;
-	for (size_t i = 0; i < stringCount; i++)
+	for (char i = 0; i < stringCount; i++)
 		strings.push_back(String(i));
-	for (size_t i = 0; i < 25; i++)
+	for (char i = 0; i < 25; i++)
 		frets.push_back(Fret(i));
-	for (size_t i = 1; i < 25; i++)
+	for (char i = 1; i < 25; i++)
 		fretLabels.push_back(FretLabel(i));
 
 	glClearColor(0.0f, 0.02f, 0.02f, 0.0f);

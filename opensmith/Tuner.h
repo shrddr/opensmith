@@ -7,21 +7,24 @@
 class TunerDetector : public AudioInputBuffer
 {
 public:
-	TunerDetector(size_t sampleRate, size_t bufferSize, size_t bufferCount);
-	void prepare(int note);
-	float analyze();
+	TunerDetector();
+	void prepare(float targetFrequency);
+	void analyze();
+	float result();
 private:
-	size_t sampleRate;
-	size_t inputSize;
-	float frequency;
-	static const int offsets[];
-	static const int offsetCount;
+	enum { lookup, autocorr } method;
+	CircularBuffer<float> history;
+
+	void analyzeLookup();
+	float targetFrequency;
+	std::vector<float> offsets;
 	std::vector<float> sinTables;
 	std::vector<float> cosTables;
 	void updateTable(size_t table, float freq);
-	CircularBuffer<float> history;
 
-	Logger L;
+	void analyzeAuto();
+	int minPeriod;
+	int maxPeriod;
 };
 
 class Tuner : public GameState
@@ -37,9 +40,9 @@ private:
 	void drawBackground();
 	const float neckHeight = 200.0f;
 
-	static const size_t sampleRate = 48000;
 	std::vector<int> notes;
 	size_t currentNote;
+	float targetFrequency;
 
 	bool hit;
 	double hitStart;

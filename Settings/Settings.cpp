@@ -14,7 +14,7 @@ Settings::Settings()
 	// visual
 	fullScreen = false;
 
-	stringColors[0] = 1.0f; stringColors[1] = 0.1f; stringColors[2] = 0.1;
+	stringColors[0] = 1.0f; stringColors[1] = 0.1f; stringColors[2] = 0.1f;
 	stringColors[3] = 1.0f; stringColors[4] = 1.0f; stringColors[5] = 0.1f;
 	stringColors[6] = 0.2f; stringColors[7] = 0.2f; stringColors[8] = 1.0f;
 	stringColors[9] = 1.0f; stringColors[10] = 0.7f; stringColors[11] = 0.1f;
@@ -54,7 +54,7 @@ Settings::Settings()
 	// tuner
 	lastTuning.clear();
 	precisionCentDelta = 5.0f;
-	precisionHoldTime = 1.0f;
+	precisionHoldTime = 3.0f;
 }
 
 void Settings::save()

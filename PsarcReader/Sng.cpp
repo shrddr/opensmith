@@ -10,7 +10,7 @@
 #include "Keys.h"
 #include "Sng.h"
 
-int SngReader::readTo(std::vector<char>& input, std::vector<char>& storage)
+void SngReader::readTo(std::vector<char>& input, std::vector<char>& storage)
 {
 	MemoryReaderLE SourceReader(input);
 	uint32_t head = SourceReader.readUint32();
