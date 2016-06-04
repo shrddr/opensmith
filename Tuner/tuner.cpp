@@ -166,7 +166,7 @@ int main()
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		float freq = d.detect(30, 400);
-		if (isnan(freq))
+		if (std::isnan(freq))
 			continue;
 
 		float noteDiff = 9E9;

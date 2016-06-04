@@ -1,5 +1,6 @@
 #include "notes.h"
 #include <iostream>
+#include <cmath>
 
 void convertTuningAbsolute(std::vector<int>& tuning)
 {
