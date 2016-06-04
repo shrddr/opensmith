@@ -1,8 +1,13 @@
+bin/opensmith
+bin/Setup
+bin/Test
+bin/Tuner
 bin/*.exe
 bin/*.lib
 bin/*.iobj
 bin/*.ipdb
 bin/*.a
+resources/dlc
 resources/dlc/*
 resources/temp.*
 resources/settings
