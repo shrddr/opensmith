@@ -35,9 +35,6 @@ This one also needs building from source.
 #### and finally
 * `cd opensmith`
 * `make`
-* `cd bin`
-* `./Setup`
-* `./opensmith PATH/TO/songfile.psarc`
 
 ### Mac OS X 10.8
 
@@ -88,6 +85,3 @@ This one also needs building from source.
 #### and finally
 * `cd opensmith`
 * `make`
-* `cd bin`
-* `./Setup`
-* `./opensmith PATH/TO/songfile.psarc`
