@@ -1,6 +1,7 @@
 ### Ubuntu 16
 
-* `sudo apt-get install g++ pkg-config libglfw3-dev libglew-dev zlib1g-dev portaudio19-dev libogg-dev libvorbis-dev`
+* `sudo apt-get install git g++ pkg-config libglfw3-dev libglew-dev zlib1g-dev portaudio19-dev libogg-dev libvorbis-dev`
+* `git clone https://github.com/shrddr/opensmith.git`
 * `cd opensmith`
 * `make`
 
