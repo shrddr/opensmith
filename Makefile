@@ -5,7 +5,7 @@ OSXGL = -framework OpenGL
 PORTAUDIO = bin/libportaudio.a -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
 else
 CXXFLAGS = -std=c++11
-PORTAUDIO = bin/libportaudio.a -lasound -pthread
+PORTAUDIO = -lportaudio -lasound -pthread
 endif
 
 all: libRijndael libPsarcReader libSettings libWem libAudio exeopensmith exeSetup exeTest exeTuner
