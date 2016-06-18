@@ -10,7 +10,7 @@ SpriteSet::~SpriteSet()
 	for (auto sprite : sprites) delete sprite;
 }
 
-int SpriteSet::add(float x, float y, float width, float height, glm::vec3 tint)
+int SpriteSet::add(float x, float y, float width, float height, glm::vec3& tint)
 {
 	size_t id = sprites.size();
 

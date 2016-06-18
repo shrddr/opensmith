@@ -133,6 +133,7 @@ void Setup::showConfirm()
 	items.clear();
 	items.push_back("Save");
 	items.push_back("Choose again");
+	selectedItem = 0;
 }
 
 void Setup::keyEnter()

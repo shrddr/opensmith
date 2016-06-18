@@ -113,25 +113,24 @@ MainMenu::MainMenu()
 
 void MainMenu::keyEnter()
 {
-	if (selectedItem == 0)
+	switch (selectedItem)
 	{
-		delete gameState;
-		gameState = new FileMenu;
-	}
-	if (selectedItem == 1)
-	{
-		delete gameState;
-		gameState = new Setup;
-	}
-	if (selectedItem == 2)
-	{
-		delete gameState;
-		gameState = new TuningMenu();
-	}
-	if (selectedItem == 3)
-	{
-		delete gameState;
-		gameState = 0;
+		case 0: 
+			delete gameState;
+			gameState = new FileMenu;
+			break;
+		case 1:
+			delete gameState;
+			gameState = new Setup;
+			break;
+		case 2:
+			delete gameState;
+			gameState = new TuningMenu();
+			break;
+		case 3:
+			delete gameState;
+			gameState = 0;
+			break;
 	}
 }
 

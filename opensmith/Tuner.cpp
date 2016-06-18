@@ -27,15 +27,15 @@ Tuner::Tuner(std::vector<int> tuning, bool returnToMenu):
 	for (size_t id = 0; id < stringCount; id++)
 	{
 		gaugePositions.push_back(y);
+		glm::vec3 tint(o.stringColors[3 * id],
+				o.stringColors[3 * id + 1],
+				o.stringColors[3 * id + 2]);
 		sprites.add(
 			x - h / 2,
 			y,
 			w,
 			h,
-			glm::vec3(
-				o.stringColors[3 * id],
-				o.stringColors[3 * id + 1],
-				o.stringColors[3 * id + 2])
+			tint
 		);
 		y -= stringSpacing;
 	}

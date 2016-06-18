@@ -59,12 +59,13 @@ void Hud::initNotes()
 		for (size_t fret = 0; fret < 24; fret++)
 		{
 			float left = 100 + fret * 25;
+			glm::vec3 tint(1, 1, 1);
 			sprites.add(
 				left,
 				bottom,
 				24,
 				24,
-				glm::vec3(1, 1, 1)
+				tint
 			);
 		}
 	}
