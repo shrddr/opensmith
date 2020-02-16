@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <GL/glew.h>
+#include "Session.h"
 #include "Tuner.h"
 #include "Menu.h"
-#include "util.h"
 #include "Settings/Settings.h"
 #include "Audio/notes.h"
+#include "../util.h"
 
 #define SAMPLE_RATE 48000
 

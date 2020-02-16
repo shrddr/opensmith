@@ -1,9 +1,9 @@
-#include "GameState.h"
+#include "Session.h"
 #include "Menu.h"
 #include "Settings/Settings.h"
-#include "View.h"
-#include "Model.h"
-#include "Controller.h"
+#include "../View.h"
+#include "../Model.h"
+#include "../Controller.h"
 
 Session::Session()
 {

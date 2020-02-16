@@ -13,9 +13,11 @@ Dependencies:
 * [dirent](https://github.com/tronkko/dirent) - filesystem api
 
 Building:
-VS 2015 solution and prebuilt dependencies included.
+VS 2019 solution and prebuilt dependencies included.
 Also comes with GCC makefile (might not be up-to-date). [Building guide](Install.md)
 
 Usage:
 Put .psarc song files into `resources/dlc` directory. You can use official Rocksmith DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC or Mac format.
-After that change directory to `bin` and run `opensmith`. Use `-f` switch to run fullscreen. Select setup first and choose the audio device. Then load up a song and have fun.
+After that change directory to `bin` and run `opensmith`. Use `-f` switch to run fullscreen. Select setup first to choose input and output audio devices. Then pick a song, tune and have fun.
+
+![Session screenshot](scrn-sess.png)

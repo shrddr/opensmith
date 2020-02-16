@@ -6,8 +6,8 @@
 
 #include "Audio/Audio.h"
 #include "Settings/Settings.h"
-#include "GameState.h"
-#include "Menu.h"
+#include "GameStates/GameState.h"
+#include "GameStates/Menu.h"
 
 GLFWwindow* GameState::window = 0;
 GameState* GameState::gameState = 0;

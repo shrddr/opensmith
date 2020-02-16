@@ -1,9 +1,9 @@
-#include <GL/glew.h>
-#include "Setup.h"
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include "util.h"
+#include <GL/glew.h>
+#include "../util.h"
+#include "Setup.h"
 
 Setup::Setup() :
 	stage(api),

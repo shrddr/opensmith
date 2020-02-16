@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include "WaveDemo.h"
-#include "Menu.h"
+#include "GameStates/Menu.h"
 #include "util.h"
 
 WaveDemo::WaveDemo() :

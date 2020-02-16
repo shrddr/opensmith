@@ -1,7 +1,7 @@
 #pragma once
 #include "Menu.h"
 #include "Audio/Audio.h"
-#include "WaveDemo.h"
+#include "../WaveDemo.h"
 
 class Setup: public Menu
 {

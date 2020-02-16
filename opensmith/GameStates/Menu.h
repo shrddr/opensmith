@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 #include "GameState.h"
-#include "Text2D.h"
+#include "../Text2D.h"
 
 class Menu : public GameState
 {

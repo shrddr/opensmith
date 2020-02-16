@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "GameState.h"
+#include "GameStates/GameState.h"
 #include "Audio/Audio.h"
 
 class Wave : public AudioInputBuffer

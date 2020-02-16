@@ -11,14 +11,15 @@
     <ClCompile Include="View.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="GameState.cpp" />
-    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Filesystem.cpp" />
-    <ClCompile Include="Tuner.cpp" />
     <ClCompile Include="WaveDemo.cpp" />
-    <ClCompile Include="Setup.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="GameStates\GameState.cpp" />
+    <ClCompile Include="GameStates\Menu.cpp" />
+    <ClCompile Include="GameStates\Session.cpp" />
+    <ClCompile Include="GameStates\Tuner.cpp" />
+    <ClCompile Include="GameStates\Setup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -31,13 +32,14 @@
     <ClInclude Include="Hud.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="GameState.h" />
-    <ClInclude Include="Menu.h" />
     <ClInclude Include="Filesystem.h" />
-    <ClInclude Include="Tuner.h" />
     <ClInclude Include="WaveDemo.h" />
-    <ClInclude Include="Setup.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="GameStates\GameState.h" />
+    <ClInclude Include="GameStates\Menu.h" />
+    <ClInclude Include="GameStates\Session.h" />
+    <ClInclude Include="GameStates\Tuner.h" />
+    <ClInclude Include="GameStates\Setup.h" />
   </ItemGroup>
 </Project>
