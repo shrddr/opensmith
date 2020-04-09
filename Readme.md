@@ -11,6 +11,7 @@ Dependencies:
 * [ogg](https://xiph.org/ogg/) - song container
 * [vorbis](https://xiph.org/vorbis/) - song codec
 * [dirent](https://github.com/tronkko/dirent) - filesystem api
+* [tinyxml2]( https://github.com/leethomason/tinyxml2) - song XML parsing
 
 Building:
 VS 2019 solution and prebuilt dependencies included.

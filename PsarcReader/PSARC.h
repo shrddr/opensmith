@@ -53,6 +53,11 @@ public:
 	std::vector<Entry*> Entries;
 	std::vector<uint32_t> zLengths;
 
+	void DetectEntries();
+
+	Entry* entry_audio;
+	Entry* entry_vocals;
+
 private:
 	const int headerSize = 32;
 

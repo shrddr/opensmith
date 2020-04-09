@@ -5,6 +5,8 @@
 #include "PsarcReader/PSARC.h"
 #include "PsarcReader/Sng.h"
 #include "Audio/VorbisDecoder.h"
+#include "Vocals/Vocals.h"
+#include <cassert>
 
 // test if end of file is handled correctly
 bool testDecoderEof(const char* fileName)
@@ -138,24 +140,35 @@ void testWemMPerformance(const char* fileName)
 	}
 }
 
+void test_read_vocals(char* songname, size_t expected_entry_count)
+{
+	PSARC* psarc = new PSARC(songname);
+	std::vector<char> vocalsEntryStorage;
+	psarc->entry_vocals->Data->readTo(vocalsEntryStorage);
+	Vocals v(vocalsEntryStorage);
+	assert(v.Count() == expected_entry_count);
+}
+
 int main()
 {
 	//std::cout << testDecoderEof("../resources/temp.wem") << std::endl;
 
-	//std::cout << testPsarc("../../../rhcp_p.psarc", 24) << std::endl;
-	//std::cout << testPsarc("../../../rhcp_m.psarc", 24) << std::endl;
-	//std::cout << testSng("../resources/temp_p.sng") << std::endl;
-	//std::cout << testSng("../resources/temp.sng") << std::endl;
+	/*std::cout << testPsarc("../../../rhcp_p.psarc", 24) << std::endl;
+	std::cout << testPsarc("../../../rhcp_m.psarc", 24) << std::endl;
+	std::cout << testSng("../resources/temp_p.sng") << std::endl;
+	std::cout << testSng("../resources/temp.sng") << std::endl;*/
 
 	//std::cout << testPsarcWemStream("../../../rhcp_p.psarc", 0) << std::endl;
 
-	auto t1 = std::chrono::high_resolution_clock::now();
+	/*auto t1 = std::chrono::high_resolution_clock::now();
 	testWemPerformance("../resources/temp.wem");
 	auto t2 = std::chrono::high_resolution_clock::now();
 	std::cout << std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1).count() << std::endl;
 	testWemMPerformance("../resources/temp.wem");
 	auto t3 = std::chrono::high_resolution_clock::now();
-	std::cout << std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2).count() << std::endl;
+	std::cout << std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2).count() << std::endl;*/
+
+	test_read_vocals("../resources/dlc/Lamb-Of-God_512_v2_0_DD_p.psarc", 344);
 
 	std::cin.get();
 }

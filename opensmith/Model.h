@@ -39,6 +39,5 @@ private:
 	// Model-View interface
 
 	Hud hud;
-
 };
 

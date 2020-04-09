@@ -4,6 +4,7 @@
 #include "Settings/Settings.h"
 #include "Wem/Wem.h"
 #include "Audio/notes.h"
+#include "Vocals/Vocals.h"
 
 Model::Model(View& v, Controller& c):
 	v(v),
@@ -11,20 +12,7 @@ Model::Model(View& v, Controller& c):
 {
 	PSARC* psarc = new PSARC(o.psarcFile.c_str());
 	std::cout << glfwGetTime() << " > PSARC header parsed" << std::endl;
-
-	int entryAudio = -1;
-	uint64_t entryAudioLength = 0;
-
-	for (size_t i = 0; i < psarc->Entries.size(); i++)
-	{
-		auto e = psarc->Entries[i];
-		if (e->name.find(".wem") != std::string::npos)
-			if (e->Length > entryAudioLength)
-			{
-				entryAudioLength = e->Length;  // HACK: pick the largest
-				entryAudio = i;
-			}
-	}
+	psarc->DetectEntries();
 
 	// get sng
 
@@ -54,7 +42,7 @@ Model::Model(View& v, Controller& c):
 	// get audio
 
 	std::vector<char> audioEntryStorage;
-	psarc->Entries[entryAudio]->Data->readTo(audioEntryStorage);
+	psarc->entry_audio->Data->readTo(audioEntryStorage);
 
 	if (o.dumpWem)
 	{
@@ -74,6 +62,15 @@ Model::Model(View& v, Controller& c):
 	std::cout << glfwGetTime() << " > VorbisDecoder init" << std::endl;
 
 	buffer = new VorbisBuffer(*decoder);
+
+	// get vocals
+
+	std::vector<char> vocalsEntryStorage;
+	if (psarc->entry_vocals != NULL)
+	{
+		psarc->entry_vocals->Data->readTo(vocalsEntryStorage);
+		Vocals v(vocalsEntryStorage);
+	}
 
 	// init detector
 

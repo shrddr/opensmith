@@ -105,6 +105,9 @@ PSARC::PSARC(char const* fileName):
 		delete *Entries.begin();
 		Entries.erase(Entries.begin());
 	}
+
+	entry_audio = NULL;
+	entry_vocals = NULL;
 }
 
 PSARC::~PSARC()
@@ -112,6 +115,23 @@ PSARC::~PSARC()
 	for (auto it = Entries.begin(); it != Entries.end(); ++it)
 	{
 		delete *it;
+	}
+}
+
+void PSARC::DetectEntries()
+{
+	uint64_t entryAudioLength = 0;
+	for (size_t i = 0; i < Entries.size(); i++)
+	{
+		auto e = Entries[i];
+		if (e->name.find(".wem") != std::string::npos)
+			if (e->Length > entryAudioLength)
+			{
+				entryAudioLength = e->Length;  // HACK: pick the largest
+				entry_audio = e;
+			}
+		if (e->name.find("vocals.xml") != std::string::npos)
+			entry_vocals = e;
 	}
 }
 
