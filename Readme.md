@@ -13,9 +13,7 @@ Dependencies:
 * [dirent](https://github.com/tronkko/dirent) - filesystem api
 * [tinyxml2]( https://github.com/leethomason/tinyxml2) - song XML parsing
 
-Building:
-VS 2019 solution and prebuilt dependencies included.
-Also comes with GCC makefile (might not be up-to-date). [Building guide](Install.md)
+Building: cmake
 
 Usage:
 Put .psarc song files into `resources/dlc` directory. You can use official Rocksmith DLCs as well as [custom](https://github.com/rscustom/rocksmith-custom-song-toolkit) DLCs, PC or Mac format.

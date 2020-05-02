@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include "Rijndael/rijndael.h"
-#include "zlib/zlib.h"
+#include "zlib.h"
 #include "PSARC.h"
 #include "Keys.h"
 

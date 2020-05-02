@@ -6,7 +6,7 @@
 #include "StreamReader.h"
 #include "MemoryReader.h"
 #include "Rijndael/rijndael.h"
-#include "zlib/zlib.h"
+#include <zlib.h>
 #include "Keys.h"
 #include "Sng.h"
 

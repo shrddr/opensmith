@@ -1,3 +1,5 @@
+NOTE: this is terribly outdated (june 2016). just use cmake instead
+
 ### Ubuntu 16
 
 * `sudo apt-get install git g++ pkg-config libglfw3-dev libglew-dev zlib1g-dev portaudio19-dev libogg-dev libvorbis-dev`
