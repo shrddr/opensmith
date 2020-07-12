@@ -1,8 +1,11 @@
 file(GLOB_RECURSE MyCPPs *.cpp)
 add_executable(opensmith ${MyCPPs})
+
+add_dependencies(opensmith gli)
+
 target_link_libraries(
   opensmith PRIVATE project_options project_warnings
-  CONAN_PKG::glew CONAN_PKG::glfw
+  CONAN_PKG::glew CONAN_PKG::glfw CONAN_PKG::glm
   Audio Settings Wem PsarcReader Vocals)
 
 if (WIN32)

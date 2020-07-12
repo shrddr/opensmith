@@ -19,17 +19,44 @@ add_library(project_warnings INTERFACE)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(project_warnings)
 
-# Set up some extra Conan dependencies based on our needs
-# before loading Conan
+######################
+# conan dependencies #
+######################
+
 set(CONAN_EXTRA_REQUIRES "")
 set(CONAN_EXTRA_OPTIONS "")
 
 include(cmake/Conan.cmake)
 run_conan()
 
+#################
+# git clone gli #
+#################
+
+include(ExternalProject)
+
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+
+message(STATUS "EXTERNAL_INSTALL_LOCATION = ${EXTERNAL_INSTALL_LOCATION}")
+
+ExternalProject_Add(gli
+    GIT_REPOSITORY https://github.com/g-truc/gli
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+)
+
+include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+
+#############
+# portaudio #
+#############
+
 #set (PA_USE_ASIO 1)
 #set (PA_ENABLE_DEBUG_OUTPUT 0)
 add_subdirectory(portaudio EXCLUDE_FROM_ALL)
+
+#########
+# build #
+#########
 
 add_subdirectory(Rijndael)
 add_subdirectory(PsarcReader)

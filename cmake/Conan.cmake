@@ -17,10 +17,6 @@ if (WIN32)
   set(CONAN_EXTRA_REQUIRES ${CONAN_EXTRA_REQUIRES} "dirent/1.23.2")
 endif (WIN32)
 
-if(UNIX)
-  set(CONAN_EXTRA_REQUIRES ${CONAN_EXTRA_REQUIRES} "portaudio/v190600.20161030@bincrafters/stable")
-endif(UNIX)
-
 conan_cmake_run(
   REQUIRES
   ${CONAN_EXTRA_REQUIRES}
@@ -34,6 +30,7 @@ conan_cmake_run(
   zlib/1.2.11
   glfw/3.3.2@bincrafters/stable
   glew/2.1.0@bincrafters/stable
+  glm/0.9.9.8
   OPTIONS
   ${CONAN_EXTRA_OPTIONS}
   BASIC_SETUP
