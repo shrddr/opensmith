@@ -25,7 +25,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(int argc, char** argv)
 {
-	for (size_t i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
 		if (strcmp("-song", argv[i]) == 0)
 			o.psarcFile = o.psarcDirectory + argv[i + 1];

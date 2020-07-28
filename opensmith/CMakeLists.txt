@@ -1,7 +1,7 @@
 file(GLOB_RECURSE MyCPPs *.cpp)
 add_executable(opensmith ${MyCPPs})
 
-add_dependencies(opensmith gli)
+target_include_directories(opensmith PRIVATE ${GliIncludeDir})
 
 target_link_libraries(
   opensmith PRIVATE project_options project_warnings

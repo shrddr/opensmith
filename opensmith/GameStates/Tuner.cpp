@@ -268,7 +268,7 @@ void TunerDetector::analyzeAuto()
 
 	std::map<size_t, float> peaks;
 
-	for (size_t period = minPeriod; period < maxPeriod; period++)
+	for (int period = minPeriod; period < maxPeriod; period++)
 	{
 		sumPrev = sum;
 		sum = 0;

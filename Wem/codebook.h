@@ -19,7 +19,7 @@ class CodebookLibrary
 public:
 	CodebookLibrary(const char* fileName);
 	~CodebookLibrary();
-	const char* getCodebook(int i) const
+	const char* getCodebook(size_t i) const
 	{
 		if (!codebookData || !codebookOffsets)
 			throw std::string("codebook library not loaded");
@@ -27,7 +27,7 @@ public:
 			return NULL;
 		return &codebookData[codebookOffsets[i]];
 	}
-	long getCodebookSize(int i) const
+	long getCodebookSize(size_t i) const
 	{
 		if (!codebookData || !codebookOffsets)
 			throw std::string("codebook library not loaded");
@@ -40,6 +40,6 @@ public:
 private:
 	char* codebookData;
 	long* codebookOffsets;
-	long codebookCount;
+	size_t codebookCount;
 };
 

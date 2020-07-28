@@ -116,7 +116,7 @@ struct FretLabel : public Drawable
 	void draw(float currentTime);
 
 	char id;
-	bool active;
+	bool active = false;
 };
 
 class View

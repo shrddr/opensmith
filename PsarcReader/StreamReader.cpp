@@ -1,6 +1,6 @@
 #include "StreamReader.h"
 
-void StreamReaderLE::setPos(uint64_t position)
+void StreamReaderLE::setPos(std::streamoff position)
 {
 	pBaseStream.seekg(position);
 	pos = pBaseStream.tellg();

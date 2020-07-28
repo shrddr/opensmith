@@ -10,11 +10,11 @@ Model::Model(View& v, Controller& c):
 	v(v),
 	c(c)
 {
+	std::cout << glfwGetTime() << " > parsing PSARC header" << std::endl;
 	PSARC* psarc = new PSARC(o.psarcFile.c_str());
-	std::cout << glfwGetTime() << " > PSARC header parsed" << std::endl;
 	psarc->DetectEntries();
 
-	// get sng
+	std::cout << glfwGetTime() << " > extracting SNG from PSARC" << std::endl;
 
 	std::vector<char> sngEntryStorage;
 	psarc->Entries[o.sngEntry]->Data->readTo(sngEntryStorage);
@@ -26,16 +26,15 @@ Model::Model(View& v, Controller& c):
 		outSngFile.close();
 	}
 
-	std::cout << glfwGetTime() << " > SNG extracted from PSARC" << std::endl;
+	
 
+	std::cout << glfwGetTime() << " > parsing SNG\n";
 	std::vector<char> sngStorage;
 	SngReader::readTo(sngEntryStorage, sngStorage);
 	s.parse(sngStorage);
 	convertTuningAbsolute(s.metadata.tuning);
 
-	std::cout << glfwGetTime() << " > SNG parsed" << std::endl;
-
-	std::cout << "Tuning: " << notesNames(s.metadata.tuning) << std::endl;
+	std::cout << "Tuning: " << notesNames(s.metadata.tuning) << "\n";
 
 	preloadSNG();
 
@@ -51,43 +50,41 @@ Model::Model(View& v, Controller& c):
 		outWemFile.close();
 	}
 	
-	std::cout << glfwGetTime() << " > WEM extracted from PSARC" << std::endl;
-
+	std::cout << glfwGetTime() << " > extracting WEM from PSARC\n";
 	Wem w(audioEntryStorage);
+	std::cout << glfwGetTime() << " > WEM to OG\n";
 	w.generateOgg(oggStorage);
 
-	std::cout << glfwGetTime() << " > WEM to OGG" << std::endl;
-
+	std::cout << glfwGetTime() << " > VorbisDecoder init\n";
 	decoder = new VorbisDecoder(oggStorage);
-	std::cout << glfwGetTime() << " > VorbisDecoder init" << std::endl;
 
 	buffer = new VorbisBuffer(*decoder);
 
 	// get vocals
 
-	std::vector<char> vocalsEntryStorage;
+	/*std::vector<char> vocalsEntryStorage;
 	if (psarc->entry_vocals != NULL)
 	{
 		psarc->entry_vocals->Data->readTo(vocalsEntryStorage);
 		Vocals v(vocalsEntryStorage);
-	}
+	}*/
 
 	// init detector
 
+	std::cout << glfwGetTime() << " > NoteDetector init\n";
 	noteDetector = new NoteDetector(w.getSampleRate(), s.metadata.tuning, o.role == bass);
-	std::cout << glfwGetTime() << " > NoteDetector init" << std::endl;
 
 	// start portaudio
 
-	io = new InOut{buffer, noteDetector, o.playbackVolume , o.instrumentVolume };
+	io = new InOut{ buffer, noteDetector, o.playbackVolume, o.instrumentVolume };
+	std::cout << glfwGetTime() << " > Audio init (" << w.getSampleRate() << ")\n";
 	audio = new Audio(*io, w.getSampleRate());
-	std::cout << glfwGetTime() << " > Audio init" << std::endl;
-
+	
 	double paTime = audio->start();
 	io->startTime = paTime;
 	audioStartTime = glfwGetTime();
 
-	std::cout << audioStartTime << " > Audio start" <<  std::endl;
+	std::cout << audioStartTime << " > Audio start\n";
 
 	delete psarc;
 }
@@ -144,15 +141,15 @@ void Model::update(float glfwTime)
 			if (anchor.endBeatTime < itIteration->startTime) continue;
 			if (anchor.startBeatTime > itIteration->nextPhraseTime) break;
 			// find out fret later
-			Anchor o = { -1, anchor.width, anchor.startBeatTime, anchor.endBeatTime };
+			Anchor a = { -1, anchor.width, anchor.startBeatTime, anchor.endBeatTime };
 
 			// cut anchors to iteration length
 			if (anchor.startBeatTime < itIteration->startTime)
-				o.startTime = itIteration->startTime;
+				a.startTime = itIteration->startTime;
 			if (anchor.endBeatTime > itIteration->nextPhraseTime)
-				o.endTime = itIteration->nextPhraseTime;
+				a.endTime = itIteration->nextPhraseTime;
 			
-			v.anchors.push_back(o);
+			v.anchors.push_back(a);
 		}
 
 		for (auto n : a.Notes)

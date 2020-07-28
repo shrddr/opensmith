@@ -37,7 +37,7 @@ public:
 	}
 	~StreamReaderLE() {}
 	int pos; // for memory streams
-	void setPos(uint64_t position);
+	void setPos(std::streamoff position);
 	void addPos(int delta);
 	std::istream& pBaseStream;
 	void readBytes(char* dest, int count);

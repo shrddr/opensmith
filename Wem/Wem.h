@@ -37,11 +37,11 @@ public:
 private:
 	std::istream* inStream;
 	membuf* data;
-	long fileSize;
+	size_t fileSize;
 	bool littleEndian;
 	long riffSize;
-	long fmtOffset, dataOffset;
-	long fmtSize, dataSize;
+	std::streamoff fmtOffset, dataOffset;
+	uint32_t fmtSize, dataSize;
 	// RIFF fmt
 	uint16_t channels;
 	uint32_t sampleRate;

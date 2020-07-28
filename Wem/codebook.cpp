@@ -39,7 +39,7 @@ CodebookLibrary::CodebookLibrary(const char* fileName):
 	if (!is) throw std::string(fileName);
 
 	is.seekg(0, std::ios::end);
-	long file_size = is.tellg();
+	size_t file_size = is.tellg();
 
 	StreamReaderLE r(is);
 	r.setPos(file_size - 4);
@@ -52,9 +52,9 @@ CodebookLibrary::CodebookLibrary(const char* fileName):
 
 	is.seekg(0);
 	for (long i = 0; i < offsetOffset; i++)
-		codebookData[i] = is.get();
+		is.get(codebookData[i]);
 
-	for (long i = 0; i < codebookCount; i++)
+	for (size_t i = 0; i < codebookCount; i++)
 		codebookOffsets[i] = r.readInt32();
 
 	// so first we read from file to memory
@@ -129,7 +129,7 @@ void CodebookLibrary::rebuild(BitStream &bis, unsigned long cb_size, OggStream& 
 
 		bos << sparse;
 
-		for (int i = 0; i < entries; i++)
+		for (unsigned int i = 0; i < entries; i++)
 		{
 			bool presentBool = true;
 

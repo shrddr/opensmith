@@ -77,7 +77,7 @@ PSARC::PSARC(char const* fileName):
 
 	std::for_each(Entries.begin(), Entries.end(), [&](Entry* e)
 	{
-		e->Data = new Entry::DataPointer(
+		e->Data = std::make_unique<Entry::DataPointer>(
 			*e,
 			Reader,
 			zLengths,

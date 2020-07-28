@@ -13,7 +13,8 @@ OggStream::OggStream(std::vector<char>& storage) :
 	first(true),
 	continued(false),
 	granule(0),
-	seqno(0)
+	seqno(0),
+	pageBuffer("")
 {
 
 }
@@ -31,7 +32,7 @@ void OggStream::flushBits(void) {
 	if (bitsStored != 0) {
 		if (pageBytes == segment_size * max_segments)
 		{
-			throw std::string("ran out of space in an Ogg packet");
+			throw std::exception("ran out of space in an Ogg packet");
 			flushPage(true);
 		}
 
@@ -72,7 +73,7 @@ void OggStream::flushPage(bool next_continued, bool last) {
 		pageBuffer[26] = segments;          // segment count
 
 											// segment sizes
-		for (int i = 0, bytesLeft = pageBytes; i < segments; i++)
+		for (unsigned int i = 0, bytesLeft = pageBytes; i < segments; i++)
 		{
 			if (bytesLeft >= segment_size)
 			{

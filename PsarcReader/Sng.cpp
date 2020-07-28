@@ -25,7 +25,7 @@ void SngReader::readTo(std::vector<char>& input, std::vector<char>& storage)
 	int cipherSize = fileSize - headerSize - blockSize;
 	char* plainText = new char[cipherSize];
 
-	uint32_t dataSize;
+	uint32_t dataSize = 0;
 	bool decryptSuccess = false;
 	for (size_t i = 0; !decryptSuccess && i < keys::sngCount; i++) // try both pc and mac keys
 	{

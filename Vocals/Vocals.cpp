@@ -1,7 +1,12 @@
 #include <iostream>
 #include "Vocals.h"
-#include "../tinyxml2/tinyxml2.h"
+#include <tinyxml2.h>
 
+std::ostream& operator<<(std::ostream& os, const VocalsEntry& entry)
+{
+	os << entry.time << " / " << entry.tlen << " / " << entry.text;
+	return os;
+}
 
 Vocals::Vocals(std::vector<char> vocalsEntryStorage)
 {
@@ -17,7 +22,7 @@ Vocals::Vocals(std::vector<char> vocalsEntryStorage)
 		entry.tlen = e->FloatAttribute("length");
 		entry.text = e->Attribute("lyric");
 		records.push_back(entry);
-		std::cout << entry.time << " / " << entry.tlen << " / " << entry.text << std::endl;
+		std::cout << entry << "\n";
 	}
 }
 

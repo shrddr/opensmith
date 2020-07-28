@@ -35,16 +35,21 @@ run_conan()
 
 include(ExternalProject)
 
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
-
-message(STATUS "EXTERNAL_INSTALL_LOCATION = ${EXTERNAL_INSTALL_LOCATION}")
-
-ExternalProject_Add(gli
+ExternalProject_Add(
+    gli
+    PREFIX ${PROJECT_SOURCE_DIR}/external/gli
     GIT_REPOSITORY https://github.com/g-truc/gli
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""#${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/gli ${PROJECT_SOURCE_DIR}/include/gli
 )
+ExternalProject_Get_Property(gli source_dir)
+set(GliIncludeDir ${source_dir})
 
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+
+message(STATUS "{GliIncludeDir} = ${GliIncludeDir}")
+
+#include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 
 #############
 # portaudio #

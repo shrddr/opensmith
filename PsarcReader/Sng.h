@@ -133,7 +133,7 @@ public:
 		char pickDirection;
 		char slap;
 		char pluck;
-		int16_t vibrato;
+		int16_t vibrato = 0;
 		float sustain;
 		float maxBend;
 		std::vector<BendData> bendData;
@@ -295,21 +295,21 @@ public:
 
 	struct Metadata
 	{
-		double maxScore;
-		double maxNotesAndChords;
-		double maxNotesAndChords_Real;
-		double pointsPerNote;
-		float firstBeatLength;
-		float startTime;
-		char capoFretId;
-		char lastConversionDateTime[32];
-		int16_t part;
-		float songLength;
-		int32_t stringCount;
+		double maxScore{};
+		double maxNotesAndChords{};
+		double maxNotesAndChords_Real{};
+		double pointsPerNote{};
+		float firstBeatLength{};
+		float startTime{};
+		char capoFretId{};
+		char lastConversionDateTime[32]{};
+		int16_t part{};
+		float songLength{};
+		int32_t stringCount {};
 		std::vector<int> tuning;
-		float unk1_firstNoteTime;
-		float unk2_firstNoteTime;
-		int32_t maxDifficulty;
+		float unk1_firstNoteTime{};
+		float unk2_firstNoteTime{};
+		int32_t maxDifficulty{};
 	};
 
 	std::vector<BPM> BPMs;

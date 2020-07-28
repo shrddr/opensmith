@@ -16,16 +16,12 @@ public:
 	{
 	public:
 		Entry() {}
-		~Entry()
-		{
-			delete Data;
-		}
-		int id;
-		char MD5[16];
-		uint32_t zIndex;
-		uint64_t Length;
-		uint64_t Offset;
-		std::string name;
+		int id{};
+		char MD5[16]{};
+		uint32_t zIndex = -1;
+		uint64_t Length{};
+		uint64_t Offset{};
+		std::string name{};
 
 		class DataPointer
 		{
@@ -45,7 +41,7 @@ public:
 			uint32_t blockSize;
 		};
 
-		DataPointer* Data;
+		std::unique_ptr<DataPointer> Data;
 	};
 
 	std::ifstream stream;

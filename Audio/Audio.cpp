@@ -32,7 +32,7 @@ static int patestCallback(const void *inputBuffer, void *outputBuffer,
 	float *out = (float*)outputBuffer;
 	const float *in = (const float*)inputBuffer;
 
-	for (int i = 0; i < framesPerBuffer; i++)
+	for (unsigned long i = 0; i < framesPerBuffer; i++)
 	{
 		consumer->setPCM(*in); // add timeInfo->inputBufferAdcTime
 		float left;
@@ -74,7 +74,15 @@ Audio::Audio(InOut &io, uint32_t sampleRate)
 		patestCallback,
 		&io);
 
-	if (err != paNoError) report(err);
+	if (err != paNoError)
+	{
+		std::cout << "Pa_OpenStream failed:\n" 
+			<< "input device = " << inputParameters.device << "\n"
+			<< "input ch = " << inputParameters.channelCount << "\n"
+			<< "output device = " << outputParameters.device << "\n"
+			<< "output ch = " << outputParameters.channelCount << "\n";
+		report(err);
+	}
 }
 
 double Audio::start()
@@ -86,6 +94,8 @@ double Audio::start()
 		if (err != paNoError)
 			report(err);
 	}
+	else
+		throw std::exception("The stream to start is already running");
 	return startTime;
 }
 

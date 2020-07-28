@@ -78,8 +78,6 @@ void Wem::init()
 {
 	fmtOffset = -1;
 	dataOffset = -1;
-	fmtSize = -1;
-	dataSize = -1;
 	noGranule = false;
 
 	StreamReaderLE r(*inStream);
@@ -167,7 +165,7 @@ void Wem::init()
 	}
 
 	// read vorb (from now on assuming vorbSize == -1)
-	long vorbOffset = fmtOffset + 0x18;
+	std::streamoff vorbOffset = fmtOffset + 0x18;
 	r.setPos(vorbOffset + 0x00);
 	sampleCount = r.readUint32();
 	noGranule = true;
@@ -361,7 +359,7 @@ void Wem::generateOggHeader(OggStream& os, bool*& modeBlockflag, int& modeBits)
 		BitUint<32> vendorSize(strlen(vendor));
 		os << vendorSize;
 
-		for (int i = 0; i < vendorSize; i++) {
+		for (size_t i = 0; i < vendorSize; i++) {
 			BitUint<8> c(vendor[i]);
 			os << c;
 		}

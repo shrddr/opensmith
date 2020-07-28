@@ -54,7 +54,7 @@ public:
 private:
 	PaStream* stream;
 	PaError err;
-	double startTime;
+	double startTime {};
 	void report(PaError err);
 };
 

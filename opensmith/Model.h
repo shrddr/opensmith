@@ -28,7 +28,7 @@ private:
 	NoteDetector* noteDetector;
 	InOut* io;
 	Audio* audio;
-	float audioStartTime;
+	double audioStartTime;
 
 	// Song parsing
 

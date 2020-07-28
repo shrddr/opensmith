@@ -21,7 +21,7 @@ int32_t MemoryReaderLE::readInt32()
 	return *result;
 }
 
-uint32_t MemoryReaderLE::readUint16()
+uint16_t MemoryReaderLE::readUint16()
 {
 	uint16_t* result = (uint16_t*)(data + pos);
 	pos += 2;

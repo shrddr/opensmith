@@ -17,6 +17,11 @@ if (WIN32)
   set(CONAN_EXTRA_REQUIRES ${CONAN_EXTRA_REQUIRES} "dirent/1.23.2")
 endif (WIN32)
 
+# conan-hosted portaudio has no ASIO support - OK for UNIX
+#if(UNIX)
+#  set(CONAN_EXTRA_REQUIRES ${CONAN_EXTRA_REQUIRES} "portaudio/v190600.20161030@bincrafters/stable")
+#endif(UNIX)
+
 conan_cmake_run(
   REQUIRES
   ${CONAN_EXTRA_REQUIRES}

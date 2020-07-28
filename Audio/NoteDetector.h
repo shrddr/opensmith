@@ -43,7 +43,7 @@ private:
 	
 	float powers[noteCount];
 	float deltas[noteCount];
-	bool up[noteCount];
+	bool up[noteCount] = {};
 
 	std::ofstream log;
 };

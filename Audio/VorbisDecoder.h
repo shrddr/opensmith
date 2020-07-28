@@ -79,8 +79,8 @@ public:
 	}
 private:
 	VorbisDecoder& decoder;
-	bool ready;
-	float** pcm;
+	bool ready = false;
+	float** pcm = 0;
 	int64_t streamPos;
 	int size;
 	int pos;
