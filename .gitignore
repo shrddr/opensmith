@@ -9,6 +9,7 @@ bin/*.iobj
 bin/*.ipdb
 bin/*.a
 bin/*.exp
+bin/*.idb
 resources/dlc
 resources/dlc/*
 resources/temp.*
